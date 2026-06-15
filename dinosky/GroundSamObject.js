@@ -67,7 +67,7 @@ export class GroundSamObject extends TankObject {
             speed: Math.max(0.001, Number(this.config.missileSpeed ?? missileConfig.speed ?? 12)),
             acceleration: Math.max(0.001, Number(this.config.missileAcceleration ?? missileConfig.acceleration ?? 20)),
             maxTurnRate: Math.max(0, Number(this.config.missileMaxTurnRate ?? missileConfig.maxTurnRate ?? 2.5)),
-            damageToDyno: Math.max(0, Number(this.config.missileDamageToDyno ?? missileConfig.damageToDyno ?? 25)),
+            damageToDino: Math.max(0, Number(this.config.missileDamageToDino ?? missileConfig.damageToDino ?? 25)),
             lifetime: Math.max(0.05, Number(this.config.missileLifetime ?? missileConfig.lifetime ?? 5)),
             fireInterval: Math.max(0.05, Number(this.config.missileFireInterval ?? missileConfig.fireInterval ?? 2)),
             wakeFireDelay: Math.max(0, Number(this.config.missileWakeFireDelay ?? missileConfig.wakeFireDelay ?? 0.7)),
@@ -91,15 +91,15 @@ export class GroundSamObject extends TankObject {
         };
     }
 
-    getDynoTargetWorld(dynoTarget, out = TMP_TARGET_WORLD) {
-        const hitCircle = dynoTarget?.getWorldCollisionCircle?.();
+    getDinoTargetWorld(dinoTarget, out = TMP_TARGET_WORLD) {
+        const hitCircle = dinoTarget?.getWorldCollisionCircle?.();
         if (hitCircle && Number.isFinite(hitCircle.centerX) && Number.isFinite(hitCircle.centerY)) {
             out.set(hitCircle.centerX, hitCircle.centerY, this.container.position.z);
             return out;
         }
 
-        if (dynoTarget?.getWorldPosition) {
-            return dynoTarget.getWorldPosition(out);
+        if (dinoTarget?.getWorldPosition) {
+            return dinoTarget.getWorldPosition(out);
         }
 
         return null;
@@ -128,7 +128,7 @@ export class GroundSamObject extends TankObject {
         return out;
     }
 
-    updateMissileCombat(delta, dynoTarget) {
+    updateMissileCombat(delta, dinoTarget) {
         if (
             !this.missileLauncher ||
             this.health <= 0 ||
@@ -152,7 +152,7 @@ export class GroundSamObject extends TankObject {
             return;
         }
 
-        const target = this.getDynoTargetWorld(dynoTarget, TMP_TARGET_WORLD);
+        const target = this.getDinoTargetWorld(dinoTarget, TMP_TARGET_WORLD);
         if (!target) {
             return;
         }
@@ -169,22 +169,22 @@ export class GroundSamObject extends TankObject {
         this.missileLauncher.launch({
             position: launchPosition,
             direction: this.getMissileLaunchDirection(TMP_LAUNCH_DIRECTION),
-            target: dynoTarget
+            target: dinoTarget
         });
         this.missileCooldown = this.missileConfig.fireInterval;
     }
 
-    updateTankCombat(delta, dynoTarget) {
+    updateTankCombat(delta, dinoTarget) {
         if (!this.loaded || this.state === LEVEL_OBJECT_STATES.DESTROYED) {
             return;
         }
-        this.updateMissileCombat(delta, dynoTarget);
+        this.updateMissileCombat(delta, dinoTarget);
     }
 
-    update(delta, level, dynoTarget = null) {
-        super.update(delta, level, dynoTarget);
+    update(delta, level, dinoTarget = null) {
+        super.update(delta, level, dinoTarget);
         if (this.missileLauncher?.hasActiveWork?.()) {
-            this.missileLauncher.update(delta, dynoTarget);
+            this.missileLauncher.update(delta, dinoTarget);
         }
         this.alwaysUpdate = this.missileLauncher?.hasActiveWork?.() ?? false;
     }

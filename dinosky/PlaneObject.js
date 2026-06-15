@@ -58,7 +58,7 @@ export class PlaneObject extends LevelObject {
         super.destroy();
     }
 
-    update(delta, level, dynoTarget = null) {
+    update(delta, level, dinoTarget = null) {
         if (!this.loaded) return;
 
         this._updatePropeller(delta);
@@ -69,6 +69,6 @@ export class PlaneObject extends LevelObject {
 
         this.state = LEVEL_OBJECT_STATES.IDLE;
         this.gravityEnabled = false;
-        this.flyingAI.update(delta, level, dynoTarget);
+        this.flyingAI.update(delta, level, dinoTarget);
     }
 }

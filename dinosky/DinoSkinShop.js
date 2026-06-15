@@ -1,14 +1,14 @@
 /**
- * DYNO SKIN SHOP
+ * DINO SKIN SHOP
  *
  * HTML-overlay dialog (matching SettingsDialog style) for browsing, buying,
- * and equipping dyno skins.
+ * and equipping dino skins.
  *
  * HOW SKIN CONFIG WORKS
- *   Skins are defined in CONFIG.dynoSkins (config.js).  Each entry has:
+ *   Skins are defined in CONFIG.dinoSkins (config.js).  Each entry has:
  *     id            – unique string key
  *     nameKey       – i18n key for the localized display name
- *     texture       – path to the full dyno texture used in gameplay
+ *     texture       – path to the full dino texture used in gameplay
  *     price         – coin cost (0 = free / default-owned)
  *     unlockedByDefault – true → owned from first session
  *
@@ -20,12 +20,12 @@
  * HOW TEXTURES ARE SWAPPED
  *   The game passes an onEquip(skinId, texturePath) callback on construction.
  *   Equipping calls that callback, which in main.js calls
- *   player.setDynoTexture(texturePath) – a method we add to Player.js.
+ *   player.setDinoTexture(texturePath) – a method we add to Player.js.
  *
  * HOW OWNERSHIP PERSISTENCE WORKS
  *   Owned skin ids and the equipped skin id are stored together with the coin
- *   count in localStorage under the key 'dynoPlayerData'.
- *   DynoSkinShop.loadPlayerData() / savePlayerData() handle serialization.
+ *   count in localStorage under the key 'dinoPlayerData'.
+ *   DinoSkinShop.loadPlayerData() / savePlayerData() handle serialization.
  *   The game reads / writes coinCount through get/setCoinCount() so both the
  *   HUD and the shop stay in sync.
  *
@@ -37,7 +37,7 @@
  *
  * HOW RESPONSIVE LAYOUTS ARE HANDLED
  *   A CSS media query switches between a single-column portrait card and a
- *   two-column landscape card.  The dyno preview sits in a <canvas> element
+ *   two-column landscape card.  The dino preview sits in a <canvas> element
  *   whose size is recalculated on every resize via ResizeObserver.
  */
 
@@ -48,7 +48,7 @@ import { CONFIG } from './config.js';
 import { t } from './i18n.js';
 import { loadLocalJson, saveJsonWithPlatformMirrors } from './PlatformBridge.js';
 
-const STORAGE_KEY = 'dynoPlayerData';
+const STORAGE_KEY = 'dinoPlayerData';
 
 // ── Persistence helpers ───────────────────────────────────────────────────────
 
@@ -62,23 +62,23 @@ export function savePlayerData(data) {
 
 /** Returns the initial player-data object seeded from the skin config. */
 function defaultPlayerData() {
-    const ownedByDefault = (CONFIG.dynoSkins ?? [])
+    const ownedByDefault = (CONFIG.dinoSkins ?? [])
         .filter((s) => s.unlockedByDefault)
         .map((s) => s.id);
-    const firstId = CONFIG.dynoSkins?.[0]?.id ?? 'classic';
+    const firstId = CONFIG.dinoSkins?.[0]?.id ?? 'classic';
     return {
         coins: 0,
-        ownedDynoSkins: ownedByDefault.length > 0 ? ownedByDefault : [firstId],
-        equippedDynoSkinId: firstId
+        ownedDinoSkins: ownedByDefault.length > 0 ? ownedByDefault : [firstId],
+        equippedDinoSkinId: firstId
     };
 }
 
 // ── CSS ───────────────────────────────────────────────────────────────────────
 
 function injectStyles() {
-    if (document.getElementById('dyno-skin-shop-styles')) return;
+    if (document.getElementById('dino-skin-shop-styles')) return;
     const style = document.createElement('style');
-    style.id = 'dyno-skin-shop-styles';
+    style.id = 'dino-skin-shop-styles';
     style.textContent = `
         .dss-screen {
             position: fixed;
@@ -227,7 +227,7 @@ function injectStyles() {
         .dss-close:hover,
         .dss-close:focus-visible { filter: brightness(1.1); }
 
-        /* ── Dyno preview ── */
+        /* ── Dino preview ── */
         .dss-preview-wrap {
             position: relative;
             display: flex;
@@ -536,14 +536,14 @@ function injectStyles() {
     document.head.appendChild(style);
 }
 
-// ── DynoSkinShop ────────────────────────────────────────────────────────────
+// ── DinoSkinShop ────────────────────────────────────────────────────────────
 
-export class DynoSkinShop {
+export class DinoSkinShop {
     /**
      * @param {object} options
      * @param {() => number}         options.getCoinCount   – returns current coins
      * @param {(n: number) => void}  options.setCoinCount   – sets coin count in game + HUD
-     * @param {(id: string, texturePath: string) => void} options.onEquip – apply texture to dyno
+     * @param {(id: string, texturePath: string) => void} options.onEquip – apply texture to dino
      * @param {() => Promise<boolean>} options.onWatchAd   – trigger rewarded ad; resolves with reward
      * @param {() => void | Promise<void>} options.onHide  – optional hook when dialog closes
      */
@@ -566,28 +566,28 @@ export class DynoSkinShop {
         const defaults = defaultPlayerData();
         this._data = saved ? {
             coins: Number.isFinite(saved.coins) ? saved.coins : defaults.coins,
-            ownedDynoSkins: Array.isArray(saved.ownedDynoSkins) ? saved.ownedDynoSkins : defaults.ownedDynoSkins,
-            equippedDynoSkinId: saved.equippedDynoSkinId ?? defaults.equippedDynoSkinId,
+            ownedDinoSkins: Array.isArray(saved.ownedDinoSkins) ? saved.ownedDinoSkins : defaults.ownedDinoSkins,
+            equippedDinoSkinId: saved.equippedDinoSkinId ?? defaults.equippedDinoSkinId,
         } : defaults;
         // Sync coin count from the live game value on open (handled in show()).
 
-        this.skins = CONFIG.dynoSkins ?? [];
+        this.skins = CONFIG.dinoSkins ?? [];
         this._selectedIndex = Math.max(0, this.skins.findIndex(
-            (s) => s.id === this._data.equippedDynoSkinId
+            (s) => s.id === this._data.equippedDinoSkinId
         ));
 
-        // THREE.js mini-renderer for the dyno preview.
+        // THREE.js mini-renderer for the dino preview.
         this._previewRenderer = null;
         this._previewScene = null;
         this._previewCamera = null;
         this._previewMixer = null;
-        this._previewDynoModel = null;
+        this._previewDinoModel = null;
         this._previewAnimFrameId = null;
         this._previewClock = new THREE.Clock(false);
         this._previewTextureLoader = new THREE.TextureLoader();
         this._previewTexturePromises = {};
-        this._previewDynoAssetPromise = null;
-        this._previewDynoAsset = null;
+        this._previewDinoAssetPromise = null;
+        this._previewDinoAsset = null;
         this._previewTextures = {};  // cached: texturePath → THREE.Texture
         this._thumbCanvases = [];    // one per skin, drawn via previewRenderer snapshots
         this._previewWrap = null;
@@ -796,7 +796,7 @@ export class DynoSkinShop {
             label.textContent = t(skin.nameKey) || skin.id;
 
             const bottom = document.createElement('div');
-            if (this._data.ownedDynoSkins.includes(skin.id)) {
+            if (this._data.ownedDinoSkins.includes(skin.id)) {
                 bottom.className = 'dss-lock-icon';
                 bottom.textContent = '✓';
             } else {
@@ -859,8 +859,8 @@ export class DynoSkinShop {
         const skin = this.skins[this._selectedIndex];
         if (!skin) return;
 
-        const isOwned = this._data.ownedDynoSkins.includes(skin.id);
-        const isEquipped = this._data.equippedDynoSkinId === skin.id;
+        const isOwned = this._data.ownedDinoSkins.includes(skin.id);
+        const isEquipped = this._data.equippedDinoSkinId === skin.id;
 
         // Skin name
         this._skinNameEl.textContent = t(skin.nameKey) || skin.id;
@@ -971,8 +971,8 @@ export class DynoSkinShop {
     _handleAction() {
         const skin = this.skins[this._selectedIndex];
         if (!skin) return;
-        const isOwned = this._data.ownedDynoSkins.includes(skin.id);
-        const isEquipped = this._data.equippedDynoSkinId === skin.id;
+        const isOwned = this._data.ownedDinoSkins.includes(skin.id);
+        const isEquipped = this._data.equippedDinoSkinId === skin.id;
 
         if (isEquipped) return;
 
@@ -992,11 +992,11 @@ export class DynoSkinShop {
             return;
         }
         this._data.coins -= skin.price;
-        this._data.ownedDynoSkins.push(skin.id);
+        this._data.ownedDinoSkins.push(skin.id);
         this.setCoinCount(this._data.coins);
         this._saveData();
         this._equipSkin(skin.id);
-        console.log('Dyno skin purchased', skin.id);
+        console.log('Dino skin purchased', skin.id);
     }
 
     async _handleAdUnlock() {
@@ -1009,10 +1009,10 @@ export class DynoSkinShop {
         try {
             const rewarded = await this.onWatchAd();
             if (rewarded) {
-                this._data.ownedDynoSkins.push(skin.id);
+                this._data.ownedDinoSkins.push(skin.id);
                 this._saveData();
                 this._equipSkin(skin.id);
-                console.log('Dyno skin unlocked via ad', skin.id);
+                console.log('Dino skin unlocked via ad', skin.id);
             }
         } finally {
             this._adInProgress = false;
@@ -1024,12 +1024,12 @@ export class DynoSkinShop {
     _equipSkin(skinId) {
         const skin = this.skins.find((s) => s.id === skinId);
         if (!skin) return;
-        this._data.equippedDynoSkinId = skinId;
+        this._data.equippedDinoSkinId = skinId;
         this._saveData();
         this.onEquip(skinId, skin.texture);
         this._buildThumbs();
         this._refreshUI();
-        console.log('Dyno skin equipped', skinId);
+        console.log('Dino skin equipped', skinId);
     }
 
     async _handleWatchAd() {
@@ -1154,7 +1154,7 @@ export class DynoSkinShop {
     }
 
     preloadPreviewAssets() {
-        void this._ensurePreviewDynoAsset();
+        void this._ensurePreviewDinoAsset();
         const skin = this.skins[this._selectedIndex];
         if (skin?.texture) {
             void this._loadPreviewTextureAsync(skin.texture);
@@ -1166,7 +1166,7 @@ export class DynoSkinShop {
 
     hasAffordableLockedSkin(currentCoins = this._data.coins) {
         const coins = Number.isFinite(currentCoins) ? currentCoins : 0;
-        const owned = new Set(this._data.ownedDynoSkins || []);
+        const owned = new Set(this._data.ownedDinoSkins || []);
         return this.skins.some((skin) => (
             !owned.has(skin.id) &&
             Number.isFinite(skin.price) &&
@@ -1222,30 +1222,30 @@ export class DynoSkinShop {
         this._previewCamera.position.set(0, 0, 18);
         this._previewCamera.lookAt(0, 0, 0);
 
-        this._loadPreviewDyno();
+        this._loadPreviewDino();
         this._previewClock.start();
         this._tickPreview();
     }
 
-    _ensurePreviewDynoAsset() {
-        if (this._previewDynoAsset) {
-            return Promise.resolve(this._previewDynoAsset);
+    _ensurePreviewDinoAsset() {
+        if (this._previewDinoAsset) {
+            return Promise.resolve(this._previewDinoAsset);
         }
-        if (this._previewDynoAssetPromise) {
-            return this._previewDynoAssetPromise;
+        if (this._previewDinoAssetPromise) {
+            return this._previewDinoAssetPromise;
         }
 
         const loader = createGLTFLoader();
-        this._previewDynoAssetPromise = loaderLoadWithRetry(loader, './gfx/mesh/dyno/dyno.glb')
+        this._previewDinoAssetPromise = loaderLoadWithRetry(loader, './gfx/mesh/dino/dino.glb')
             .then((gltf) => {
-                this._previewDynoAsset = gltf;
+                this._previewDinoAsset = gltf;
                 return gltf;
             })
             .catch((err) => {
-                this._previewDynoAssetPromise = null;
+                this._previewDinoAssetPromise = null;
                 throw err;
             });
-        return this._previewDynoAssetPromise;
+        return this._previewDinoAssetPromise;
     }
 
     _loadPreviewTextureAsync(texturePath) {
@@ -1270,7 +1270,7 @@ export class DynoSkinShop {
                 },
                 undefined,
                 (err) => {
-                    console.warn('[DynoSkinShop] Texture load error', texturePath, err);
+                    console.warn('[DinoSkinShop] Texture load error', texturePath, err);
                     delete this._previewTexturePromises[texturePath];
                     resolve(null);
                 }
@@ -1285,16 +1285,16 @@ export class DynoSkinShop {
         return this._previewTexturePromises[texturePath];
     }
 
-    async _loadPreviewDyno() {
+    async _loadPreviewDino() {
         let gltf;
         try {
-            gltf = await this._ensurePreviewDynoAsset();
+            gltf = await this._ensurePreviewDinoAsset();
         } catch (err) {
-            console.warn('[DynoSkinShop] Preview dyno load error', err);
+            console.warn('[DinoSkinShop] Preview dino load error', err);
             return;
         }
 
-        console.log('[DynoSkinShop] Dyno loaded for preview');
+        console.log('[DinoSkinShop] Dino loaded for preview');
 
         const model = gltf.scene;
         model.scale.setScalar(1);
@@ -1337,7 +1337,7 @@ export class DynoSkinShop {
         model.rotation.y = 0.4;
 
         this._previewScene.add(model);
-        this._previewDynoModel = model;
+        this._previewDinoModel = model;
 
         // Animations — try idle-loop first, then idle, breathe, first available.
         if (gltf.animations?.length) {
@@ -1348,7 +1348,7 @@ export class DynoSkinShop {
                 THREE.AnimationClip.findByName(gltf.animations, 'idle') ??
                 THREE.AnimationClip.findByName(gltf.animations, 'breathe') ??
                 gltf.animations[0];
-            console.log('[DynoSkinShop] Playing animation:', idleClip?.name);
+            console.log('[DinoSkinShop] Playing animation:', idleClip?.name);
             if (idleClip) {
                 this._previewMixer.clipAction(idleClip).play();
             }
@@ -1384,8 +1384,8 @@ export class DynoSkinShop {
 
     _applyTextureToPreviewModel(texturePath) {
         const tex = this._previewTextures[texturePath];
-        if (!tex || !this._previewDynoModel) return;
-        this._previewDynoModel.traverse((child) => {
+        if (!tex || !this._previewDinoModel) return;
+        this._previewDinoModel.traverse((child) => {
             if (!child.isMesh) return;
             const mats = Array.isArray(child.material) ? child.material : [child.material];
             for (const m of mats) {
@@ -1401,8 +1401,8 @@ export class DynoSkinShop {
         this._previewAnimFrameId = requestAnimationFrame(() => this._tickPreview());
         const delta = this._previewClock.getDelta();
         this._previewMixer?.update(delta);
-        if (this._previewDynoModel) {
-            this._previewDynoModel.rotation.y += delta * 0.35;
+        if (this._previewDinoModel) {
+            this._previewDinoModel.rotation.y += delta * 0.35;
         }
         this._previewRenderer?.render(this._previewScene, this._previewCamera);
     }
@@ -1427,7 +1427,7 @@ export class DynoSkinShop {
         this._previewScene = null;
         this._previewCamera = null;
         this._previewMixer = null;
-        this._previewDynoModel = null;
+        this._previewDinoModel = null;
         this._resetPreviewCanvas();
     }
 
@@ -1525,7 +1525,7 @@ export class DynoSkinShop {
 
     // Returns the currently equipped skin id (used by main.js on startup).
     getEquippedSkinId() {
-        return this._data.equippedDynoSkinId;
+        return this._data.equippedDinoSkinId;
     }
 
     // Returns the persisted coin count — used by main.js to seed its authoritative coinCount.

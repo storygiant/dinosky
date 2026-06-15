@@ -69,9 +69,9 @@
  </tile>
  <tile id="12">
   <properties>
-   <property name="objectType" value="bossdyno"/>
+   <property name="objectType" value="bossdino"/>
   </properties>
-  <image source="bossdyno.webp" width="208" height="79"/>
+  <image source="bossdino.webp" width="208" height="79"/>
  </tile>
  <tile id="13">
   <properties>

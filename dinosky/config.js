@@ -29,7 +29,7 @@ export const CONFIG = {
     // automatically when loading completes. The Poki gameplayStart SDK call is held
     // until the player has interacted (pointer down or key down) for the first time.
     autoStartOnLoad: false,
-    disableDynoRendering: false,
+    disableDinoRendering: false,
     // Cap the WebGL pixel ratio. 1 = native CSS pixels (fastest), 2 = retina quality.
     // On weak mobile GPUs, setting this to 1 can double the framerate.
     maxPixelRatio: 2,
@@ -84,8 +84,8 @@ export const CONFIG = {
     idleCommercialBreakInterval: 350,
     // Seconds between interstitial ads shown while a mission is actively running.
     activeMissionCommercialBreakInterval: 390,
-    // Initial upward impulse used when the dyno leaves the ground.
-        // Initial upward impulse used when the dyno leaves the ground.
+    // Initial upward impulse used when the dino leaves the ground.
+        // Initial upward impulse used when the dino leaves the ground.
     JUMP_FORCE: 20,
     // Additional lift used during the takeoff launch.
     FLIGHT_FORCE: 30,
@@ -94,11 +94,11 @@ export const CONFIG = {
     takeoffAngleDeg: 20,
     // Minimum positive vertical joystick input needed before takeoff is allowed.
     takeoffMinUpInput: 0.05,
-    // Fixed extra world-space Y offset for the dyno visual while grounded.
-    dynoGroundOffsetY: 0.4,
+    // Fixed extra world-space Y offset for the dino visual while grounded.
+    dinoGroundOffsetY: 0.4,
 
-    DYNO_MODEL: {
-        // Dyno GLB node names to hide when the player model loads. Timeline ActorTrack
+    DINO_MODEL: {
+        // Dino GLB node names to hide when the player model loads. Timeline ActorTrack
         // keyframes can later show/hide these with `nodeVisibility`, `showNodes`, or `hideNodes`.
         hiddenNodesOnLoad: ['girl']
     },
@@ -124,10 +124,10 @@ export const CONFIG = {
     hoverAcceleration: 18,
     // Deceleration used while slowing down in hover mode.
     hoverDeceleration: 35,
-    // Air speed below this value uses hover mode; at or above it the dyno switches to flying mode.
+    // Air speed below this value uses hover mode; at or above it the dino switches to flying mode.
     hoverSpeedThreshold: 9,
     // While hovering within this world-space distance from the resolved surface below, keep the
-        // dyno in hover so near-ground control stays stable and does not jump into full flight.
+        // dino in hover so near-ground control stays stable and does not jump into full flight.
     nearGroundHoverLockDistance: 10,
     // Minimum turn speed used by upright hover turns at low hover speed.
     minHoverTurnSpeed: 12,
@@ -145,7 +145,7 @@ export const CONFIG = {
     // Extra animation-speed multiplier reached at the ceiling while still trying to climb.
     thinAirClimbAnimationMultiplier: 5,
     // Maximum downward speed used while flying in the negative Y direction.
-    // Minimum downward Y speed needed before the dyno switches to the dive animation.
+    // Minimum downward Y speed needed before the dino switches to the dive animation.
     flightDiveSpeedThreshold: 38,
     // Acceleration used while steering vertically in flying mode.
     flightAcceleration: 20,
@@ -159,12 +159,12 @@ export const CONFIG = {
     groundRotationSpeed: 8,
     // Fixed duration for the left/right flight turnaround visual rotation.
     flightTurnDuration: 0.2,
-    // How quickly horizontal speed is reduced while the dyno is turning around in flight.
+    // How quickly horizontal speed is reduced while the dino is turning around in flight.
     flightTurnSpeedDecrease: 50,
     // How quickly horizontal speed builds back up after a flight turnaround has completed.
     flightTurnSpeedIncrease: 50,
 
-    DYNO_MOVEMENT: {
+    DINO_MOVEMENT: {
         // Runtime movement is split into small pieces so a fast frame cannot skip across a
         // blocking tile. Keep this at or below half a gameplay tile for reliable collision.
         maxStepSize: null,
@@ -245,7 +245,7 @@ export const CONFIG = {
         // Camera center follow damping (0..1). Higher = snappier.
         followLerp: 0.5
     },
-    // Extra world-space headroom kept between the top of the sky gradient and the dyno's
+    // Extra world-space headroom kept between the top of the sky gradient and the dino's
     // actual flight ceiling. Camera can still move to the full sky height.
     flightCeilingOffset: 30,
     LEVEL_HEIGHT: 600,
@@ -259,10 +259,10 @@ export const CONFIG = {
     // Derived at runtime from the loaded Tiled map height (height * tileheight).
     LEVEL_FLIGHT_HEIGHT: 0,
 
-    DYNO_CARRY: {
+    DINO_CARRY: {
         maxLiftWeight: 250,
         // Objects at or below this weight allow full flight (hover/fly/glide/dive) while carried.
-        // Above this threshold the dyno is locked to hover mode.
+        // Above this threshold the dino is locked to hover mode.
         freeFlyCarryWeightThreshold: 2,
         // Max flight speed when carried weight reaches maxLiftWeight.
         // Weight 0 uses normal flightssssssss speed; values in between are interpolated.
@@ -276,7 +276,7 @@ export const CONFIG = {
         // Extra flap speed while struggling with an object that is too heavy to lift.
         struggleFlapInputBoost: 3,
         carryHoverSpeedMultiplier: 1.2,
-        // Auto-pickup moves the dyno so grab reaches the object's root before attaching.
+        // Auto-pickup moves the dino so grab reaches the object's root before attaching.
         pickupAlignSpeed: 18,
         pickupAlignTolerance: 0.25,
         pickupMaxDuration: 1,
@@ -284,7 +284,7 @@ export const CONFIG = {
         allowDiveWhileCarrying: false,
         allowGlideWhileCarrying: false
     },
-    DYNO_DRAG: {
+    DINO_DRAG: {
         // How much slower pushing is compared to pulling. 1.8 = push is 1.8× slower.
         pushSpeedDivisor: 1.8,
         // If the drag joint stretches beyond this world-unit length the object is released.
@@ -298,11 +298,11 @@ export const CONFIG = {
         alignSpeed: 14,
         alignTolerance: 0.35,
         alignMaxDuration: 1,
-        // Maximum vertical distance (world units) between the dyno's mouth and a grab point
+        // Maximum vertical distance (world units) between the dino's mouth and a grab point
         // at the moment of attachment. Grab points higher than this are unreachable (e.g. an
         // upside-down tank). Defaults to one tile height if not set.
         maxGrabHeightOffset: 1.5,
-        // After the dyno's mouth passes the reachable grab point, keep the button enabled
+        // After the dino's mouth passes the reachable grab point, keep the button enabled
         // for this many world units. Pressing grab in that zone makes auto-drag walk back to
         // the same near-side anchor instead of switching to the far side of the object.
         grabOvershootDistance: 5,
@@ -341,7 +341,7 @@ export const CONFIG = {
         matterCarryConstraintDamping: 0.5,
         keepFreeCornerGrounded: true,
         freeCornerGroundSlop: 0.03,
-        draggedBehindDynoZOffset: 2.3,
+        draggedBehindDinoZOffset: 2.3,
         draggedInFrontOfObjectsZOffset: 0,
         // Hold up for this many seconds while ground-dragging (non-mouth) to release the
         // object and take off. Input must stay within dragTakeoffUpAngleHalf degrees of
@@ -351,8 +351,8 @@ export const CONFIG = {
         // drag-release-and-takeoff gesture. 10° means 80°–90° from horizontal on each side.
         dragTakeoffUpAngleHalf: 10
     },
-    // Dyno fire combat settings removed for Dyno Sky
-    DYNO_FIRE_COMBAT: {},
+    // Dino fire combat settings removed for Dino Sky
+    DINO_FIRE_COMBAT: {},
     PERFORMANCE: {
         enabled: true,
         slowDeviceDetection: {
@@ -409,7 +409,7 @@ export const CONFIG = {
             }
         }
     },
-    // "Dyno Fury" ultimate — an Inferno Shockwave. Charge builds passively and from speed boost
+    // "Dino Fury" ultimate — an Inferno Shockwave. Charge builds passively and from speed boost
     // usage; once full, KeyR (or the Fury button) unleashes a radial
     // blast that damages every enemy, knocks back physics props, and shatters breakable terrain.
     FURY: {
@@ -482,36 +482,36 @@ export const CONFIG = {
     // Coins awarded when the player completes a rewarded video in the skin shop.
     rewardedAdCoins: 50,
 
-    // Dyno skin definitions — add new skins here, nowhere else.
-    // nameKey: i18n key; texture: gameplay dyno texture;
+    // Dino skin definitions — add new skins here, nowhere else.
+    // nameKey: i18n key; texture: gameplay dino texture;
     // buttonTexture: image shown on the thumbnail button (falls back to texture if omitted);
     // price: coin cost; unlockedByDefault: owned from first session.
-    dynoSkins: [
+    dinoSkins: [
         {
             id: 'classic',
             nameKey: 'skins.classic',
-            texture: './gfx/textures/dyno/dyno_texture.webp',
-            buttonTexture: './gfx/UI/dyno_texture.webp',
+            texture: './gfx/textures/dino/dino_texture.webp',
+            buttonTexture: './gfx/UI/dino_texture.webp',
             price: 0,
             unlockedByDefault: true
         },
         {
             id: 'earth',
             nameKey: 'skins.earth',
-            texture: './gfx/textures/dyno/dyno_texture1.webp',
-            buttonTexture: './gfx/UI/dyno_texture1.webp',
+            texture: './gfx/textures/dino/dino_texture1.webp',
+            buttonTexture: './gfx/UI/dino_texture1.webp',
             price: 0,
             unlockByAd: true
         },
         {
             id: 'ice',
             nameKey: 'skins.ice',
-            texture: './gfx/textures/dyno/dyno_texture2.webp',
-            buttonTexture: './gfx/UI/dyno_texture2.webp',
+            texture: './gfx/textures/dino/dino_texture2.webp',
+            buttonTexture: './gfx/UI/dino_texture2.webp',
             price: 100
         }
     ],
-    DYNO_ENERGY_BOOST: {
+    DINO_ENERGY_BOOST: {
         // Energy resource values for hold-to-boost movement (ground + air).
         maxEnergyValue: 200,
         energyDrainValue: 10,
@@ -520,16 +520,16 @@ export const CONFIG = {
         // Seconds the energy meter stays empty before it begins refilling.
         energyEmptyDuration: 3
     },
-    DYNO_HEALTH: {
-        // Dyno health resource. 0 means dead / game-over-ready.
+    DINO_HEALTH: {
+        // Dino health resource. 0 means dead / game-over-ready.
         maxHealthValue: 250,
         // Automatic health regeneration per second. Keep 0 to disable.
         healthFillSpeed: 0,
         // Missiles are single-impact projectiles. This tiny gate prevents one visual impact
-        // from applying stacked damage if several overlap the dyno in the same instant.
+        // from applying stacked damage if several overlap the dino in the same instant.
         missileDamageCooldownSeconds: 0.35
     },
-    DYNO_DEATH: {
+    DINO_DEATH: {
         // Time to rotate from the current tilt into the dead-fall pose while airborne.
         deathFallRotateDuration: 0.5,
         // Visual pitch during airborne death (nose-down by default).
@@ -539,30 +539,30 @@ export const CONFIG = {
         // Maximum downward speed during airborne death fall.
         deathMaxFallSpeed: 18
     },
-    DYNO_HIT_PUSH: {
+    DINO_HIT_PUSH: {
         // Projectile damage maps to a small translation nudge. This keeps light bullets readable
-        // without letting heavy hits shove the dyno through collision.
+        // without letting heavy hits shove the dino through collision.
         minHitPushDistance: 0.2,
         maxHitPushDistance: 1.2,
         referenceDamage: 50,
         hitPushStepCount: 6
     },
-    DYNO_HIT_IMPACT: {
-        dynoHitImpactScale: 2.5,
-        dynoHitImpactDuration: 0.3,
-        dynoHitImpactParticleCount: 14,
+    DINO_HIT_IMPACT: {
+        dinoHitImpactScale: 2.5,
+        dinoHitImpactDuration: 0.3,
+        dinoHitImpactParticleCount: 14,
         // Used only when the projectile does not provide an exact world hit position.
-        dynoHitImpactFallbackOffset: 0.9
+        dinoHitImpactFallbackOffset: 0.9
     },
-    DYNO_HIT_FLASH: {
+    DINO_HIT_FLASH: {
         hitFlashColor: 0xffffff,
-        // MeshBasicMaterial has no emissive channel and the dyno base color is white, so a
+        // MeshBasicMaterial has no emissive channel and the dino base color is white, so a
         // warm tint gives textured/unlit materials a visible flash instead of white-on-white.
         hitFlashTintColor: 0xff4a2a,
         hitFlashIntensity: 3,
         hitFlashDuration: 0.3
     },
-    DYNO_CEILING_FAINT: {
+    DINO_CEILING_FAINT: {
         // Leave null to use the level's actual flight ceiling. Set a number to override with
         // an absolute world-space Y threshold.
         ceilingFaintYThreshold: null,
@@ -588,7 +588,7 @@ export const CONFIG = {
         faintCrashZoomOutFactor: 1.6,
         faintCrashZoomOutDurationSeconds: 2.0
     },
-    DYNO_WATER: {
+    DINO_WATER: {
         enabled: true,
         // Speed at which the swimDive state transitions to normal swim.
         swimDiveToNormalSpeed: 14,
@@ -601,23 +601,23 @@ export const CONFIG = {
         // Gentler drag applied during swimDive so entry speed bleeds off gradually.
         waterDiveDrag: 0.85,
         // How fast (radians/sec, scaled by input magnitude) the dive velocity rotates toward the joystick direction.
-        // Higher = more direct steering; the dyno redirects its momentum faster.
+        // Higher = more direct steering; the dino redirects its momentum faster.
         waterDiveSteerSpeed: 6,
         // Extra drag applied when input points more than 90° from current travel direction (going backwards).
         // Blends from waterDiveDrag at 90° to this value at 180°. Lower = harder brake when reversing.
         waterDiveReverseDrag: 0.6,
-        // How much faster the surface dyno brakes compared to its acceleration rate when pressing the opposite direction.
+        // How much faster the surface dino brakes compared to its acceleration rate when pressing the opposite direction.
         waterSurfaceBrakeMultiplier: 2,
-        // Distance below the dyno centre to snap to the water surface when idling at the top.
+        // Distance below the dino centre to snap to the water surface when idling at the top.
         surfaceSnapDistance: 0.5,
         // How far below to probe for ground when checking whether to land after exiting water.
         exitToGroundCheckDistance: 2.0,
-        // How far below the water surface (world units) before the dyno tilts toward its
+        // How far below the water surface (world units) before the dino tilts toward its
         // movement direction instead of staying horizontal. Default = 2 tiles × 2 units = 4.
         deepTiltDistance: 1,
         // Smoothing speed for visually rotating the tilt angle while swimming deep (lower = slower than flight).
         swimTiltRotationSpeed: 4,
-        // Base animation playback speed for swim_idle / swim_idle_up when the dyno is stationary.
+        // Base animation playback speed for swim_idle / swim_idle_up when the dino is stationary.
         // Scales up linearly with speed, reaching swimIdleBaseSpeed + 1 at waterMaxSpeed.
         swimIdleBaseSpeed: 0.6
     },
@@ -645,7 +645,7 @@ export const CONFIG = {
         hoverPickupRadius: 18,
         groundPickupDistance: 12,
         gravity: 52,
-        // Matter.js is used only for runtime LevelObject physics. Dyno movement/collision
+        // Matter.js is used only for runtime LevelObject physics. Dino movement/collision
         // stays on the custom controller so the player feel does not change.
         // Matter uses the same world units as the rest of the game, so gravity and velocity
         // need to be tuned for this game's scale instead of relying on Matter defaults.
@@ -841,7 +841,7 @@ export const CONFIG = {
             collideWithPlatforms: true,
             category: MATTER_MASK_BLOCK,
             collideWithMask: MATTER_MASK_BLOCK | MATTER_MASK_PLATFORMS | MATTER_MASK_TERRAIN,
-            collideWithDyno: true,
+            collideWithDino: true,
             walkable: false,
             walkableEdgeActivationRadius: 12,
             walkableGapTolerance: 1,
@@ -908,7 +908,7 @@ export const CONFIG = {
             landingZoneRadiusX: 8,
             landingZoneRadiusY: 6,
         },
-        // Boss dyno object type removed for Dyno Sky
+        // Boss dino object type removed for Dino Sky
         car: {
             behavior: 'vehicle',
             modelPath: './gfx/mesh/vehicles/car.glb',
@@ -1352,16 +1352,16 @@ export const CONFIG = {
                 walkSpeed: [1, 5],
                 runSpeed: [7, 9],
                 allowRun: true,
-                reactToDyno: true,
+                reactToDino: true,
                 // Keep males active while they are already well within view, so they do not
-                // stand idle until the dyno is almost on top of them.
-                dynoReactDistance: 15,
+                // stand idle until the dino is almost on top of them.
+                dinoReactDistance: 15,
                 walkActivationRange: 150,
                 aiActivationRange: 150,
-                moveAwayFromDyno: true,
-                // Males should already flee as soon as the dyno gets close enough, even if
+                moveAwayFromDino: true,
+                // Males should already flee as soon as the dino gets close enough, even if
                 // the stricter face-to-face threat check would not have triggered yet.
-                fleeOnDynoProximity: true,
+                fleeOnDinoProximity: true,
                 canWalkSlope: true,
                 idleOnSlopeAfterDrop: false,
                 turnDuration: 0.25,
@@ -1449,16 +1449,16 @@ export const CONFIG = {
                 walkSpeed: [2, 3],
                 runSpeed: [7, 9],
                 allowRun: true,
-                reactToDyno: true,
+                reactToDino: true,
                 // Keep males active while they are already well within view, so they do not
-                // stand idle until the dyno is almost on top of them.
-                dynoReactDistance: 15,
+                // stand idle until the dino is almost on top of them.
+                dinoReactDistance: 15,
                 walkActivationRange: 150,
                 aiActivationRange: 150,
-                moveAwayFromDyno: true,
-                // Males should already flee as soon as the dyno gets close enough, even if
+                moveAwayFromDino: true,
+                // Males should already flee as soon as the dino gets close enough, even if
                 // the stricter face-to-face threat check would not have triggered yet.
-                fleeOnDynoProximity: true,
+                fleeOnDinoProximity: true,
                 canWalkSlope: true,
                 idleOnSlopeAfterDrop: false,
                 turnDuration: 0.25,
@@ -1543,11 +1543,11 @@ export const CONFIG = {
                 runSpeed: 1.4,
                 // Cows do not run — allowRun: false means runAway state uses walkSpeed instead.
                 allowRun: false,
-                reactToDyno: true,
-                dynoReactDistance: 12,
+                reactToDino: true,
+                dinoReactDistance: 12,
                 walkActivationRange: 150,
                 aiActivationRange: 150,
-                moveAwayFromDyno: true,
+                moveAwayFromDino: true,
                 // Cow turns around rather than climbing steep slopes.
                 canWalkSlope: false,
                 // After being dropped the cow idles calmly before resuming its walk cycle.
@@ -1631,7 +1631,7 @@ export const CONFIG = {
                 fireInterval: 2,
                 bulletSpeed: 24,
                 bulletLifetime: 6,
-                bulletDamageToDyno: 15,
+                bulletDamageToDino: 15,
                 bulletScale: 0.8,
                 bulletHitRadius: 0.6,
                 bulletTexturePath: './gfx/levels/bullet.webp',
@@ -1716,7 +1716,7 @@ export const CONFIG = {
                 fireInterval: 0.3,
                 bulletSpeed: 42,
                 bulletLifetime: 3,
-                bulletDamageToDyno: 5,
+                bulletDamageToDino: 5,
                 bulletScale: 0.4,
                 bulletHitRadius: 0.4,
                 bulletTexturePath: './gfx/levels/bullet.webp',
@@ -1779,7 +1779,7 @@ export const CONFIG = {
             missileSpeed: 12,
             missileAcceleration: 20,
             missileMaxTurnRate: 2,
-            missileDamageToDyno: 15,
+            missileDamageToDino: 15,
             missileLifetime: 6,
             missileHitRadius: 0.6,
             missileFireRange: 35,
@@ -1869,7 +1869,7 @@ export const CONFIG = {
             missileSpeed: 12,
             missileAcceleration: 20,
             missileMaxTurnRate: 2.5,
-            missileDamageToDyno: 25,
+            missileDamageToDino: 25,
             missileLifetime: 10,
             missileHitRadius: 0.6,
             missileFireRange: 28,
@@ -1977,7 +1977,7 @@ export const CONFIG = {
             missileSpeed: 10,
             missileAcceleration: 16,
             missileMaxTurnRate: 2.0,
-            missileDamageToDyno: 20,
+            missileDamageToDino: 20,
             missileLifetime: 10,
             missileHitRadius: 0.6,
             missileFireRange: 22,
@@ -2154,7 +2154,7 @@ export const CONFIG = {
             collideWithPlatforms: true,
             category: MATTER_MASK_BLOCK,
             collideWithMask: MATTER_MASK_BLOCK | MATTER_MASK_PLATFORMS | MATTER_MASK_TERRAIN,
-            collideWithDyno: true,
+            collideWithDino: true,
             pickupable: true,
             draggable: false,
             modelScale: 9,
@@ -2258,7 +2258,7 @@ export const CONFIG = {
             groundOffset: 0,
             flyAI: {
                 movementType: 'plane',
-                // 'patrol' = fly between random points, 'flee' = fly away from dyno when close
+                // 'patrol' = fly between random points, 'flee' = fly away from dino when close
                 behavior: 'flee',
                 // Base cruise speed (world units/second) when flying level.
                 moveSpeed: 17,
@@ -2268,9 +2268,9 @@ export const CONFIG = {
                 moveDownSpeed: 22,
                 // Distance from the current target at which a new patrol target is selected.
                 arriveThreshold: 6,
-                // World-unit radius within which the dyno triggers flee behaviour.
+                // World-unit radius within which the dino triggers flee behaviour.
                 fleeRange: 25,
-                // Flee target is placed this many units away from the dyno (should be > fleeRange).
+                // Flee target is placed this many units away from the dino (should be > fleeRange).
                 fleeDistance: 30,
                 // Multiplier applied to the current base speed when fleeing (e.g. 2 = double speed).
                 fleeSpeedMultiplier: 1.6,
@@ -2343,7 +2343,7 @@ export const CONFIG = {
                 basketRadius: 1.8,
                 // Pull mechanics.
                 maxPullDistance: 10,
-                // Grab activation: dyno must be within this distance of basket while loaded.
+                // Grab activation: dino must be within this distance of basket while loaded.
                 grabActivationRadius: 2.5,
                 // Launch power range.
                 minLaunchPower: 80,

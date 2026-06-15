@@ -1,12 +1,12 @@
 function injectSettingsDialogStyles() {
-    if (document.getElementById('dyno-settings-dialog-styles')) {
+    if (document.getElementById('dino-settings-dialog-styles')) {
         return;
     }
 
     const style = document.createElement('style');
-    style.id = 'dyno-settings-dialog-styles';
+    style.id = 'dino-settings-dialog-styles';
     style.textContent = `
-        .dyno-settings-screen {
+        .dino-settings-screen {
             position: fixed;
             inset: 0;
             z-index: 1200;
@@ -31,13 +31,13 @@ function injectSettingsDialogStyles() {
             overflow: hidden;
         }
 
-        .dyno-settings-screen.is-visible {
+        .dino-settings-screen.is-visible {
             opacity: 1;
             visibility: visible;
             pointer-events: auto;
         }
 
-        .dyno-settings-card {
+        .dino-settings-card {
             width: min(478px, calc(100vw - 32px));
             max-height: calc(100dvh - 32px);
             box-sizing: border-box;
@@ -57,25 +57,25 @@ function injectSettingsDialogStyles() {
             scrollbar-gutter: stable;
         }
 
-        .dyno-settings-card::-webkit-scrollbar {
+        .dino-settings-card::-webkit-scrollbar {
             width: 10px;
         }
 
-        .dyno-settings-card::-webkit-scrollbar-track {
+        .dino-settings-card::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.06);
             border-radius: 999px;
         }
 
-        .dyno-settings-card::-webkit-scrollbar-thumb {
+        .dino-settings-card::-webkit-scrollbar-thumb {
             background: rgba(160, 200, 255, 0.45);
             border-radius: 999px;
         }
 
-        .dyno-settings-card::-webkit-scrollbar-thumb:hover {
+        .dino-settings-card::-webkit-scrollbar-thumb:hover {
             background: rgba(160, 200, 255, 0.68);
         }
 
-        .dyno-settings-header {
+        .dino-settings-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -83,12 +83,12 @@ function injectSettingsDialogStyles() {
             margin-bottom: 22px;
         }
 
-        .dyno-settings-header > :first-child {
+        .dino-settings-header > :first-child {
             min-width: 0;
             flex: 1 1 auto;
         }
 
-        .dyno-settings-kicker {
+        .dino-settings-kicker {
             margin: 0 0 8px;
             font-size: clamp(10px, 2.4vw, 12px);
             font-weight: 700;
@@ -97,7 +97,7 @@ function injectSettingsDialogStyles() {
             color: rgba(215, 240, 255, 0.72);
         }
 
-        .dyno-settings-title {
+        .dino-settings-title {
             margin: 0;
             font-size: clamp(24px, 7vw, 34px);
             font-weight: 700;
@@ -106,7 +106,7 @@ function injectSettingsDialogStyles() {
             line-height: 0.95;
         }
 
-        .dyno-settings-close {
+        .dino-settings-close {
             flex: 0 0 auto;
             width: 44px;
             height: 44px;
@@ -121,7 +121,7 @@ function injectSettingsDialogStyles() {
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
         }
 
-        .dyno-settings-row {
+        .dino-settings-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -131,11 +131,11 @@ function injectSettingsDialogStyles() {
             border-top: 1px solid rgba(255, 255, 255, 0.12);
         }
 
-        .dyno-settings-row:last-of-type {
+        .dino-settings-row:last-of-type {
             border-bottom: 1px solid rgba(255, 255, 255, 0.12);
         }
 
-        .dyno-settings-label {
+        .dino-settings-label {
             min-width: 0;
             font-size: 15px;
             font-weight: 700;
@@ -143,7 +143,7 @@ function injectSettingsDialogStyles() {
             text-transform: uppercase;
         }
 
-        .dyno-settings-toggle {
+        .dino-settings-toggle {
             position: relative;
             flex: 0 0 auto;
             width: 76px;
@@ -157,7 +157,7 @@ function injectSettingsDialogStyles() {
                 inset 0 1px 0 rgba(255, 255, 255, 0.16);
         }
 
-        .dyno-settings-toggle::before {
+        .dino-settings-toggle::before {
             content: "";
             position: absolute;
             top: 4px;
@@ -170,25 +170,25 @@ function injectSettingsDialogStyles() {
             transition: transform 150ms ease, background 150ms ease;
         }
 
-        .dyno-settings-toggle[aria-checked="true"] {
+        .dino-settings-toggle[aria-checked="true"] {
             background:
                 linear-gradient(180deg, #fff4b8 0%, #ffb949 100%);
         }
 
-        .dyno-settings-toggle[aria-checked="true"]::before {
+        .dino-settings-toggle[aria-checked="true"]::before {
             transform: translateX(38px);
             background: #14253a;
         }
 
-        .dyno-settings-close:hover,
-        .dyno-settings-close:focus-visible,
-        .dyno-settings-toggle:hover,
-        .dyno-settings-toggle:focus-visible {
+        .dino-settings-close:hover,
+        .dino-settings-close:focus-visible,
+        .dino-settings-toggle:hover,
+        .dino-settings-toggle:focus-visible {
             outline: none;
             filter: brightness(1.05);
         }
 
-        .dyno-settings-select {
+        .dino-settings-select {
             flex: 0 0 auto;
             padding: 8px 12px;
             border: 1px solid rgba(255, 255, 255, 0.18);
@@ -208,12 +208,12 @@ function injectSettingsDialogStyles() {
             padding-right: 30px;
         }
 
-        .dyno-settings-select:focus {
+        .dino-settings-select:focus {
             outline: none;
             border-color: rgba(255, 255, 255, 0.4);
         }
 
-        .dyno-settings-restart-btn {
+        .dino-settings-restart-btn {
             flex: 0 0 auto;
             padding: 9px 18px;
             border: 1px solid rgba(255, 100, 80, 0.5);
@@ -229,27 +229,27 @@ function injectSettingsDialogStyles() {
             transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
         }
 
-        .dyno-settings-restart-btn:hover,
-        .dyno-settings-restart-btn:focus-visible {
+        .dino-settings-restart-btn:hover,
+        .dino-settings-restart-btn:focus-visible {
             outline: none;
             background: rgba(255, 60, 40, 0.28);
             border-color: rgba(255, 100, 80, 0.9);
             color: #ffb0a0;
         }
 
-        .dyno-settings-restart-btn.confirm {
+        .dino-settings-restart-btn.confirm {
             background: rgba(255, 60, 40, 0.5);
             border-color: #ff6050;
             color: #fff;
         }
 
-        .dyno-settings-select option {
+        .dino-settings-select option {
             background: #0c2457;
             color: #f7fbff;
         }
 
         @media (orientation: landscape) and (max-height: 720px) {
-            .dyno-settings-screen {
+            .dino-settings-screen {
                 align-items: flex-start;
                 padding:
                     max(12px, env(safe-area-inset-top))
@@ -258,47 +258,47 @@ function injectSettingsDialogStyles() {
                     max(12px, env(safe-area-inset-left));
             }
 
-            .dyno-settings-card {
+            .dino-settings-card {
                 width: min(60vw, calc(100vw - 24px));
                 max-height: calc(100dvh - 24px);
                 padding: 22px 24px;
             }
 
-            .dyno-settings-header {
+            .dino-settings-header {
                 margin-bottom: 16px;
             }
 
-            .dyno-settings-kicker {
+            .dino-settings-kicker {
                 margin-bottom: 6px;
             }
 
-            .dyno-settings-title {
+            .dino-settings-title {
                 font-size: clamp(22px, 5vw, 32px);
             }
 
-            .dyno-settings-row {
+            .dino-settings-row {
                 min-height: 58px;
                 padding: 10px 0;
             }
         }
 
         @media (max-width: 520px) {
-            .dyno-settings-card {
+            .dino-settings-card {
                 width: min(100%, calc(100vw - 20px));
                 padding: 20px 18px;
             }
 
-            .dyno-settings-header {
+            .dino-settings-header {
                 gap: 12px;
             }
 
-            .dyno-settings-close {
+            .dino-settings-close {
                 width: 40px;
                 height: 40px;
                 font-size: 22px;
             }
 
-            .dyno-settings-title {
+            .dino-settings-title {
                 font-size: clamp(22px, 6.2vw, 30px);
             }
         }
@@ -351,39 +351,39 @@ export class SettingsDialog {
         this.onHide = onHide;
 
         this.root = document.createElement('div');
-        this.root.className = 'dyno-settings-screen';
+        this.root.className = 'dino-settings-screen';
 
         this.card = document.createElement('div');
-        this.card.className = 'dyno-settings-card';
+        this.card.className = 'dino-settings-card';
         this.card.setAttribute('role', 'dialog');
         this.card.setAttribute('aria-modal', 'true');
-        this.card.setAttribute('aria-labelledby', 'dyno-settings-title');
+        this.card.setAttribute('aria-labelledby', 'dino-settings-title');
 
         const header = document.createElement('div');
-        header.className = 'dyno-settings-header';
+        header.className = 'dino-settings-header';
 
         const headingGroup = document.createElement('div');
         this.kicker = document.createElement('p');
-        this.kicker.className = 'dyno-settings-kicker';
-        this.kicker.textContent = 'DYNO THE DYNO';
+        this.kicker.className = 'dino-settings-kicker';
+        this.kicker.textContent = 'DINO THE DINO';
 
         this.title = document.createElement('h2');
-        this.title.id = 'dyno-settings-title';
-        this.title.className = 'dyno-settings-title';
+        this.title.id = 'dino-settings-title';
+        this.title.className = 'dino-settings-title';
         this.title.textContent = t('settings_title');
         headingGroup.append(this.kicker, this.title);
 
         this.closeButton = document.createElement('button');
-        this.closeButton.className = 'dyno-settings-close';
+        this.closeButton.className = 'dino-settings-close';
         this.closeButton.type = 'button';
         this.closeButton.setAttribute('aria-label', t('settings_close_label'));
         this.closeButton.textContent = 'x';
         header.append(headingGroup, this.closeButton);
 
         const nameRow = this.createNameRow();
-        this._nameLabel = nameRow.querySelector('.dyno-settings-label');
+        this._nameLabel = nameRow.querySelector('.dino-settings-label');
         const qualityRow = this.qualitySystemEnabled ? this.createQualityRow() : null;
-        this._qualityLabel = qualityRow?.querySelector('.dyno-settings-label') || null;
+        this._qualityLabel = qualityRow?.querySelector('.dino-settings-label') || null;
         const fullscreenRow = this.createDesktopFullscreenRow();
         this._fullscreenLabel = fullscreenRow?.label || null;
         this.desktopFullscreenToggle = fullscreenRow?.toggle || null;
@@ -401,13 +401,13 @@ export class SettingsDialog {
         this._musicLabel = musicRow.label;
 
         const languageRow = this.createLanguageRow();
-        this._languageLabel = languageRow.querySelector('.dyno-settings-label');
+        this._languageLabel = languageRow.querySelector('.dino-settings-label');
         const quitRow = this.createDesktopQuitRow();
-        this._quitLabel = quitRow?.querySelector('.dyno-settings-label') || null;
+        this._quitLabel = quitRow?.querySelector('.dino-settings-label') || null;
         const restartRow = this.createRestartRow();
-        this._restartLabel = restartRow.querySelector('.dyno-settings-label');
+        this._restartLabel = restartRow.querySelector('.dino-settings-label');
         const resetAllRow = this.createResetAllRow();
-        this._resetAllLabel = resetAllRow.querySelector('.dyno-settings-label');
+        this._resetAllLabel = resetAllRow.querySelector('.dino-settings-label');
 
         this.card.append(
             header,
@@ -500,13 +500,13 @@ export class SettingsDialog {
         const identity = getPlayerIdentity();
 
         const row = document.createElement('div');
-        row.className = 'dyno-settings-row';
+        row.className = 'dino-settings-row';
 
         const labelGroup = document.createElement('div');
         labelGroup.style.cssText = 'min-width: 0; flex: 1 1 auto;';
 
         const label = document.createElement('div');
-        label.className = 'dyno-settings-label';
+        label.className = 'dino-settings-label';
         label.textContent = t('settings_your_name');
 
         const sub = document.createElement('div');
@@ -540,14 +540,14 @@ export class SettingsDialog {
         }
 
         const row = document.createElement('div');
-        row.className = 'dyno-settings-row';
+        row.className = 'dino-settings-row';
 
         const label = document.createElement('div');
-        label.className = 'dyno-settings-label';
+        label.className = 'dino-settings-label';
         label.textContent = t('settings_fullscreen');
 
         const toggle = document.createElement('button');
-        toggle.className = 'dyno-settings-toggle';
+        toggle.className = 'dino-settings-toggle';
         toggle.type = 'button';
         toggle.setAttribute('role', 'switch');
         toggle.setAttribute('aria-label', t('settings_fullscreen_label'));
@@ -592,14 +592,14 @@ export class SettingsDialog {
         }
 
         const row = document.createElement('div');
-        row.className = 'dyno-settings-row';
+        row.className = 'dino-settings-row';
 
         const label = document.createElement('div');
-        label.className = 'dyno-settings-label';
+        label.className = 'dino-settings-label';
         label.textContent = t('settings_quit');
 
         this._quitBtn = document.createElement('button');
-        this._quitBtn.className = 'dyno-settings-restart-btn';
+        this._quitBtn.className = 'dino-settings-restart-btn';
         this._quitBtn.type = 'button';
         this._quitBtn.textContent = t('settings_quit_btn');
         this._quitBtn.addEventListener('click', () => {
@@ -612,14 +612,14 @@ export class SettingsDialog {
 
     createLanguageRow() {
         const row = document.createElement('div');
-        row.className = 'dyno-settings-row';
+        row.className = 'dino-settings-row';
 
         const label = document.createElement('div');
-        label.className = 'dyno-settings-label';
+        label.className = 'dino-settings-label';
         label.textContent = t('settings_language');
 
         const select = document.createElement('select');
-        select.className = 'dyno-settings-select';
+        select.className = 'dino-settings-select';
         select.setAttribute('aria-label', t('settings_language'));
 
         const currentLang = getLanguage();
@@ -641,14 +641,14 @@ export class SettingsDialog {
 
     createQualityRow() {
         const row = document.createElement('div');
-        row.className = 'dyno-settings-row';
+        row.className = 'dino-settings-row';
 
         const label = document.createElement('div');
-        label.className = 'dyno-settings-label';
+        label.className = 'dino-settings-label';
         label.textContent = t('settings_quality');
 
         const select = document.createElement('select');
-        select.className = 'dyno-settings-select';
+        select.className = 'dino-settings-select';
         select.setAttribute('aria-label', t('settings_quality_label'));
 
         for (const mode of ['auto', 'high', 'low']) {
@@ -669,14 +669,14 @@ export class SettingsDialog {
 
     createRestartRow() {
         const row = document.createElement('div');
-        row.className = 'dyno-settings-row';
+        row.className = 'dino-settings-row';
 
         const label = document.createElement('div');
-        label.className = 'dyno-settings-label';
+        label.className = 'dino-settings-label';
         label.textContent = t('settings_restart_missions');
 
         this._restartBtn = document.createElement('button');
-        this._restartBtn.className = 'dyno-settings-restart-btn';
+        this._restartBtn.className = 'dino-settings-restart-btn';
         this._restartBtn.type = 'button';
         this._restartBtn.textContent = t('settings_restart_btn');
 
@@ -705,14 +705,14 @@ export class SettingsDialog {
 
     createResetAllRow() {
         const row = document.createElement('div');
-        row.className = 'dyno-settings-row';
+        row.className = 'dino-settings-row';
 
         const label = document.createElement('div');
-        label.className = 'dyno-settings-label';
+        label.className = 'dino-settings-label';
         label.textContent = t('settings_reset_all');
 
         this._resetAllBtn = document.createElement('button');
-        this._resetAllBtn.className = 'dyno-settings-restart-btn';
+        this._resetAllBtn.className = 'dino-settings-restart-btn';
         this._resetAllBtn.type = 'button';
         this._resetAllBtn.textContent = t('settings_reset_all_btn');
 
@@ -740,14 +740,14 @@ export class SettingsDialog {
 
     createToggleRow(labelText, ariaLabel) {
         const row = document.createElement('div');
-        row.className = 'dyno-settings-row';
+        row.className = 'dino-settings-row';
 
         const label = document.createElement('div');
-        label.className = 'dyno-settings-label';
+        label.className = 'dino-settings-label';
         label.textContent = labelText;
 
         const toggle = document.createElement('button');
-        toggle.className = 'dyno-settings-toggle';
+        toggle.className = 'dino-settings-toggle';
         toggle.type = 'button';
         toggle.setAttribute('role', 'switch');
         toggle.setAttribute('aria-label', ariaLabel);
@@ -823,14 +823,14 @@ export class SettingsDialog {
                 musicEnabled: this.musicEnabled,
                 ...(this.qualitySystemEnabled ? { qualityMode: this.qualityMode } : {})
             };
-            void saveJsonWithPlatformMirrors('dynoSettings', settings);
+            void saveJsonWithPlatformMirrors('dinoSettings', settings);
         } catch (error) {
             console.warn('[SettingsDialog] Failed to save settings to localStorage:', error);
         }
     }
 
     loadSettings() {
-        const settings = loadLocalJson('dynoSettings', {});
+        const settings = loadLocalJson('dinoSettings', {});
         return settings && typeof settings === 'object' ? settings : {};
     }
 

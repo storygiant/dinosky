@@ -15,7 +15,7 @@ import { TopBarUI, TOP_BAR_PRELOAD_ASSET_URLS } from './TopBarUI.js';
 import { SideSpeedBoostButton } from './SideSpeedBoostButton.js';
 import { AudioManager } from './AudioManager.js';
 import { SettingsDialog } from './SettingsDialog.js';
-import { DynoSkinShop, loadPlayerData, savePlayerData } from './DynoSkinShop.js';
+import { DinoSkinShop, loadPlayerData, savePlayerData } from './DinoSkinShop.js';
 import { MISSIONS, MISSION_LEVELS } from './MissionData.js';
 import { MissionManager } from './MissionManager.js';
 import { ActiveMissionUI } from './ActiveMissionUI.js';
@@ -31,8 +31,8 @@ import { PokiGameplayGate, PokiStopReasons } from './PokiGameplayGate.js';
 const SOUND_EFFECTS = {
     chopper: 'sfx/chopper.ogg',
     plane: 'sfx/plane.ogg',
-    dynoHit: 'sfx/dyno_hit.ogg',
-    dynoLiftoff: 'sfx/dyno_liftoff.ogg',
+    dinoHit: 'sfx/dino_hit.ogg',
+    dinoLiftoff: 'sfx/dino_liftoff.ogg',
     explosion: 'sfx/explosion.ogg',
     explosion2: 'sfx/explosion2.ogg',
     explosionCar: 'sfx/explosion_car.ogg',
@@ -161,7 +161,7 @@ function loadSavedQualityMode() {
     if (!isQualitySystemEnabled()) {
         return 'high';
     }
-    const parsed = loadLocalJson('dynoSettings', null);
+    const parsed = loadLocalJson('dinoSettings', null);
     return normalizeQualityMode(parsed?.qualityMode);
 }
 
@@ -214,7 +214,7 @@ const LOAD_PROGRESS_AFTER_LEVEL_DATA = 0.18;
 const LOAD_PROGRESS_BEFORE_READY = 0.9;
 const MAX_FRAME_DT = 0.1;
 const CAMERA_Y_SAFE_MARGIN_RATIO = 0.22;
-const POKI_LOADING_FINISHED_STORAGE_KEY = 'dyno:pokiGameLoadingFinished';
+const POKI_LOADING_FINISHED_STORAGE_KEY = 'dino:pokiGameLoadingFinished';
 
 function easeInOutPower(value, power = 2) {
     const t = THREE.MathUtils.clamp(value, 0, 1);
@@ -504,7 +504,7 @@ class Game {
             return el;
         })() : null;
 
-        // --- Dyno Fury ultimate (Inferno Shockwave) ---
+        // --- Dino Fury ultimate (Inferno Shockwave) ---
         this.timeScale = 1;                 // gameplay time scale, driven by the slow-mo envelope
         this.infernoShockwave = null;       // lazily created on first trigger
         this._furySlowMo = null;            // { elapsed, hold, ramp, scale } while active
@@ -628,7 +628,7 @@ class Game {
 
     setupLighting() {
 /*        
-        // Basic scene meshes use unlit materials, so this only affects the imported dyno model.
+        // Basic scene meshes use unlit materials, so this only affects the imported dino model.
         const ambientLight = new THREE.AmbientLight(0xffffff, 1.35);
         this.scene.add(ambientLight);
 
@@ -1826,7 +1826,7 @@ class Game {
         };
         this.setTimelineSkipHandler(doSkip);
 
-        // Snap camera back to dyno, restore zoom, and exit cinematic mode.
+        // Snap camera back to dino, restore zoom, and exit cinematic mode.
         const exitPreview = () => {
             if (this.player) {
                 this.camera.position.x = clampX(this.player.position.x);
@@ -1859,11 +1859,11 @@ class Game {
         };
 
         if (continuous) {
-            // Build full path: start (dyno) → all waypoints → end (dyno).
-            const dynoPos = this.player
+            // Build full path: start (dino) → all waypoints → end (dino).
+            const dinoPos = this.player
                 ? { x: this.player.position.x, y: this.player.position.y }
                 : waypoints[0];
-            const path = [dynoPos, ...waypoints, dynoPos];
+            const path = [dinoPos, ...waypoints, dinoPos];
 
             // Compute cumulative distances for uniform speed.
             const dists = [0];
@@ -1900,11 +1900,11 @@ class Game {
 
         } else {
             // Stop-and-hold: estimate total duration for zoom curve.
-            const dynoPos = this.player
+            const dinoPos = this.player
                 ? { x: this.player.position.x, y: this.player.position.y }
                 : waypoints[0];
             let totalEstMs = 0;
-            let prev = dynoPos;
+            let prev = dinoPos;
             for (const wp of waypoints) {
                 totalEstMs += (Math.hypot(wp.x - prev.x, wp.y - prev.y) / resolvedSpeed) * 1000 + holdMs;
                 prev = wp;
@@ -2009,7 +2009,7 @@ class Game {
         const lookAheadT = THREE.MathUtils.clamp(Math.max(lookAheadRatioX, lookAheadRatioY), 0, 1);
         const easedLookAheadT = easeInOutPower(lookAheadT, dynamicSettings.responseEasingPower);
         // Keep zoom tightly coupled to framing offset:
-        // centered dyno -> minZoom, max look-ahead -> maxZoom.
+        // centered dino -> minZoom, max look-ahead -> maxZoom.
         const targetZoom = THREE.MathUtils.lerp(dynamicSettings.minZoom, dynamicSettings.maxZoom, easedLookAheadT);
 
         // Fury zoom: factor > 1 zooms out (more world visible).
@@ -2032,7 +2032,7 @@ class Game {
         this.updateCameraProjection(this.dynamicCameraState.zoom);
 
         // Look-ahead follows velocity so the camera leads the movement direction. That places
-        // the dyno opposite on screen (e.g. moving right -> dyno shifts left in viewport).
+        // the dino opposite on screen (e.g. moving right -> dino shifts left in viewport).
         const bounds = this.getCameraWorldBounds();
         if (!bounds) {
             return;
@@ -2042,7 +2042,7 @@ class Game {
         const targetX = this.player.position.x + this.dynamicCameraState.lookAhead.x;
         const unclampedTargetY = this.player.position.y + this.dynamicCameraState.lookAhead.y;
         const clampedTargetX = this.clampCameraCenter(targetX, bounds.left, bounds.right, halfWidth);
-        // Do not clamp camera Y to the authored level top/bottom. Otherwise the dyno gets
+        // Do not clamp camera Y to the authored level top/bottom. Otherwise the dino gets
         // pushed toward the screen edge near level borders instead of staying normally framed.
         const targetY = unclampedTargetY;
 
@@ -2522,9 +2522,9 @@ class Game {
 
     async init() {
         await syncStorageKeysFromCloud([
-            'dynoPlayerIdentity',
-            'dynoPlayerData',
-            'dynoSettings'
+            'dinoPlayerIdentity',
+            'dinoPlayerData',
+            'dinoSettings'
         ]);
         await hydratePlayerIdentityFromPlatform();
         const syncedPlayerData = loadPlayerData();
@@ -2613,7 +2613,7 @@ class Game {
             audioManager: this.audioManager,
             renderer: this.renderer,
             levelUrl: this.currentLevelUrl,
-            renderOrder: this.levelRenderer.getDynoRenderOrder() - 0.25,
+            renderOrder: this.levelRenderer.getDinoRenderOrder() - 0.25,
             layerDepth: this.levelRenderer.getPreGameplayProjectileBand().depth
         });
         this.player = new Player(this.scene, this.level, this.joystick, {
@@ -2621,11 +2621,11 @@ class Game {
             levelObjectManager: this.levelObjectManager,
             audioManager: this.audioManager
         });
-        this.levelObjectManager.setDynoTarget(this.player);
+        this.levelObjectManager.setDinoTarget(this.player);
         this.levelObjectManager.onFaintCrashExplosion = (position, faintConfig) => {
             this.triggerFaintCrashInfernoShockwave(position, faintConfig);
         };
-        this.player.setRenderOrder(this.levelRenderer.getDynoRenderOrder());
+        this.player.setRenderOrder(this.levelRenderer.getDinoRenderOrder());
         this.topBarUI = new TopBarUI({
             loadingManager: assetLoadingSession.loadingManager
         });
@@ -2657,12 +2657,12 @@ class Game {
             },
             onResetAll: () => {
                 const keys = [
-                    'dynoPlayerData',
-                    'dynoMissionState',
-                    'dynoRaceTimes',
-                    'dynoMyLeaderboardEntries',
-                    'dynoPlayerIdentity',
-                    'dynoSettings'
+                    'dinoPlayerData',
+                    'dinoMissionState',
+                    'dinoRaceTimes',
+                    'dinoMyLeaderboardEntries',
+                    'dinoPlayerIdentity',
+                    'dinoSettings'
                 ];
                 keys.forEach(k => { try { localStorage.removeItem(k); } catch { /* ignore */ } });
                 this.softReset();
@@ -2672,7 +2672,7 @@ class Game {
                 this.runPokiCommercialBreak('settings close');
             }
         });
-        this.skinShop = new DynoSkinShop({
+        this.skinShop = new DinoSkinShop({
             getCoinCount: () => this.coinCount,
             setCoinCount: (n) => {
                 this.coinCount = n;
@@ -2683,7 +2683,7 @@ class Game {
                 savePlayerData({ ...data, coins: n });
             },
             onEquip: (skinId, texturePath) => {
-                this.player?.setDynoTexture?.(texturePath);
+                this.player?.setDinoTexture?.(texturePath);
             },
             onWatchAd: () => this.runPokiRewardedBreak('skin shop coins'),
             onHide: () => {
@@ -2694,7 +2694,7 @@ class Game {
         this.skinShop.preloadPreviewAssets?.();
         // Apply the equipped skin from saved data on startup.
         const equippedTexture = this.skinShop.getTexturePath(this.skinShop.getEquippedSkinId());
-        if (equippedTexture) this.player?.setDynoTexture?.(equippedTexture);
+        if (equippedTexture) this.player?.setDinoTexture?.(equippedTexture);
         // Re-sync coinCount from the shop's persisted data — the shop is the single
         // source of truth for coins so the HUD always matches what the shop stored.
         this.coinCount = this.skinShop.getPersistedCoins();
@@ -2845,13 +2845,13 @@ class Game {
         nextLevelObjectManager.setProjectileRenderBand(
             nextLevelRenderer.getPreGameplayProjectileBand()
         );
-        nextLevelObjectManager.setDynoTarget(this.player);
+        nextLevelObjectManager.setDinoTarget(this.player);
         const nextBurnableSceneryManager = new BurnableSceneryManager(this.scene, level, {
             loadingManager: assetLoadingSession.loadingManager,
             audioManager: this.audioManager,
             renderer: this.renderer,
             levelUrl,
-            renderOrder: nextLevelRenderer.getDynoRenderOrder() - 0.25,
+            renderOrder: nextLevelRenderer.getDinoRenderOrder() - 0.25,
             layerDepth: nextLevelRenderer.getPreGameplayProjectileBand().depth
         });
 
@@ -2886,7 +2886,7 @@ class Game {
         if (this.player) {
             this.player.ground = this.level;
             this.player.levelObjectManager = this.levelObjectManager;
-            this.player.setRenderOrder(this.levelRenderer.getDynoRenderOrder());
+            this.player.setRenderOrder(this.levelRenderer.getDinoRenderOrder());
         }
         this.levelObjectManager.attachCalloutsToLayerGroup(this.levelRenderer.getLayerGroupByName('Gameplay'));
         this.rebuildMissionZoneDebug();
@@ -3370,7 +3370,7 @@ class Game {
         }
 
         if (this.player.isAutoInteractionActive?.()) {
-            // While auto alignment is moving the dyno, disable the button visually and functionally
+            // While auto alignment is moving the dino, disable the button visually and functionally
             // so repeated presses cannot start another pickup/drop action mid-alignment.
             this.currentPickupTarget = null;
             this.pickupDropButtonEnabled = false;
@@ -3408,7 +3408,7 @@ class Game {
 
         const nearestObject = this.findCurrentPickupTarget();
         const canLift = this.player.canPickupObject?.(nearestObject) === true;
-        // Use skipMouthSideCheck so the drag icon shows even when the dyno needs to walk back
+        // Use skipMouthSideCheck so the drag icon shows even when the dino needs to walk back
         // to the grab point — matches the same relaxed check used by canUsePickupDropButton.
         const canDrag = this.player.canDragObject?.(nearestObject, { skipMouthSideCheck: true }) === true;
         const isEnabled = this.player.canUsePickupDropButton(nearestObject);
@@ -3581,7 +3581,7 @@ class Game {
         );
     }
 
-    // Fires the Dyno Fury ultimate if the player has a full charge.
+    // Fires the Dino Fury ultimate if the player has a full charge.
     tryTriggerFury() {
         if (CONFIG.FURY?.enabled === false || !this.player || !this.levelObjectManager) {
             return;
@@ -3839,7 +3839,7 @@ class Game {
         this.updateBelowLevelBackground();
         this.updateAboveLevelBackground();
         this.levelRenderer?.update(this.camera);
-        if (CONFIG.disableDynoRendering && this.player?.mesh) {
+        if (CONFIG.disableDinoRendering && this.player?.mesh) {
             this.player.mesh.visible = false;
         }
         const sceneScissor = this.getSceneRenderScissorRect();
@@ -3869,7 +3869,7 @@ class Game {
             sceneScissor.width,
             sceneScissor.height
         );
-        // Transient screen shake (e.g. Dyno Fury detonation). Offset only for this render so
+        // Transient screen shake (e.g. Dino Fury detonation). Offset only for this render so
         // camera-follow math next frame is unaffected.
         let shakeX = 0;
         let shakeY = 0;
@@ -4013,7 +4013,7 @@ class Game {
         this.timer.update();
         const rawDt = paused ? 0 : this.timer.getDelta();
 
-        // Dyno Fury ultimate: trigger on key/button press, then advance its slow-mo + shake
+        // Dino Fury ultimate: trigger on key/button press, then advance its slow-mo + shake
         // envelope on wall-clock time before scaling gameplay dt.
         if (!paused && this.joystick?.consumeFuryPressed?.()) {
             this.tryTriggerFury();

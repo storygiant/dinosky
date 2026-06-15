@@ -8,20 +8,20 @@ import { loaderLoadWithRetry } from './fetchWithRetry.js';
 const PLAYER_RADIUS = 1;
 const LOCAL_GROUND_EPSILON = 0.05;
 
-// Keep dyno-specific tuning centralized so visuals and animation mapping stay easy to tweak.
-export const DYNO_MODEL_SETTINGS = {
-    path: './gfx/mesh/dyno/dyno.glb',
-    texturePath: './gfx/textures/dyno/dyno_texture.webp',
-    // Render the dyno unlit so the texture colors stay exact and lighting does not darken it.
+// Keep dino-specific tuning centralized so visuals and animation mapping stay easy to tweak.
+export const DINO_MODEL_SETTINGS = {
+    path: './gfx/mesh/dino/dino.glb',
+    texturePath: './gfx/textures/dino/dino_texture.webp',
+    // Render the dino unlit so the texture colors stay exact and lighting does not darken it.
     useUnlitMonotoneMaterial: true,
     monotoneColor: '#ffffff',
-    // Fixed dyno model scale in world space so every device uses the exact same size.
+    // Fixed dino model scale in world space so every device uses the exact same size.
     modelScale: 8,
     // Fixed local base offset for the imported model.
-    // Ground alignment is controlled explicitly with fitOffset.y + CONFIG.dynoGroundOffsetY.
+    // Ground alignment is controlled explicitly with fitOffset.y + CONFIG.dinoGroundOffsetY.
     baseOffsetY: 0,
     // Manual world-space visual offsets. Y is intentionally a simple fixed value.
-    // Keep the body in front of the ground layers even when the dyno turns on the Y axis.
+    // Keep the body in front of the ground layers even when the dino turns on the Y axis.
     fitOffset: { x: 0, y: -1.5, z: 1.4 },
     facingYaw: {
         right: -Math.PI / 2,
@@ -125,7 +125,7 @@ export const DYNO_MODEL_SETTINGS = {
     }
 };
 
-/* Dyno fire breath removed for Dyno Sky */
+/* Dino fire breath removed for Dino Sky */
 
 const UNDERWATER_TRAIL_SETTINGS = Object.freeze({
     maxParticles: 32,
@@ -148,8 +148,8 @@ const UNDERWATER_TRAIL_SETTINGS = Object.freeze({
 });
 
 export const PLAYER_PRELOAD_ASSET_URLS = [
-    DYNO_MODEL_SETTINGS.path,
-    DYNO_MODEL_SETTINGS.texturePath
+    DINO_MODEL_SETTINGS.path,
+    DINO_MODEL_SETTINGS.texturePath
 ];
 
 const LOCOMOTION_TIMESCALE_LOG_STATES = new Set([
@@ -176,33 +176,33 @@ export class Player {
         this.visualRenderOrder = 0;
 
         // Keep flight side-switching on a world-space Y axis, then apply tilt and local facing underneath it.
-        this.dynoFlightTurnPivot = new THREE.Group();
+        this.dinoFlightTurnPivot = new THREE.Group();
 
-        this.dynoTiltPivot = new THREE.Group();
-        this.dynoTiltPivot.position.y = -PLAYER_RADIUS;
+        this.dinoTiltPivot = new THREE.Group();
+        this.dinoTiltPivot.position.y = -PLAYER_RADIUS;
 
-        this.dynoTurnPivot = new THREE.Group();
-        this.dynoTurnPivot.position.y = PLAYER_RADIUS;
+        this.dinoTurnPivot = new THREE.Group();
+        this.dinoTurnPivot.position.y = PLAYER_RADIUS;
 
-        this.dynoCollisionAnchor = new THREE.Group();
-        this.dynoCollisionAnchor.name = 'DynoCollisionAnchor';
+        this.dinoCollisionAnchor = new THREE.Group();
+        this.dinoCollisionAnchor.name = 'DinoCollisionAnchor';
 
-        this.dynoFacingPivot = new THREE.Group();
-        this.dynoFacingPivot.visible = false;
+        this.dinoFacingPivot = new THREE.Group();
+        this.dinoFacingPivot.visible = false;
 
-        this.dynoFitRoot = new THREE.Group();
-            this.dynoFitRoot.rotation.set(
-                DYNO_MODEL_SETTINGS.extraRotation.x,
-                DYNO_MODEL_SETTINGS.extraRotation.y,
-                DYNO_MODEL_SETTINGS.extraRotation.z
+        this.dinoFitRoot = new THREE.Group();
+            this.dinoFitRoot.rotation.set(
+                DINO_MODEL_SETTINGS.extraRotation.x,
+                DINO_MODEL_SETTINGS.extraRotation.y,
+                DINO_MODEL_SETTINGS.extraRotation.z
             );
 
-        this.dynoFacingPivot.add(this.dynoFitRoot);
-        this.dynoTurnPivot.add(this.dynoCollisionAnchor);
-        this.dynoTurnPivot.add(this.dynoFacingPivot);
-        this.dynoTiltPivot.add(this.dynoTurnPivot);
-        this.dynoFlightTurnPivot.add(this.dynoTiltPivot);
-        this.mesh.add(this.dynoFlightTurnPivot);
+        this.dinoFacingPivot.add(this.dinoFitRoot);
+        this.dinoTurnPivot.add(this.dinoCollisionAnchor);
+        this.dinoTurnPivot.add(this.dinoFacingPivot);
+        this.dinoTiltPivot.add(this.dinoTurnPivot);
+        this.dinoFlightTurnPivot.add(this.dinoTiltPivot);
+        this.mesh.add(this.dinoFlightTurnPivot);
         this.scene.add(this.mesh);
 
         const spawnConfig = CONFIG.spawnPosition || {};
@@ -296,8 +296,8 @@ export class Player {
         this.hoverBlendPendingMode = null;
         this.dragLayerBounds = new THREE.Box3();
 
-        this.dynoModel = null;
-        this.dynoMaterialStates = [];
+        this.dinoModel = null;
+        this.dinoMaterialStates = [];
         this.hitFlashElapsed = 0;
         this.hitFlashActive = false;
         this.animationMixer = null;
@@ -312,11 +312,11 @@ export class Player {
         this.mouthObject = null;
         this.mouthSocket = null;
         this.carrySocket = null;
-        this.maxLiftWeight = Number.isFinite(CONFIG.DYNO_CARRY?.maxLiftWeight)
-            ? CONFIG.DYNO_CARRY.maxLiftWeight
+        this.maxLiftWeight = Number.isFinite(CONFIG.DINO_CARRY?.maxLiftWeight)
+            ? CONFIG.DINO_CARRY.maxLiftWeight
             : 0;
-        this.maxDragWeight = Number.isFinite(CONFIG.DYNO_DRAG?.maxDragWeight)
-            ? CONFIG.DYNO_DRAG.maxDragWeight
+        this.maxDragWeight = Number.isFinite(CONFIG.DINO_DRAG?.maxDragWeight)
+            ? CONFIG.DINO_DRAG.maxDragWeight
             : 0;
         this.carriedObject = null;
         this.grabbedObject = null;
@@ -356,33 +356,33 @@ export class Player {
         this.energyDepletedCount = 0;
         this.maxEnergyValue = Math.max(
             0,
-            Number.isFinite(CONFIG.DYNO_ENERGY_BOOST?.maxEnergyValue)
-                ? CONFIG.DYNO_ENERGY_BOOST.maxEnergyValue
+            Number.isFinite(CONFIG.DINO_ENERGY_BOOST?.maxEnergyValue)
+                ? CONFIG.DINO_ENERGY_BOOST.maxEnergyValue
                 : 100
         );
         this.energyDrainValue = Math.max(
             0,
-            Number.isFinite(CONFIG.DYNO_ENERGY_BOOST?.energyDrainValue)
-                ? CONFIG.DYNO_ENERGY_BOOST.energyDrainValue
+            Number.isFinite(CONFIG.DINO_ENERGY_BOOST?.energyDrainValue)
+                ? CONFIG.DINO_ENERGY_BOOST.energyDrainValue
                 : 25
         );
         this.energyFillSpeed = Math.max(
             0,
-            Number.isFinite(CONFIG.DYNO_ENERGY_BOOST?.energyFillSpeed)
-                ? CONFIG.DYNO_ENERGY_BOOST.energyFillSpeed
+            Number.isFinite(CONFIG.DINO_ENERGY_BOOST?.energyFillSpeed)
+                ? CONFIG.DINO_ENERGY_BOOST.energyFillSpeed
                 : 15
         );
         this.energyEmptyDuration = Math.max(
             0,
-            Number.isFinite(CONFIG.DYNO_ENERGY_BOOST?.energyEmptyDuration)
-                ? CONFIG.DYNO_ENERGY_BOOST.energyEmptyDuration
+            Number.isFinite(CONFIG.DINO_ENERGY_BOOST?.energyEmptyDuration)
+                ? CONFIG.DINO_ENERGY_BOOST.energyEmptyDuration
                 : 0
         );
         this.energyEmptyTimer = 0;
         this.energySpeedMultiplier = Math.max(
             1,
-            Number.isFinite(CONFIG.DYNO_ENERGY_BOOST?.energySpeedMultiplier)
-                ? CONFIG.DYNO_ENERGY_BOOST.energySpeedMultiplier
+            Number.isFinite(CONFIG.DINO_ENERGY_BOOST?.energySpeedMultiplier)
+                ? CONFIG.DINO_ENERGY_BOOST.energySpeedMultiplier
                 : 1.6
         );
         this.currentEnergyValue = this.maxEnergyValue;
@@ -390,20 +390,20 @@ export class Player {
         this.lastEnergyDrainAmount = 0;
         this.maxHealthValue = Math.max(
             0,
-            Number.isFinite(CONFIG.DYNO_HEALTH?.maxHealthValue)
-                ? CONFIG.DYNO_HEALTH.maxHealthValue
+            Number.isFinite(CONFIG.DINO_HEALTH?.maxHealthValue)
+                ? CONFIG.DINO_HEALTH.maxHealthValue
                 : 100
         );
         this.healthFillSpeed = Math.max(
             0,
-            Number.isFinite(CONFIG.DYNO_HEALTH?.healthFillSpeed)
-                ? CONFIG.DYNO_HEALTH.healthFillSpeed
+            Number.isFinite(CONFIG.DINO_HEALTH?.healthFillSpeed)
+                ? CONFIG.DINO_HEALTH.healthFillSpeed
                 : 0
         );
         this.currentHealthValue = this.maxHealthValue;
         this.lastMissileDamageTime = -Infinity;
         this.gameOverReady = false;
-        // Dyno Fury ultimate charge (0..1): fills while breathing flame plus a slow passive
+        // Dino Fury ultimate charge (0..1): fills while breathing flame plus a slow passive
         // trickle. At full charge the player can unleash the Inferno Shockwave (see main.js).
         this.furyCharge = 0;
         this.isDeadState = false;
@@ -420,13 +420,13 @@ export class Player {
         this.debugCarryRectWorldLine = null;
         this.debugCarryRectReprojectedLine = null;
         this.debugCarryRectConnectorLine = null;
-        this.debugMatterDynoAnchorLines = new Map();
+        this.debugMatterDinoAnchorLines = new Map();
         this.debugCollisionOverlay = null;
         this.debugCollisionMarkers = [];
 
         this.setupDebugHitRect();
         this.setupDebugCollisionOverlay();
-        this.loadDyno();
+        this.loadDino();
     }
 
     setupDebugHitRect() {
@@ -446,7 +446,7 @@ export class Player {
             side: THREE.DoubleSide
         });
         this.debugHitRectFill = new THREE.Mesh(geometry, fillMaterial);
-        this.debugHitRectFill.name = 'DynoCollisionShapeDebugFill';
+        this.debugHitRectFill.name = 'DinoCollisionShapeDebugFill';
         this.debugHitRectFill.renderOrder = 10000;
         this.scene.add(this.debugHitRectFill);
 
@@ -460,7 +460,7 @@ export class Player {
             linewidth: 2
         });
         this.debugHitRectLine = new THREE.Line(new THREE.BufferGeometry(), lineMaterial);
-        this.debugHitRectLine.name = 'DynoCollisionShapeDebugOutline';
+        this.debugHitRectLine.name = 'DinoCollisionShapeDebugOutline';
         this.debugHitRectLine.renderOrder = 10001;
         this.scene.add(this.debugHitRectLine);
 
@@ -474,7 +474,7 @@ export class Player {
             linewidth: 2
         });
         this.debugCarryRectWorldLine = new THREE.Line(new THREE.BufferGeometry(), rawRectLineMaterial);
-        this.debugCarryRectWorldLine.name = 'DynoCarryRectWorldDebugOutline';
+        this.debugCarryRectWorldLine.name = 'DinoCarryRectWorldDebugOutline';
         this.debugCarryRectWorldLine.renderOrder = 10002;
         this.scene.add(this.debugCarryRectWorldLine);
 
@@ -488,7 +488,7 @@ export class Player {
             linewidth: 2
         });
         this.debugCarryRectReprojectedLine = new THREE.Line(new THREE.BufferGeometry(), reprojectedLineMaterial);
-        this.debugCarryRectReprojectedLine.name = 'DynoCarryRectReprojectedDebugOutline';
+        this.debugCarryRectReprojectedLine.name = 'DinoCarryRectReprojectedDebugOutline';
         this.debugCarryRectReprojectedLine.renderOrder = 10003;
         this.scene.add(this.debugCarryRectReprojectedLine);
 
@@ -502,7 +502,7 @@ export class Player {
             linewidth: 2
         });
         this.debugCarryRectConnectorLine = new THREE.LineSegments(new THREE.BufferGeometry(), connectorLineMaterial);
-        this.debugCarryRectConnectorLine.name = 'DynoCarryRectComparisonConnectors';
+        this.debugCarryRectConnectorLine.name = 'DinoCarryRectComparisonConnectors';
         this.debugCarryRectConnectorLine.renderOrder = 10004;
         this.scene.add(this.debugCarryRectConnectorLine);
         this.updateDebugHitRect();
@@ -528,16 +528,16 @@ export class Player {
             };
         }
 
-        const transform = this.getDynoCollisionTransform();
+        const transform = this.getDinoCollisionTransform();
         const rectWorldPoints = this.getRectWorldPoints(carriedRect, false);
         const orderedRectWorldPoints = this.orderRectPointsForCarryPolygon(rectWorldPoints, transform);
         const rawRectWorldPoints = orderedRectWorldPoints.length > 0
             ? [...orderedRectWorldPoints.map((point) => point.clone()), orderedRectWorldPoints[0].clone()]
             : [];
         const reprojectedRectWorldPoints = orderedRectWorldPoints
-            .map((point) => this.transformWorldPointToDynoLocal(point, transform))
+            .map((point) => this.transformWorldPointToDinoLocal(point, transform))
             .filter(Boolean)
-            .map((point) => this.transformDynoLocalPointToWorld(point, transform))
+            .map((point) => this.transformDinoLocalPointToWorld(point, transform))
             .filter(Boolean);
 
         if (reprojectedRectWorldPoints.length > 0) {
@@ -579,9 +579,9 @@ export class Player {
         return geometry;
     }
 
-    updateDebugMatterDynoAnchors() {
+    updateDebugMatterDinoAnchors() {
         if (CONFIG.LEVEL_OBJECTS?.debugRenderMatterPhysics !== true) {
-              this.disposeDebugMatterDynoAnchors();
+              this.disposeDebugMatterDinoAnchors();
             return;
         }
 
@@ -610,7 +610,7 @@ export class Player {
             }
 
             activeKeys.add(marker.key);
-            let line = this.debugMatterDynoAnchorLines.get(marker.key);
+            let line = this.debugMatterDinoAnchorLines.get(marker.key);
             const geometry = this.makeDebugCrossGeometry(marker.point, 0.42, 49.35);
             if (!line) {
                 line = new THREE.LineSegments(
@@ -624,11 +624,11 @@ export class Player {
                         toneMapped: false
                     })
                 );
-                line.name = `DynoMatterAnchorDebug:${marker.key}`;
+                line.name = `DinoMatterAnchorDebug:${marker.key}`;
                 line.renderOrder = 1000015;
                 line.frustumCulled = false;
                 this.scene.add(line);
-                this.debugMatterDynoAnchorLines.set(marker.key, line);
+                this.debugMatterDinoAnchorLines.set(marker.key, line);
             } else {
                 line.geometry?.dispose?.();
                 line.geometry = geometry;
@@ -636,7 +636,7 @@ export class Player {
                 line.visible = true;
             }
         }
-        for (const [key, line] of [...this.debugMatterDynoAnchorLines.entries()]) {
+        for (const [key, line] of [...this.debugMatterDinoAnchorLines.entries()]) {
             if (activeKeys.has(key)) {
                 continue;
             }
@@ -644,21 +644,21 @@ export class Player {
             line.geometry?.dispose?.();
             line.material?.dispose?.();
             line.removeFromParent?.();
-            this.debugMatterDynoAnchorLines.delete(key);
+            this.debugMatterDinoAnchorLines.delete(key);
         }
     }
 
-    disposeDebugMatterDynoAnchors() {
-        for (const line of this.debugMatterDynoAnchorLines.values()) {
+    disposeDebugMatterDinoAnchors() {
+        for (const line of this.debugMatterDinoAnchorLines.values()) {
             line.geometry?.dispose?.();
             line.material?.dispose?.();
             line.removeFromParent?.();
         }
-        this.debugMatterDynoAnchorLines.clear();
+        this.debugMatterDinoAnchorLines.clear();
     }
 
     updateDebugHitRect() {
-        this.updateDebugMatterDynoAnchors();
+        this.updateDebugMatterDinoAnchors();
 
         if (!CONFIG.LEVEL_OBJECTS?.debugRenderCollisionShell) {
             if (this.debugHitRectFill) {
@@ -782,7 +782,7 @@ export class Player {
     }
 
     disposeDebugHitRect() {
-        this.disposeDebugMatterDynoAnchors();
+        this.disposeDebugMatterDinoAnchors();
 
         if (this.debugHitRectFill) {
             this.debugHitRectFill.geometry?.dispose?.();
@@ -841,7 +841,7 @@ export class Player {
         }
 
         this.debugCollisionOverlay = new THREE.Group();
-        this.debugCollisionOverlay.name = 'DynoCollisionOverlayDebug';
+        this.debugCollisionOverlay.name = 'DinoCollisionOverlayDebug';
         this.scene.add(this.debugCollisionOverlay);
     }
 
@@ -946,8 +946,8 @@ export class Player {
         this.visualRenderOrder = renderOrder;
         this.mesh.renderOrder = renderOrder;
 
-        if (this.dynoModel) {
-            this.dynoModel.traverse((child) => {
+        if (this.dinoModel) {
+            this.dinoModel.traverse((child) => {
                 if (child.isMesh) {
                     child.renderOrder = renderOrder;
                 }
@@ -963,41 +963,41 @@ export class Player {
         }
     }
 
-    loadDyno() {
-        loaderLoadWithRetry(this.loader, DYNO_MODEL_SETTINGS.path)
-            .then((gltf) => this.handleDynoLoaded(gltf))
+    loadDino() {
+        loaderLoadWithRetry(this.loader, DINO_MODEL_SETTINGS.path)
+            .then((gltf) => this.handleDinoLoaded(gltf))
             .catch((error) => {
                 const detail = error instanceof Error
                     ? error.message
                     : (error?.message || error?.url || error?.filename || String(error));
-                console.error(`[Player] Failed to load dyno.glb: ${detail}`, error);
+                console.error(`[Player] Failed to load dino.glb: ${detail}`, error);
             });
     }
 
-    handleDynoLoaded(gltf) {
-        this.dynoModel = gltf.scene;
-        this.applyDynoTexture(this.dynoModel);
-        this.prepareDynoModel(this.dynoModel);
-        this.applyInitialDynoNodeVisibility();
-        this.collectDynoMaterials();
+    handleDinoLoaded(gltf) {
+        this.dinoModel = gltf.scene;
+        this.applyDinoTexture(this.dinoModel);
+        this.prepareDinoModel(this.dinoModel);
+        this.applyInitialDinoNodeVisibility();
+        this.collectDinoMaterials();
         this.setupAnimations(gltf.animations);
         this.setupCarrySocket();
 
-        this.dynoFacingPivot.visible = true;
+        this.dinoFacingPivot.visible = true;
         this.updateFacingDirection(0);
         this.updateGroundAlignment(0);
-            // Dyno fire breath removed for Dyno Sky
+            // Dino fire breath removed for Dino Sky
 
-//        console.info('[Player] Dyno model loaded:', DYNO_MODEL_SETTINGS.path);
+//        console.info('[Player] Dino model loaded:', DINO_MODEL_SETTINGS.path);
     }
 
-    findDynoNodesByName(name) {
-        if (!this.dynoModel || typeof name !== 'string' || !name.trim()) {
+    findDinoNodesByName(name) {
+        if (!this.dinoModel || typeof name !== 'string' || !name.trim()) {
             return [];
         }
 
         const matches = [];
-        this.dynoModel.traverse((child) => {
+        this.dinoModel.traverse((child) => {
             if (child?.name === name) {
                 matches.push(child);
             }
@@ -1005,10 +1005,10 @@ export class Player {
         return matches;
     }
 
-    setDynoNodeVisible(name, visible) {
-        const matches = this.findDynoNodesByName(name);
+    setDinoNodeVisible(name, visible) {
+        const matches = this.findDinoNodesByName(name);
         if (!matches.length) {
-            console.warn(`[Player] Dyno model node not found: "${name}"`);
+            console.warn(`[Player] Dino model node not found: "${name}"`);
             return false;
         }
 
@@ -1019,20 +1019,20 @@ export class Player {
         return true;
     }
 
-    setDynoNodeVisibility(nodeVisibility = {}) {
+    setDinoNodeVisibility(nodeVisibility = {}) {
         if (!nodeVisibility || typeof nodeVisibility !== 'object') {
             return false;
         }
 
         let changed = false;
         for (const [name, visible] of Object.entries(nodeVisibility)) {
-            changed = this.setDynoNodeVisible(name, visible === true) || changed;
+            changed = this.setDinoNodeVisible(name, visible === true) || changed;
         }
         return changed;
     }
 
     setModelNodeVisibility(nodeVisibility = {}) {
-        return this.setDynoNodeVisibility(nodeVisibility);
+        return this.setDinoNodeVisibility(nodeVisibility);
     }
 
     showModelNodes(nodeNames = []) {
@@ -1042,7 +1042,7 @@ export class Player {
 
         let changed = false;
         for (const name of nodeNames) {
-            changed = this.setDynoNodeVisible(name, true) || changed;
+            changed = this.setDinoNodeVisible(name, true) || changed;
         }
         return changed;
     }
@@ -1054,13 +1054,13 @@ export class Player {
 
         let changed = false;
         for (const name of nodeNames) {
-            changed = this.setDynoNodeVisible(name, false) || changed;
+            changed = this.setDinoNodeVisible(name, false) || changed;
         }
         return changed;
     }
 
-    applyInitialDynoNodeVisibility() {
-        const hiddenNodes = CONFIG.DYNO_MODEL?.hiddenNodesOnLoad;
+    applyInitialDinoNodeVisibility() {
+        const hiddenNodes = CONFIG.DINO_MODEL?.hiddenNodesOnLoad;
         if (!Array.isArray(hiddenNodes)) {
             return;
         }
@@ -1068,7 +1068,7 @@ export class Player {
         this.hideModelNodes(hiddenNodes);
     }
 
-    // Dyno fire breath removed for Dyno Sky
+    // Dino fire breath removed for Dino Sky
 
     setupMouthSocket(mouthObject) {
         this.mouthSocket?.removeFromParent();
@@ -1079,7 +1079,7 @@ export class Player {
         }
 
         this.mouthSocket = new THREE.Group();
-        this.mouthSocket.name = 'DynoMouthSocket';
+        this.mouthSocket.name = 'DinoMouthSocket';
         mouthObject.add(this.mouthSocket);
         this.mouthSocket.position.set(0, 0, 0);
         this.mouthSocket.rotation.set(0, 0, 0);
@@ -1105,22 +1105,22 @@ export class Player {
     setupCarrySocket() {
         this.carrySocket?.removeFromParent();
 
-        const footBone = this.findDynoBone('grab');
+        const footBone = this.findDinoBone('grab');
         this.carrySocket = new THREE.Group();
-        this.carrySocket.name = 'DynoCarrySocket';
+        this.carrySocket.name = 'DinoCarrySocket';
 
         // Carrying is anchored to the authored grab bone so phase 1 pickups follow the real
-        // dyno animation without requiring any changes to the imported dyno rig or GLBs.
+        // dino animation without requiring any changes to the imported dino rig or GLBs.
         if (footBone) {
             footBone.add(this.carrySocket);
             this.carrySocket.position.set(0, 0, 0);
             this.carrySocket.rotation.set(0, 0, 0);
             this.updateCarrySocketScaleCompensation();
-//            console.info('[Player] Carry socket attached to dyno bone: grab');
+//            console.info('[Player] Carry socket attached to dino bone: grab');
             return;
         }
 
-        this.dynoFitRoot.add(this.carrySocket);
+        this.dinoFitRoot.add(this.carrySocket);
         this.carrySocket.position.set(0, -1.3, 0.5);
         this.carrySocket.scale.set(1, 1, 1);
         console.warn('[Player] Carry socket fallback in use because grab bone was not found.');
@@ -1139,18 +1139,18 @@ export class Player {
         const safeScaleY = Math.abs(parentWorldScale.y) > 0.0001 ? 1 / parentWorldScale.y : 1;
         const safeScaleZ = Math.abs(parentWorldScale.z) > 0.0001 ? 1 / parentWorldScale.z : 1;
 
-        // The carry socket sits under the scaled dyno rig. Counter-scaling the socket keeps
+        // The carry socket sits under the scaled dino rig. Counter-scaling the socket keeps
         // carried level objects at the same world size they have while resting in the level.
         this.carrySocket.scale.set(safeScaleX, safeScaleY, safeScaleZ);
     }
 
-    findDynoBone(name) {
-        if (!this.dynoModel || !name) {
+    findDinoBone(name) {
+        if (!this.dinoModel || !name) {
             return null;
         }
 
         let foundBone = null;
-        this.dynoModel.traverse((child) => {
+        this.dinoModel.traverse((child) => {
             if (foundBone || !child?.isBone || child.name !== name) {
                 return;
             }
@@ -1161,14 +1161,14 @@ export class Player {
         return foundBone;
     }
 
-    findDynoMouthObject() {
-        if (!this.dynoModel) {
+    findDinoMouthObject() {
+        if (!this.dinoModel) {
             return null;
         }
 
         const scoredCandidates = [];
 
-        this.dynoModel.traverse((child) => {
+        this.dinoModel.traverse((child) => {
             if (!child?.isObject3D) {
                 return;
             }
@@ -1202,22 +1202,22 @@ export class Player {
         return scoredCandidates[0].child;
     }
 
-    // Swaps the dyno's texture at runtime (called by DynoSkinShop on equip).
-    setDynoTexture(texturePath) {
-        DYNO_MODEL_SETTINGS.texturePath = texturePath;
-        if (!this.dynoModel) return; // model not loaded yet — texturePath is set above so handleDynoLoaded will pick it up
-        this.applyDynoTexture(this.dynoModel);
+    // Swaps the dino's texture at runtime (called by DinoSkinShop on equip).
+    setDinoTexture(texturePath) {
+        DINO_MODEL_SETTINGS.texturePath = texturePath;
+        if (!this.dinoModel) return; // model not loaded yet — texturePath is set above so handleDinoLoaded will pick it up
+        this.applyDinoTexture(this.dinoModel);
     }
 
-    applyDynoTexture(dynoModel) {
+    applyDinoTexture(dinoModel) {
         this.textureLoader.load(
-            DYNO_MODEL_SETTINGS.texturePath,
+            DINO_MODEL_SETTINGS.texturePath,
             (texture) => {
                 // glTF UVs expect external textures with flipY disabled in Three.js.
                 texture.colorSpace = THREE.SRGBColorSpace;
                 texture.flipY = false;
 
-                dynoModel.traverse((child) => {
+                dinoModel.traverse((child) => {
                     if (!child.isMesh) {
                         return;
                     }
@@ -1233,24 +1233,24 @@ export class Player {
                     }
                 });
 
-//                console.info('[Player] Dyno texture applied:', DYNO_MODEL_SETTINGS.texturePath);
+//                console.info('[Player] Dino texture applied:', DINO_MODEL_SETTINGS.texturePath);
             },
             undefined,
             (error) => {
-                console.warn('[Player] Failed to load dyno texture, keeping original materials.', error);
+                console.warn('[Player] Failed to load dino texture, keeping original materials.', error);
             }
         );
     }
 
-    prepareDynoModel(dynoModel) {
-        this.dynoFitRoot.clear();
-        this.dynoFitRoot.rotation.set(
-            DYNO_MODEL_SETTINGS.extraRotation.x,
-            DYNO_MODEL_SETTINGS.extraRotation.y,
-            DYNO_MODEL_SETTINGS.extraRotation.z
+    prepareDinoModel(dinoModel) {
+        this.dinoFitRoot.clear();
+        this.dinoFitRoot.rotation.set(
+            DINO_MODEL_SETTINGS.extraRotation.x,
+            DINO_MODEL_SETTINGS.extraRotation.y,
+            DINO_MODEL_SETTINGS.extraRotation.z
         );
 
-            dynoModel.traverse((child) => {
+            dinoModel.traverse((child) => {
             if (!child.isMesh) {
                 return;
             }
@@ -1265,8 +1265,8 @@ export class Player {
                     return material;
                 }
 
-                if (!DYNO_MODEL_SETTINGS.useUnlitMonotoneMaterial) {
-                    // Let the dyno self-occlude correctly so wings and body parts do not
+                if (!DINO_MODEL_SETTINGS.useUnlitMonotoneMaterial) {
+                    // Let the dino self-occlude correctly so wings and body parts do not
                     // visually render through each other during tight flight poses.
                     // The model already sits in front of the terrain via its world-space Z offset.
                     material.depthTest = true;
@@ -1275,7 +1275,7 @@ export class Player {
                 }
 
                 const unlitMaterial = new THREE.MeshBasicMaterial({
-                    color: new THREE.Color(DYNO_MODEL_SETTINGS.monotoneColor),
+                    color: new THREE.Color(DINO_MODEL_SETTINGS.monotoneColor),
                     map: material.map ?? null,
                     transparent: material.transparent === true,
                     opacity: material.opacity ?? 1,
@@ -1292,32 +1292,32 @@ export class Player {
             child.material = Array.isArray(child.material) ? nextMaterials : nextMaterials[0];
         });
 
-        this.dynoFitRoot.add(dynoModel);
+        this.dinoFitRoot.add(dinoModel);
 
         // Use one explicit model scale instead of runtime auto-fit scaling.
-        dynoModel.scale.setScalar(DYNO_MODEL_SETTINGS.modelScale);
-        this.dynoFitRoot.updateMatrixWorld(true);
+        dinoModel.scale.setScalar(DINO_MODEL_SETTINGS.modelScale);
+        this.dinoFitRoot.updateMatrixWorld(true);
 
-        const fittedBounds = this.getStaticModelBounds(this.dynoFitRoot);
+        const fittedBounds = this.getStaticModelBounds(this.dinoFitRoot);
         const fittedCenter = new THREE.Vector3();
         fittedBounds.getCenter(fittedCenter);
 
-        this.dynoFitRoot.position.set(
-            DYNO_MODEL_SETTINGS.fitOffset.x - fittedCenter.x,
-            DYNO_MODEL_SETTINGS.baseOffsetY + DYNO_MODEL_SETTINGS.fitOffset.y + CONFIG.dynoGroundOffsetY,
-            DYNO_MODEL_SETTINGS.fitOffset.z - fittedCenter.z
+        this.dinoFitRoot.position.set(
+            DINO_MODEL_SETTINGS.fitOffset.x - fittedCenter.x,
+            DINO_MODEL_SETTINGS.baseOffsetY + DINO_MODEL_SETTINGS.fitOffset.y + CONFIG.dinoGroundOffsetY,
+            DINO_MODEL_SETTINGS.fitOffset.z - fittedCenter.z
         );
-        this.dynoFitRoot.updateMatrixWorld(true);
+        this.dinoFitRoot.updateMatrixWorld(true);
     }
 
-    collectDynoMaterials() {
-        this.dynoMaterialStates = [];
-        if (!this.dynoModel) {
+    collectDinoMaterials() {
+        this.dinoMaterialStates = [];
+        if (!this.dinoModel) {
             return;
         }
 
         const seenMaterials = new Set();
-        this.dynoModel.traverse((child) => {
+        this.dinoModel.traverse((child) => {
             if (!child.isMesh) {
                 return;
             }
@@ -1329,7 +1329,7 @@ export class Player {
                 }
 
                 seenMaterials.add(material);
-                this.dynoMaterialStates.push({
+                this.dinoMaterialStates.push({
                     material,
                     baseColor: material.color?.clone?.() || null,
                     baseEmissive: material.emissive?.clone?.() || null,
@@ -1385,13 +1385,13 @@ export class Player {
 
     setupAnimations(clips) {
         const clipNames = clips.map((clip) => clip.name || '(unnamed)');
-//        console.info('[Player] Dyno clips found:', clipNames);
+//        console.info('[Player] Dino clips found:', clipNames);
 
         if (!clips.length) {
             return;
         }
 
-        this.animationMixer = new THREE.AnimationMixer(this.dynoModel);
+        this.animationMixer = new THREE.AnimationMixer(this.dinoModel);
         this.animationMixer.addEventListener('finished', (event) => this.handleAnimationFinished(event));
         this.animationClipActions.clear();
         this.animationClipActionsNormalized.clear();
@@ -1430,16 +1430,16 @@ export class Player {
 
         this.ensureRequiredAnimationClips();
 
-//        console.info('[Player] Chosen dyno clips per state:', chosenClips);
+//        console.info('[Player] Chosen dino clips per state:', chosenClips);
         this.playLoopAnimation(this.getPreferredLoopState());
     }
 
     ensureRequiredAnimationClips() {
         if (!this.animationActions.drag) {
-            throw new Error('[Player] Missing required dyno animation clip: drag-loop (state "drag").');
+            throw new Error('[Player] Missing required dino animation clip: drag-loop (state "drag").');
         }
         if (!this.animationActions.dragIdle) {
-            throw new Error('[Player] Missing required dyno animation clip: drag_idle-loop (state "dragIdle").');
+            throw new Error('[Player] Missing required dino animation clip: drag_idle-loop (state "dragIdle").');
         }
     }
 
@@ -1450,7 +1450,7 @@ export class Player {
         }));
         const stateClipMap = {};
 
-        for (const state of Object.keys(DYNO_MODEL_SETTINGS.clipOverrides)) {
+        for (const state of Object.keys(DINO_MODEL_SETTINGS.clipOverrides)) {
             stateClipMap[state] = this.findClipForState(state, clipEntries);
         }
 
@@ -1458,7 +1458,7 @@ export class Player {
     }
 
     findClipForState(state, clipEntries) {
-        const overrideName = DYNO_MODEL_SETTINGS.clipOverrides[state];
+        const overrideName = DINO_MODEL_SETTINGS.clipOverrides[state];
         if (overrideName) {
             const overrideNormalized = this.normalizeClipName(overrideName);
             const overrideMatch = clipEntries.find((entry) => (
@@ -1473,7 +1473,7 @@ export class Player {
             console.warn(`[Player] Manual clip override "${overrideName}" for ${state} was not found. Falling back to automatic matching.`);
         }
 
-        const hints = DYNO_MODEL_SETTINGS.clipHints[state] || [];
+        const hints = DINO_MODEL_SETTINGS.clipHints[state] || [];
         for (const hint of hints) {
             const match = this.pickBestClipForHint(hint, clipEntries);
             if (match) {
@@ -1540,7 +1540,7 @@ export class Player {
 
         if (this.isAutoInteractionActive()) {
             // Auto interaction owns movement briefly so joystick/keyboard direction cannot pull
-            // the dyno away while grab or the mouth is being aligned to an object anchor.
+            // the dino away while grab or the mouth is being aligned to an object anchor.
             out.x = 0; out.y = 0;
             return out;
         }
@@ -1605,7 +1605,7 @@ export class Player {
         this.audioManager?.stopLoop?.('flameLoop');
     }
 
-    // --- Dyno Fury ultimate charge ---------------------------------------
+    // --- Dino Fury ultimate charge ---------------------------------------
     updateFuryCharge(dt) {
         const fury = CONFIG.FURY || {};
         if (fury.enabled === false || !(dt > 0)) {
@@ -1702,7 +1702,7 @@ export class Player {
     }
 
     hasEnergyBoostVelocity() {
-        // Drain/boost only while the dyno is actually moving in any direction.
+        // Drain/boost only while the dino is actually moving in any direction.
         return Math.hypot(this.velocity.x, this.velocity.y) > 0.05;
     }
 
@@ -1808,7 +1808,7 @@ export class Player {
                 : Date.now() / 1000;
             const cooldownSeconds = Math.max(
                 0,
-                CONFIG.DYNO_HEALTH?.missileDamageCooldownSeconds ?? 0.35
+                CONFIG.DINO_HEALTH?.missileDamageCooldownSeconds ?? 0.35
             );
             if (nowSeconds - this.lastMissileDamageTime < cooldownSeconds) {
                 return false;
@@ -1825,9 +1825,9 @@ export class Player {
 
         this.currentHealthValue = THREE.MathUtils.clamp(this.currentHealthValue - amount, 0, maxHealth);
         this.applyHitPush(options.projectileDirection, amount);
-        this.spawnDynoHitImpactEffect(options.impactPosition, options.projectileDirection);
-        this.triggerDynoHitFlash();
-        this.audioManager?.play?.('dynoHit', { volume: 0.85, cooldown: 0.08 });
+        this.spawnDinoHitImpactEffect(options.impactPosition, options.projectileDirection);
+        this.triggerDinoHitFlash();
+        this.audioManager?.play?.('dinoHit', { volume: 0.85, cooldown: 0.08 });
         if (this.currentHealthValue <= 0) {
             this.currentHealthValue = 0;
             this.beginDeathFlow();
@@ -1835,23 +1835,23 @@ export class Player {
         return true;
     }
 
-    triggerDynoHitFlash() {
-        if (!this.dynoMaterialStates.length) {
+    triggerDinoHitFlash() {
+        if (!this.dinoMaterialStates.length) {
             return;
         }
 
         // Repeated hits restart the flash at full strength instead of stacking material changes.
         this.hitFlashElapsed = 0;
         this.hitFlashActive = true;
-        this.updateDynoHitFlash(0);
+        this.updateDinoHitFlash(0);
     }
 
-    updateDynoHitFlash(delta) {
+    updateDinoHitFlash(delta) {
         if (!this.hitFlashActive) {
             return;
         }
 
-        const flashConfig = CONFIG.DYNO_HIT_FLASH || {};
+        const flashConfig = CONFIG.DINO_HIT_FLASH || {};
         const duration = Math.max(flashConfig.hitFlashDuration ?? 0.12, 0.001);
         this.hitFlashElapsed += Math.max(delta, 0);
         const progress = THREE.MathUtils.clamp(this.hitFlashElapsed / duration, 0, 1);
@@ -1860,7 +1860,7 @@ export class Player {
         const tintColor = new THREE.Color(flashConfig.hitFlashTintColor ?? flashConfig.hitFlashColor ?? 0xff4a2a);
         const flashIntensity = Math.max(flashConfig.hitFlashIntensity ?? 1.5, 0);
 
-        for (const state of this.dynoMaterialStates) {
+        for (const state of this.dinoMaterialStates) {
             const material = state.material;
             if (!material) {
                 continue;
@@ -1872,7 +1872,7 @@ export class Player {
                 material.emissive.copy(state.baseEmissive).lerp(flashColor, fade);
                 material.emissiveIntensity = (state.baseEmissiveIntensity ?? 0) + (flashIntensity * fade);
             } else if (state.baseColor && material.color) {
-                // MeshBasicMaterial has no emissive channel. Since the dyno's normal color is
+                // MeshBasicMaterial has no emissive channel. Since the dino's normal color is
                 // white, a separate warm tint is used so the flash remains visible on textures.
                 material.color.copy(state.baseColor).lerp(tintColor, fade);
             }
@@ -1881,12 +1881,12 @@ export class Player {
         }
 
         if (progress >= 1) {
-            this.restoreDynoHitFlashMaterials();
+            this.restoreDinoHitFlashMaterials();
         }
     }
 
-    restoreDynoHitFlashMaterials() {
-        for (const state of this.dynoMaterialStates) {
+    restoreDinoHitFlashMaterials() {
+        for (const state of this.dinoMaterialStates) {
             const material = state.material;
             if (!material) {
                 continue;
@@ -1909,14 +1909,14 @@ export class Player {
         this.hitFlashElapsed = 0;
     }
 
-    spawnDynoHitImpactEffect(impactPosition, projectileDirection) {
+    spawnDinoHitImpactEffect(impactPosition, projectileDirection) {
         void impactPosition;
         void projectileDirection;
         return false;
     }
 
     computeHitPushDistance(damage) {
-        const pushConfig = CONFIG.DYNO_HIT_PUSH || {};
+        const pushConfig = CONFIG.DINO_HIT_PUSH || {};
         const minDistance = Math.max(pushConfig.minHitPushDistance ?? 0.2, 0);
         const maxDistance = Math.max(pushConfig.maxHitPushDistance ?? 1.2, minDistance);
         const referenceDamage = Math.max(pushConfig.referenceDamage ?? 50, 0.0001);
@@ -1928,7 +1928,7 @@ export class Player {
     }
 
     getHitPushStepCount() {
-        return Math.max(1, Math.floor(CONFIG.DYNO_HIT_PUSH?.hitPushStepCount ?? 6));
+        return Math.max(1, Math.floor(CONFIG.DINO_HIT_PUSH?.hitPushStepCount ?? 6));
     }
 
     normalizeHitPushDirection(projectileDirection, out = new THREE.Vector2()) {
@@ -1993,7 +1993,7 @@ export class Player {
         let moved = false;
 
         // Step-based resolution allows partial knockback and avoids tunneling through thin
-        // solids. Each accepted step leaves the dyno in a valid placement.
+        // solids. Each accepted step leaves the dino in a valid placement.
         for (let step = 0; step < steps; step += 1) {
             const candidateX = this.position.x + stepOffset.x;
             const candidateY = this.position.y + stepOffset.y;
@@ -2001,7 +2001,7 @@ export class Player {
                 ? this.resolveGroundedHitPushPosition(candidateX)
                 : this.resolveAirborneHitPushPosition(candidateX, candidateY, stepOffset.x);
 
-            if (!resolvedPosition || !this.isValidDynoPosition(resolvedPosition, {
+            if (!resolvedPosition || !this.isValidDinoPosition(resolvedPosition, {
                 grounded: wasGrounded,
                 movementX: stepOffset.x
             })) {
@@ -2034,7 +2034,7 @@ export class Player {
         return new THREE.Vector3(candidateX, candidateY, this.position.z);
     }
 
-    isValidDynoPosition(position, options = {}) {
+    isValidDinoPosition(position, options = {}) {
         if (!position || !Number.isFinite(position.x) || !Number.isFinite(position.y)) {
             return false;
         }
@@ -2095,10 +2095,10 @@ export class Player {
     }
 
     resetTimelineVisualPivots() {
-        this.dynoFlightTurnPivot.rotation.set(0, 0, 0);
-        this.dynoTiltPivot.rotation.set(0, 0, 0);
-        this.dynoTurnPivot.rotation.set(0, 0, 0);
-        this.dynoFacingPivot.rotation.set(0, 0, 0);
+        this.dinoFlightTurnPivot.rotation.set(0, 0, 0);
+        this.dinoTiltPivot.rotation.set(0, 0, 0);
+        this.dinoTurnPivot.rotation.set(0, 0, 0);
+        this.dinoFacingPivot.rotation.set(0, 0, 0);
     }
 
     onTimelineTransformUpdated(target = this.mesh) {
@@ -2110,8 +2110,8 @@ export class Player {
         this.position.copy(target.position);
 
         // Keep lastFacingDirection in sync with the ry the timeline is driving.
-        const leftYaw = DYNO_MODEL_SETTINGS.facingYaw.left;
-        const rightYaw = DYNO_MODEL_SETTINGS.facingYaw.right;
+        const leftYaw = DINO_MODEL_SETTINGS.facingYaw.left;
+        const rightYaw = DINO_MODEL_SETTINGS.facingYaw.right;
         const ry = target.rotation.y;
         const distToLeft = Math.abs(((ry - leftYaw) + Math.PI) % (2 * Math.PI) - Math.PI);
         const distToRight = Math.abs(((ry - rightYaw) + Math.PI) % (2 * Math.PI) - Math.PI);
@@ -2138,14 +2138,14 @@ export class Player {
             return;
         }
 
-        // Preserve the facing direction the timeline left the dyno in.
+        // Preserve the facing direction the timeline left the dino in.
         const timelineFinalRy = this.mesh.rotation.y;
-        const leftYaw = DYNO_MODEL_SETTINGS.facingYaw.left;
-        const rightYaw = DYNO_MODEL_SETTINGS.facingYaw.right;
+        const leftYaw = DINO_MODEL_SETTINGS.facingYaw.left;
+        const rightYaw = DINO_MODEL_SETTINGS.facingYaw.right;
         const distToLeft = Math.abs(((timelineFinalRy - leftYaw) + Math.PI) % (2 * Math.PI) - Math.PI);
         const distToRight = Math.abs(((timelineFinalRy - rightYaw) + Math.PI) % (2 * Math.PI) - Math.PI);
         this.lastFacingDirection = distToLeft <= distToRight ? -1 : 1;
-        this.dynoFacingPivot.rotation.y = this.lastFacingDirection > 0 ? rightYaw : leftYaw;
+        this.dinoFacingPivot.rotation.y = this.lastFacingDirection > 0 ? rightYaw : leftYaw;
 
         this.mesh.rotation.set(0, 0, 0);
         this.playLoopAnimation(this.getPreferredLoopState());
@@ -2212,7 +2212,7 @@ export class Player {
     }
 
     getDeathConfig() {
-        return CONFIG.DYNO_DEATH || {};
+        return CONFIG.DINO_DEATH || {};
     }
 
     beginDeathFlow() {
@@ -2292,7 +2292,7 @@ export class Player {
 
         this.transitionAction = null;
         this.queuedLoopState = null;
-        this.playAnimation(resolvedState, DYNO_MODEL_SETTINGS.fadeDuration, true);
+        this.playAnimation(resolvedState, DINO_MODEL_SETTINGS.fadeDuration, true);
         this.deathGroundedAction = this.animationActions[resolvedState] || null;
 
         if (!this.deathGroundedAction) {
@@ -2403,7 +2403,7 @@ export class Player {
 
         this.transitionAction = null;
         this.queuedLoopState = null;
-        this.playAnimation(resolvedState, DYNO_MODEL_SETTINGS.fadeDuration, true);
+        this.playAnimation(resolvedState, DINO_MODEL_SETTINGS.fadeDuration, true);
         this.reviveAction = this.animationActions[resolvedState] || null;
 
         if (!this.reviveAction) {
@@ -2455,15 +2455,15 @@ export class Player {
         return THREE.MathUtils.clamp(this.currentHealthValue / this.maxHealthValue, 0, 1);
     }
 
-    getDynoCollisionAnchorWorldPosition(target = new THREE.Vector3()) {
-        const anchor = this.dynoCollisionAnchor || this.mesh;
+    getDinoCollisionAnchorWorldPosition(target = new THREE.Vector3()) {
+        const anchor = this.dinoCollisionAnchor || this.mesh;
         anchor.updateWorldMatrix?.(true, false);
         return anchor.getWorldPosition(target);
     }
 
     getWorldCollisionCircle() {
         // Circle collision for projectile tests based on PLAYER_RADIUS.
-        const worldPosition = this.getDynoCollisionAnchorWorldPosition(new THREE.Vector3());
+        const worldPosition = this.getDinoCollisionAnchorWorldPosition(new THREE.Vector3());
         return {
             centerX: worldPosition.x,
             centerY: worldPosition.y,
@@ -2471,7 +2471,7 @@ export class Player {
         };
     }
   
-    getDynoCollisionTransform() {
+    getDinoCollisionTransform() {
         const collisionCircle = this.getWorldCollisionCircle();
         const facingSign = this.lastFacingDirection >= 0 ? 1 : -1;
         const angle = (this.currentGroundTilt ?? 0) * facingSign;
@@ -2487,7 +2487,7 @@ export class Player {
         };
     }
 
-    getDynoCollisionTransform2(carriedRect) 
+    getDinoCollisionTransform2(carriedRect) 
     {        
         const facingSign = this.lastFacingDirection >= 0 ? 1 : -1;     
         const angle = -0.135 * facingSign;
@@ -2504,12 +2504,12 @@ export class Player {
     }    
 
 /*    
-    getDynoCollisionTransform2() {
+    getDinoCollisionTransform2() {
         const facingSign = this.lastFacingDirection >= 0 ? 1 : -1;
         const socket = this.carrySocket;
 
         if (!socket) {
-            return this.getDynoCollisionTransform();
+            return this.getDinoCollisionTransform();
         }
 
         socket.updateWorldMatrix(true, false);
@@ -2517,7 +2517,7 @@ export class Player {
 
         // Derive the XY-plane angle from the carry socket's world orientation,
         // cancelling out the Y-flip that the facing direction introduces.
-        // Result uses the same sign convention as getDynoCollisionTransform:
+        // Result uses the same sign convention as getDinoCollisionTransform:
         // positive = nose-up tilt in body space, mirrored by facingSign.
         const q = socket.getWorldQuaternion(new THREE.Quaternion());
         const axisX = new THREE.Vector3(1, 0, 0).applyQuaternion(q);
@@ -2540,7 +2540,7 @@ export class Player {
         };
     }
 */
-    transformDynoLocalPointToWorld(localPoint, transform = this.getDynoCollisionTransform()) {
+    transformDinoLocalPointToWorld(localPoint, transform = this.getDinoCollisionTransform()) {
         if (!localPoint || !transform) {
             return null;
         }
@@ -2552,7 +2552,7 @@ export class Player {
         );
     }
 
-    transformDynoLocalVectorToWorld(localPoint, transform = this.getDynoCollisionTransform()) {
+    transformDinoLocalVectorToWorld(localPoint, transform = this.getDinoCollisionTransform()) {
         if (!localPoint || !transform) {
             return null;
         }
@@ -2564,7 +2564,7 @@ export class Player {
         );
     }
 
-    transformWorldPointToDynoLocal(worldPoint, transform = this.getDynoCollisionTransform()) {
+    transformWorldPointToDinoLocal(worldPoint, transform = this.getDinoCollisionTransform()) {
         if (!worldPoint || !transform) {
             return null;
         }
@@ -2625,14 +2625,14 @@ export class Player {
     }
 
     getFixedFlightCollisionPolygon(closeLoop = false) {
-        const transform = this.getDynoCollisionTransform();
+        const transform = this.getDinoCollisionTransform();
         return this.getFixedFlightCollisionLocalPolygon(closeLoop)
-            .map((point) => this.transformDynoLocalPointToWorld(point, transform))
+            .map((point) => this.transformDinoLocalPointToWorld(point, transform))
             .filter(Boolean);
     }
 
     getOffsetsFromLocalPolygon(localPolygon) {
-       const transform = this.getDynoCollisionTransform();
+       const transform = this.getDinoCollisionTransform();
         const circleAnchorOffset = new THREE.Vector2(
             transform.centerX - this.position.x,
             transform.centerY - this.position.y
@@ -2646,23 +2646,23 @@ export class Player {
             centroidX += point.x;
             centroidY += point.y;
             offsets.push(circleAnchorOffset.clone().add(
-                this.transformDynoLocalVectorToWorld(point, transform)
+                this.transformDinoLocalVectorToWorld(point, transform)
             ));
 
             const nextPoint = localPolygon[(index + 1) % localPolygon.length];
             offsets.push(circleAnchorOffset.clone().add(
-                this.transformDynoLocalVectorToWorld(point.clone().lerp(nextPoint, 0.25), transform)
+                this.transformDinoLocalVectorToWorld(point.clone().lerp(nextPoint, 0.25), transform)
             ));
             offsets.push(circleAnchorOffset.clone().add(
-                this.transformDynoLocalVectorToWorld(point.clone().lerp(nextPoint, 0.5), transform)
+                this.transformDinoLocalVectorToWorld(point.clone().lerp(nextPoint, 0.5), transform)
             ));
             offsets.push(circleAnchorOffset.clone().add(
-                this.transformDynoLocalVectorToWorld(point.clone().lerp(nextPoint, 0.75), transform)
+                this.transformDinoLocalVectorToWorld(point.clone().lerp(nextPoint, 0.75), transform)
             ));
         }
 
         offsets.push(circleAnchorOffset.clone().add(
-            this.transformDynoLocalVectorToWorld(
+            this.transformDinoLocalVectorToWorld(
                 new THREE.Vector2(
                     centroidX / localPolygon.length,
                     centroidY / localPolygon.length
@@ -2838,7 +2838,7 @@ export class Player {
         );
     }
 
-    orderRectPointsForCarryPolygon(worldPoints, transform = this.getDynoCollisionTransform()) {
+    orderRectPointsForCarryPolygon(worldPoints, transform = this.getDinoCollisionTransform()) {
         if (!Array.isArray(worldPoints) || worldPoints.length < 4) {
             return [];
         }
@@ -2846,7 +2846,7 @@ export class Player {
         const localPoints = worldPoints
             .map((point) => ({
                 worldPoint: point,
-                localPoint: this.transformWorldPointToDynoLocal(point, transform)
+                localPoint: this.transformWorldPointToDinoLocal(point, transform)
             }))
             .filter((entry) => entry.localPoint);
 
@@ -2873,7 +2873,7 @@ export class Player {
   
         carriedRect.angle = 0;
 
-        const transform = this.getDynoCollisionTransform2(carriedRect);
+        const transform = this.getDinoCollisionTransform2(carriedRect);
         const rectWorldPoints = this.getRectWorldPoints(carriedRect, false);
         const orderedRectWorldPoints = this.orderRectPointsForCarryPolygon(rectWorldPoints, transform);
         const {
@@ -2884,7 +2884,7 @@ export class Player {
         const polygon = [
            new THREE.Vector2(0, PLAYER_RADIUS),
             ...orderedRectWorldPoints
-                .map((point) => this.transformWorldPointToDynoLocal(point, transform))
+                .map((point) => this.transformWorldPointToDinoLocal(point, transform))
                 .filter(Boolean)        
         ];
 
@@ -2913,15 +2913,15 @@ export class Player {
             rectWorldPoints: rectWorldPoints.map((point) => this.formatDebugVector2(point)),
             orderedRectWorldPoints: orderedRectWorldPoints.map((point) => this.formatDebugVector2(point)),
             // For the current carry polygon path we intentionally skip any extra
-            // world->dyno-local conversion for the carried rect corners.
+            // world->dino-local conversion for the carried rect corners.
 //              orderedRectLocalPoints: orderedRectWorldPoints.map((point) => this.formatDebugVector2(point)),
               orderedRectLocalPoints: orderedRectWorldPoints
-                .map((point) => this.transformWorldPointToDynoLocal(point, transform))
+                .map((point) => this.transformWorldPointToDinoLocal(point, transform))
                 .filter(Boolean)
                 .map((point) => this.formatDebugVector2(point)),            
             polygonLocalPoints: polygon.map((point) => this.formatDebugVector2(point)),
             polygonWorldPoints: polygon
-                .map((point) => this.transformDynoLocalPointToWorld(point, transform))
+                .map((point) => this.transformDinoLocalPointToWorld(point, transform))
                 .filter(Boolean)
                 .map((point) => this.formatDebugVector2(point))
         });
@@ -2977,10 +2977,10 @@ export class Player {
     }
 
     getCarriedFlightCollisionPolygon(closeLoop = false) {
-        const transform = this.getDynoCollisionTransform();
+        const transform = this.getDinoCollisionTransform();
         const localPolygon = this.getCarriedFlightCollisionLocalPolygon(closeLoop);
         return localPolygon
-            .map((point) => this.transformDynoLocalPointToWorld(point, transform))
+            .map((point) => this.transformDinoLocalPointToWorld(point, transform))
             .filter(Boolean);
     }
 
@@ -3090,12 +3090,12 @@ export class Player {
         const fallbackZ = Number.isFinite(this.position?.z)
             ? this.position.z
             : (Number.isFinite(this.mesh?.position?.z) ? this.mesh.position.z : 0);
-        if (!this.dynoModel) {
+        if (!this.dinoModel) {
             return fallbackZ;
         }
 
-        this.dynoModel.updateWorldMatrix(true, true);
-        this.dragLayerBounds.setFromObject(this.dynoModel);
+        this.dinoModel.updateWorldMatrix(true, true);
+        this.dragLayerBounds.setFromObject(this.dinoModel);
         if (this.dragLayerBounds.isEmpty()) {
             return fallbackZ;
         }
@@ -3122,8 +3122,8 @@ export class Player {
             return 1;
         }
 
-        const weightFactor = Number.isFinite(CONFIG.DYNO_CARRY?.flapSpeedWeightFactor)
-            ? CONFIG.DYNO_CARRY.flapSpeedWeightFactor
+        const weightFactor = Number.isFinite(CONFIG.DINO_CARRY?.flapSpeedWeightFactor)
+            ? CONFIG.DINO_CARRY.flapSpeedWeightFactor
             : 0;
 
         // Fase 1 weight response stays intentionally simple: heavier cargo just speeds up the
@@ -3133,7 +3133,7 @@ export class Player {
 
     isCarryHoverOnlyActive() {
         if (!this.hasAttachedObject()) return false;
-        const threshold = CONFIG.DYNO_CARRY?.freeFlyCarryWeightThreshold ?? 10;
+        const threshold = CONFIG.DINO_CARRY?.freeFlyCarryWeightThreshold ?? 10;
         return this.getCarriedWeight() > threshold;
     }
 
@@ -3196,7 +3196,7 @@ export class Player {
 
     isAirbornePickupEligible() {
         // Hover mode is the normal pickup state. Allow triggering from any airborne state —
-        // beginAutoPickup will force the dyno into hover to complete the approach.
+        // beginAutoPickup will force the dino into hover to complete the approach.
         return !this.onGround && !this.isFlightTurning;
     }
 
@@ -3268,7 +3268,7 @@ export class Player {
             return false;
         }
 
-        // Don't allow pickup if the dyno is more than 1 tile below the object's collision bottom.
+        // Don't allow pickup if the dino is more than 1 tile below the object's collision bottom.
         const collisionBounds = levelObject.getCollisionPolygonBounds?.();
         if (collisionBounds) {
             const tileHeight = CONFIG.LEVEL_WORLD_TILE_HEIGHT ?? 2;
@@ -3279,7 +3279,7 @@ export class Player {
         }
 
         // When grounded on a dynamic walkable object, don't allow pickup of objects whose
-        // grab point is below the dyno's circle bottom — prevents grabbing the block underfoot.
+        // grab point is below the dino's circle bottom — prevents grabbing the block underfoot.
         if (this.onGround && this.groundContact?.edge?._object?.config?.walkable) {
             const pickupRootWorld = levelObject.getPickupRootWorldPosition?.(new THREE.Vector3());
             if (pickupRootWorld && pickupRootWorld.y < this.getFeetY()) {
@@ -3322,8 +3322,8 @@ export class Player {
     }
 
     getCarryHoverSpeedMultiplier() {
-        return Number.isFinite(CONFIG.DYNO_CARRY?.carryHoverSpeedMultiplier)
-            ? CONFIG.DYNO_CARRY.carryHoverSpeedMultiplier
+        return Number.isFinite(CONFIG.DINO_CARRY?.carryHoverSpeedMultiplier)
+            ? CONFIG.DINO_CARRY.carryHoverSpeedMultiplier
             : 1;
     }
 
@@ -3351,7 +3351,7 @@ export class Player {
             return false;
         }
 
-        // When grounded on a dynamic walkable object, reject grab nodes below the dyno's
+        // When grounded on a dynamic walkable object, reject grab nodes below the dino's
         // circle bottom — prevents showing the grab button for blocks underfoot.
         if (this.onGround && !options.allowDuringAuto && this.groundContact?.edge?._object?.config?.walkable) {
             const grabPointName = this.selectDragGrabPoint(levelObject);
@@ -3364,12 +3364,12 @@ export class Player {
         }
 
         // Skip mouth-side and height checks when explicitly requested (e.g. button pressed while
-        // moving — beginAutoDrag will walk the dyno back to the correct grab position).
+        // moving — beginAutoDrag will walk the dino back to the correct grab position).
         if (options.allowDuringAuto || options.skipMouthSideCheck) {
             return true;
         }
 
-        // Require the dyno to be within 1.5 tiles vertically of the grab node.
+        // Require the dino to be within 1.5 tiles vertically of the grab node.
         const grabPointName = this.selectDragGrabPoint(levelObject);
         if (!this._scratchVec3B) this._scratchVec3B = new THREE.Vector3();
         const grabWorld = levelObject.getPhysicsAnchorWorldPosition?.(grabPointName, this._scratchVec3B) ||
@@ -3385,7 +3385,7 @@ export class Player {
     }
 
     isMouthOnFacingSideOfDragGrabPoint(levelObject) {
-        const dynoFacing = this.lastFacingDirection >= 0 ? 1 : -1;
+        const dinoFacing = this.lastFacingDirection >= 0 ? 1 : -1;
         const grabPointName = this.selectDragGrabPoint(levelObject);
         if (!this._scratchVec3A) this._scratchVec3A = new THREE.Vector3();
         if (!this._scratchVec3B) this._scratchVec3B = new THREE.Vector3();
@@ -3400,7 +3400,7 @@ export class Player {
         // Keep using the near-side anchor, but allow a small configurable overshoot after the
         // mouth passes it. Pressing grab there makes auto-drag walk back to this same point.
         const overshootDistance = this.getDragGrabOvershootDistance();
-        return dynoFacing > 0
+        return dinoFacing > 0
             ? mouthWorld.x <= grabWorld.x + overshootDistance
             : mouthWorld.x >= grabWorld.x - overshootDistance;
     }
@@ -3408,8 +3408,8 @@ export class Player {
     getPickupAlignSpeed() {
         return Math.max(
             0.001,
-            Number.isFinite(CONFIG.DYNO_CARRY?.pickupAlignSpeed)
-                ? CONFIG.DYNO_CARRY.pickupAlignSpeed
+            Number.isFinite(CONFIG.DINO_CARRY?.pickupAlignSpeed)
+                ? CONFIG.DINO_CARRY.pickupAlignSpeed
                 : 18
         );
     }
@@ -3417,8 +3417,8 @@ export class Player {
     getPickupAlignTolerance() {
         return Math.max(
             0.001,
-            Number.isFinite(CONFIG.DYNO_CARRY?.pickupAlignTolerance)
-                ? CONFIG.DYNO_CARRY.pickupAlignTolerance
+            Number.isFinite(CONFIG.DINO_CARRY?.pickupAlignTolerance)
+                ? CONFIG.DINO_CARRY.pickupAlignTolerance
                 : 0.25
         );
     }
@@ -3426,8 +3426,8 @@ export class Player {
     getPickupMaxDuration() {
         return Math.max(
             0.001,
-            Number.isFinite(CONFIG.DYNO_CARRY?.pickupMaxDuration)
-                ? CONFIG.DYNO_CARRY.pickupMaxDuration
+            Number.isFinite(CONFIG.DINO_CARRY?.pickupMaxDuration)
+                ? CONFIG.DINO_CARRY.pickupMaxDuration
                 : 1
         );
     }
@@ -3435,8 +3435,8 @@ export class Player {
     getDragAlignSpeed() {
         return Math.max(
             0.001,
-            Number.isFinite(CONFIG.DYNO_DRAG?.alignSpeed)
-                ? CONFIG.DYNO_DRAG.alignSpeed
+            Number.isFinite(CONFIG.DINO_DRAG?.alignSpeed)
+                ? CONFIG.DINO_DRAG.alignSpeed
                 : 14
         );
     }
@@ -3444,8 +3444,8 @@ export class Player {
     getDragAlignTolerance() {
         return Math.max(
             0.001,
-            Number.isFinite(CONFIG.DYNO_DRAG?.alignTolerance)
-                ? CONFIG.DYNO_DRAG.alignTolerance
+            Number.isFinite(CONFIG.DINO_DRAG?.alignTolerance)
+                ? CONFIG.DINO_DRAG.alignTolerance
                 : 0.35
         );
     }
@@ -3453,8 +3453,8 @@ export class Player {
     getDragAlignMaxDuration() {
         return Math.max(
             0.001,
-            Number.isFinite(CONFIG.DYNO_DRAG?.alignMaxDuration)
-                ? CONFIG.DYNO_DRAG.alignMaxDuration
+            Number.isFinite(CONFIG.DINO_DRAG?.alignMaxDuration)
+                ? CONFIG.DINO_DRAG.alignMaxDuration
                 : 1
         );
     }
@@ -3462,8 +3462,8 @@ export class Player {
     getDragGrabOvershootDistance() {
         return Math.max(
             0,
-            Number.isFinite(CONFIG.DYNO_DRAG?.grabOvershootDistance)
-                ? CONFIG.DYNO_DRAG.grabOvershootDistance
+            Number.isFinite(CONFIG.DINO_DRAG?.grabOvershootDistance)
+                ? CONFIG.DINO_DRAG.grabOvershootDistance
                 : 0
         );
     }
@@ -3483,21 +3483,21 @@ export class Player {
 
     getDragMovementMultiplierForWeight(weight) {
         const backwardSpeedMultiplier = THREE.MathUtils.clamp(
-            Number.isFinite(CONFIG.DYNO_DRAG?.backwardSpeedMultiplier)
-                ? CONFIG.DYNO_DRAG.backwardSpeedMultiplier
+            Number.isFinite(CONFIG.DINO_DRAG?.backwardSpeedMultiplier)
+                ? CONFIG.DINO_DRAG.backwardSpeedMultiplier
                 : 0.8,
             0,
             1
         );
         const maxDragWeight = Math.max(
             0.001,
-            Number.isFinite(CONFIG.DYNO_DRAG?.maxDragWeight)
-                ? CONFIG.DYNO_DRAG.maxDragWeight
+            Number.isFinite(CONFIG.DINO_DRAG?.maxDragWeight)
+                ? CONFIG.DINO_DRAG.maxDragWeight
                 : this.maxDragWeight || 260
         );
         const minMultiplier = THREE.MathUtils.clamp(
-            Number.isFinite(CONFIG.DYNO_DRAG?.minMovementMultiplier)
-                ? CONFIG.DYNO_DRAG.minMovementMultiplier
+            Number.isFinite(CONFIG.DINO_DRAG?.minMovementMultiplier)
+                ? CONFIG.DINO_DRAG.minMovementMultiplier
                 : 0.12,
             0,
             1
@@ -3512,7 +3512,7 @@ export class Player {
             return 1;
         }
 
-        const dragConfig = CONFIG.DYNO_DRAG || {};
+        const dragConfig = CONFIG.DINO_DRAG || {};
         const maxWeight = Math.max(
             0.001,
             Number.isFinite(this.maxDragWeight) ? this.maxDragWeight : 1
@@ -3564,8 +3564,8 @@ export class Player {
     getDragBackwardMaxWalkSpeed() {
         const baseSpeed = Math.max(
             0,
-            Number.isFinite(CONFIG.DYNO_DRAG?.backwardMaxWalkSpeed)
-                ? CONFIG.DYNO_DRAG.backwardMaxWalkSpeed
+            Number.isFinite(CONFIG.DINO_DRAG?.backwardMaxWalkSpeed)
+                ? CONFIG.DINO_DRAG.backwardMaxWalkSpeed
                 : Math.max(0, CONFIG.startRunSpeed * 0.85)
         );
         return baseSpeed * this.getCurrentSpeedMultiplier();
@@ -3644,14 +3644,14 @@ export class Player {
     }
 
     selectDragGrabPoint(levelObject) {
-        const dynoFacing = this.lastFacingDirection >= 0 ? 1 : -1;
+        const dinoFacing = this.lastFacingDirection >= 0 ? 1 : -1;
         const mouthWorld = this.getMouthWorldPosition(new THREE.Vector3());
         let selectedName = null;
-        let selectedX = dynoFacing > 0 ? Infinity : -Infinity;
+        let selectedX = dinoFacing > 0 ? Infinity : -Infinity;
         let selectedTieDistanceSq = Infinity;
 
-        // A walking dyno can only reach the near side of the object. Facing right means the
-        // dyno approaches from the left, so only the leftmost world-space anchor is reachable.
+        // A walking dino can only reach the near side of the object. Facing right means the
+        // dino approaches from the left, so only the leftmost world-space anchor is reachable.
         // Facing left is the opposite. This stays correct even if the object is upside down or
         // rotated on a slope, because it uses the anchors' actual world positions.
         for (const name of ['grab_front', 'grab_back']) {
@@ -3662,7 +3662,7 @@ export class Player {
             }
 
             const distanceSq = mouthWorld.distanceToSquared(grabWorld);
-            const isBetterSide = dynoFacing > 0
+            const isBetterSide = dinoFacing > 0
                 ? grabWorld.x < selectedX - 0.0001
                 : grabWorld.x > selectedX + 0.0001;
             const isTieButCloser = Math.abs(grabWorld.x - selectedX) <= 0.0001 &&
@@ -3683,9 +3683,9 @@ export class Player {
             ? levelObject.getFacingDirection()
             : 1;
 
-        // Pick the end that puts the dyno's mouth at the near side of the vehicle:
+        // Pick the end that puts the dino's mouth at the near side of the vehicle:
         // same facing grabs the back; opposite facing grabs the front.
-        return dynoFacing === objectFacing ? 'grab_back' : 'grab_front';
+        return dinoFacing === objectFacing ? 'grab_back' : 'grab_front';
     }
 
     syncMeshForPickupAlignment() {
@@ -3793,8 +3793,8 @@ export class Player {
         if (grabWorld) {
             const mouthWorld = this.getMouthWorldPosition(new THREE.Vector3());
             const tileHeight = this.ground?.tileHeight ?? CONFIG.LEVEL_WORLD_TILE_HEIGHT ?? 2;
-            const maxHeightOffset = Number.isFinite(CONFIG.DYNO_DRAG?.maxGrabHeightOffset)
-                ? CONFIG.DYNO_DRAG.maxGrabHeightOffset
+            const maxHeightOffset = Number.isFinite(CONFIG.DINO_DRAG?.maxGrabHeightOffset)
+                ? CONFIG.DINO_DRAG.maxGrabHeightOffset
                 : tileHeight;
             if (grabWorld.y - mouthWorld.y > maxHeightOffset) {
                 return false;
@@ -3841,7 +3841,7 @@ export class Player {
 
         if (this.autoPickupElapsed >= this.getPickupMaxDuration()) {
             // If the target cannot be reached quickly, cancel and hand control back instead of
-            // dragging the dyno indefinitely through the level.
+            // dragging the dino indefinitely through the level.
             this.cancelAutoPickup();
             return;
         }
@@ -3906,7 +3906,7 @@ export class Player {
         }
 
         // Use the normal grounded locomotion pipeline so auto-approach follows slopes and wall
-        // collision, but allow reverse walking here: overshot grabs need the dyno to step
+        // collision, but allow reverse walking here: overshot grabs need the dino to step
         // backward to the pinned mouth anchor without starting a turn.
         this.updateGroundedMovement({ x: desiredInputX, y: 0 }, dt, {
             allowReverseWithoutTurn: true
@@ -3947,7 +3947,7 @@ export class Player {
     // ground-dragging a non-mouth object. When the threshold is reached the drag is released
     // and a normal takeoff is triggered.
     _updateDragTakeoffHold(input, dt) {
-        const dragCfg = CONFIG.DYNO_DRAG || {};
+        const dragCfg = CONFIG.DINO_DRAG || {};
         const holdRequired = Number.isFinite(dragCfg.dragTakeoffHoldSeconds) ? dragCfg.dragTakeoffHoldSeconds : 1.0;
         const halfAngle    = Number.isFinite(dragCfg.dragTakeoffUpAngleHalf) ? dragCfg.dragTakeoffUpAngleHalf : 10;
 
@@ -3978,7 +3978,7 @@ export class Player {
     _updateDragHeadRaise(dt) {
         if (!this._neckBone) return;
 
-        const dragCfg = CONFIG.DYNO_DRAG || {};
+        const dragCfg = CONFIG.DINO_DRAG || {};
         const holdRequired = Number.isFinite(dragCfg.dragTakeoffHoldSeconds) ? dragCfg.dragTakeoffHoldSeconds : 1.0;
 
         let targetT = 0;
@@ -4023,13 +4023,13 @@ export class Player {
         if (this._carryLastFacingDirection !== this.lastFacingDirection) {
             this._carryLastFacingDirection = this.lastFacingDirection;
             // Apply the same relation that was captured at pickup: if the object started
-            // inverted relative to the dyno, keep it inverted after each turn.
+            // inverted relative to the dino, keep it inverted after each turn.
             obj.onCarryFacingFlipped?.(this.lastFacingDirection * relation);
             obj.carryTurnYOffset = 0;
         } else if (this.isTurning) {
-            // Mirror the dyno's live turn rotation onto the carried object so it
+            // Mirror the dino's live turn rotation onto the carried object so it
             // rotates in sync. The relation only affects the committed facing on turn
-            // completion — the rotation arc itself always follows the dyno's direction.
+            // completion — the rotation arc itself always follows the dino's direction.
             obj.carryTurnYOffset = this.currentTurnRotation;
         } else {
             obj.carryTurnYOffset = 0;
@@ -4061,7 +4061,7 @@ export class Player {
         );
 
         if (!this.isMouthDraggingObject()) {
-            const maxLen = Number.isFinite(CONFIG.DYNO_DRAG?.maxJointLength) ? CONFIG.DYNO_DRAG.maxJointLength : 8;
+            const maxLen = Number.isFinite(CONFIG.DINO_DRAG?.maxJointLength) ? CONFIG.DINO_DRAG.maxJointLength : 8;
             const physicsWorld = this.draggedObject.physicsWorld;
             const constraint = physicsWorld?.dragConstraints?.get(this.draggedObject);
             if (constraint && physicsWorld) {
@@ -4094,7 +4094,7 @@ export class Player {
 
             this.carriedObject = levelObject;
             this._carryLastFacingDirection = this.lastFacingDirection;
-            // Track whether the object started aligned with the dyno (+1) or inverted (-1).
+            // Track whether the object started aligned with the dino (+1) or inverted (-1).
             this._carryFacingRelation = (levelObject.currentFacingDirection ?? 1) === this.lastFacingDirection ? 1 : -1;
             this.scheduleCarryFlightCollisionBuild();
             this.enterCarryHoverMode();
@@ -4184,7 +4184,7 @@ export class Player {
                 console.log('[Player] Released carried object', {
                     object: objectToDrop.getDebugLabel?.() || objectToDrop.type || objectToDrop.name || 'unknown',
                     preservesMatterVelocity: wasPhysicsCarried,
-                    dynoVelocity: {
+                    dinoVelocity: {
                         x: this.velocity.x,
                         y: this.velocity.y
                     }
@@ -4420,7 +4420,7 @@ export class Player {
             this.logPositionChange();
             this.mesh.position.copy(this.position);
             this.updateDebugHitRect();
-            this.updateDynoHitFlash(dt);
+            this.updateDinoHitFlash(dt);
             this.updateAnimationState(0, 0, wasOnGround);
             if (this.animationMixer) {
                 this.animationMixer.update(dt);
@@ -4439,7 +4439,7 @@ export class Player {
             this.logPositionChange();
             this.mesh.position.copy(this.position);
             this.updateDebugHitRect();
-            this.updateDynoHitFlash(dt);
+            this.updateDinoHitFlash(dt);
             this.updateAnimationState(0, 0, wasOnGround);
             if (this.animationMixer) {
                 this.animationMixer.update(dt);
@@ -4455,7 +4455,7 @@ export class Player {
             this.currentInput = { x: 0, y: 0 };
             this.position.copy(this.mesh.position);
             this.updateDebugHitRect();
-            this.updateDynoHitFlash(dt);
+            this.updateDinoHitFlash(dt);
             if (this.animationMixer) {
                 this.animationMixer.update(dt);
             }
@@ -4477,7 +4477,7 @@ export class Player {
         }
 
         // Water entry detection (runs before movement dispatch)
-        // The dyno can enter water from outside but never self-exits — water exit
+        // The dino can enter water from outside but never self-exits — water exit
         // must be triggered by a gameplay event (e.g. a story trigger or level unload).
         if (!this.isFaintSequenceActive && !this.isAutoPickupActive() && !this.isAutoDragActive()) {
             if (!this.isInWater && this.checkIsInWater()) {
@@ -4519,7 +4519,7 @@ export class Player {
 
         if (this.grabbedObject) {
             // Too-heavy grabs stay visually attached to the foot, but the object remains anchored
-            // in the level so the dyno can only flap in place until the player releases it.
+            // in the level so the dino can only flap in place until the player releases it.
             this.applyGrabbedObjectAnchorConstraint();
         }
 
@@ -4545,12 +4545,12 @@ export class Player {
         this.updateEnergyResource(dt);
         this.updateHealthResource(dt);
         this.updateFuryCharge(dt);
-        this.updateDynoHitFlash(dt);
+        this.updateDinoHitFlash(dt);
         this.updateAnimationState(input.x, input.y, wasOnGround);
         this.updateLocomotionAnimationSpeed(dt);
         this.updateGameplayAudio(dt);
 
-        // Undo neck raise before mixer overwrites — mirrors DynoFireBreath.beforeAnimationUpdate.
+        // Undo neck raise before mixer overwrites — mirrors DinoFireBreath.beforeAnimationUpdate.
         if (this._neckBone && this._appliedNeckRaiseOffset) {
             this._neckBone.rotation.x -= this._appliedNeckRaiseOffset;
             this._appliedNeckRaiseOffset = 0;
@@ -4996,13 +4996,13 @@ export class Player {
     }
 
     checkIsInWater() {
-        const waterConfig = CONFIG.DYNO_WATER;
+        const waterConfig = CONFIG.DINO_WATER;
         if (!waterConfig?.enabled) return false;
         return this.isPointInWaterPolygon(this.position.x, this.position.y);
     }
 
     checkIsInWaterOrRect() {
-        if (!CONFIG.DYNO_WATER?.enabled) return false;
+        if (!CONFIG.DINO_WATER?.enabled) return false;
         const x = this.position.x;
         const y = this.position.y;
         return this.isPointInWaterPolygon(x, y) || this.isPointInWaterZoneRect(x, y);
@@ -5044,7 +5044,7 @@ export class Player {
     setupUnderwaterTrail() {
         this.underwaterTrailGroup?.removeFromParent?.();
         this.underwaterTrailGroup = new THREE.Group();
-        this.underwaterTrailGroup.name = 'DynoUnderwaterTrail';
+        this.underwaterTrailGroup.name = 'DinoUnderwaterTrail';
         const trailRenderOrder = (Number.isFinite(this.visualRenderOrder) ? this.visualRenderOrder : 0) + 2;
         this.underwaterTrailGroup.renderOrder = trailRenderOrder;
         this.scene.add(this.underwaterTrailGroup);
@@ -5235,13 +5235,13 @@ export class Player {
 
     isDeepWaterSwim() {
         if (!this.isInWater || this.waterState !== 'swim') return false;
-        const deepTilt = CONFIG.DYNO_WATER?.deepTiltDistance ?? 4;
+        const deepTilt = CONFIG.DINO_WATER?.deepTiltDistance ?? 4;
         const surfaceY = this.getWaterSurfaceY();
         return surfaceY !== null && (surfaceY - this.position.y) >= deepTilt;
     }
 
     updateWaterMovement(input, dt) {
-        const waterConfig = CONFIG.DYNO_WATER ?? {};
+        const waterConfig = CONFIG.DINO_WATER ?? {};
         const maxSpeed = (waterConfig.waterMaxSpeed ?? 4) * this.getCurrentSpeedMultiplier();
         const surfaceSnap = waterConfig.surfaceSnapDistance ?? 0.5;
         const diveToNormalSpeed = waterConfig.swimDiveToNormalSpeed ?? 5;
@@ -5409,7 +5409,7 @@ export class Player {
                     this.flightTurnVisualTargetRotation,
                     progress
                 );
-                const hasStoppedH = Math.abs(this.velocity.x) <= DYNO_MODEL_SETTINGS.animationSpeedDeadZone;
+                const hasStoppedH = Math.abs(this.velocity.x) <= DINO_MODEL_SETTINGS.animationSpeedDeadZone;
                 if (progress >= 1 && hasStoppedH) {
                     this.isFlightTurning = false;
                     this.velocity.x = 0;
@@ -5545,7 +5545,7 @@ export class Player {
                 // Probe just below the water surface so we catch ground flush with the shore
                 const shoreGround = this.getGroundInfoBelowAt(shoreProbeX, waterSurfaceY);
                 if (shoreGround && shoreGround.surfaceHeight >= waterSurfaceY - surfaceSnap) {
-                    // Move to shore position first so the dyno is outside the water polygon
+                    // Move to shore position first so the dino is outside the water polygon
                     this.position.x = shoreProbeX;
                     this.velocity.x = 0;
                     this.velocity.y = 0;
@@ -5696,7 +5696,7 @@ export class Player {
             case 'swim': {
                 const vx = this.velocity.x;
                 const vy = this.velocity.y;
-                const moving = Math.sqrt(vx * vx + vy * vy) > DYNO_MODEL_SETTINGS.animationSpeedDeadZone;
+                const moving = Math.sqrt(vx * vx + vy * vy) > DINO_MODEL_SETTINGS.animationSpeedDeadZone;
                 const hasInput = Math.abs(this.currentInput?.x ?? 0) > 0.05 || Math.abs(this.currentInput?.y ?? 0) > 0.05;
                 return (moving || hasInput) ? 'swimNormal' : 'swimIdle';
             }
@@ -5836,20 +5836,20 @@ export class Player {
         }
 
         // Ground follow is local only: small slope-height changes are fine, but a missing or
-        // distant lower surface means the dyno leaves the ground instead of snapping downward.
+        // distant lower surface means the dino leaves the ground instead of snapping downward.
         const dropDistance = currentGroundInfo.surfaceHeight - candidateGroundInfo.surfaceHeight;
         return dropDistance <= this.getCollisionStepSize() + LOCAL_GROUND_EPSILON;
     }
 
     getCollisionStepSize() {
-        const configuredStep = CONFIG.DYNO_MOVEMENT?.maxStepSize;
+        const configuredStep = CONFIG.DINO_MOVEMENT?.maxStepSize;
         if (Number.isFinite(configuredStep) && configuredStep > 0) {
             return configuredStep;
         }
 
         const levelStep = Math.min(this.ground?.tileWidth ?? 1, this.ground?.tileHeight ?? 1);
-        const ratio = Number.isFinite(CONFIG.DYNO_MOVEMENT?.maxStepSizeTileRatio)
-            ? CONFIG.DYNO_MOVEMENT.maxStepSizeTileRatio
+        const ratio = Number.isFinite(CONFIG.DINO_MOVEMENT?.maxStepSizeTileRatio)
+            ? CONFIG.DINO_MOVEMENT.maxStepSizeTileRatio
             : 0.4;
         return Math.max(0.2, levelStep * ratio);
     }
@@ -5858,8 +5858,8 @@ export class Player {
         return Math.max(
             1,
             Math.floor(
-                Number.isFinite(CONFIG.DYNO_MOVEMENT?.maxMovementSteps)
-                    ? CONFIG.DYNO_MOVEMENT.maxMovementSteps
+                Number.isFinite(CONFIG.DINO_MOVEMENT?.maxMovementSteps)
+                    ? CONFIG.DINO_MOVEMENT.maxMovementSteps
                     : 10
             )
         );
@@ -6144,7 +6144,7 @@ export class Player {
 
     getGroundFollowDropMax() {
         // Allow following slopes that drop up to one full tile height per step so the
-        // dyno sticks to steep terrain instead of launching into the air.
+        // dino sticks to steep terrain instead of launching into the air.
         return (this.ground?.tileHeight ?? 2) + LOCAL_GROUND_EPSILON;
     }
 
@@ -6275,7 +6275,7 @@ export class Player {
     }
 
     getCeilingFaintConfig() {
-        return CONFIG.DYNO_CEILING_FAINT || {};
+        return CONFIG.DINO_CEILING_FAINT || {};
     }
 
     getCeilingFaintYThreshold() {
@@ -6345,7 +6345,7 @@ export class Player {
         }
 
         const duration = Math.max(this.getCeilingFaintConfig().faintAnimationDuration ?? 3, 0.05);
-        this.playAnimation(resolvedState, DYNO_MODEL_SETTINGS.fadeDuration, true);
+        this.playAnimation(resolvedState, DINO_MODEL_SETTINGS.fadeDuration, true);
         const action = this.animationActions[resolvedState];
         const clipDuration = Math.max(action?.getClip?.()?.duration ?? duration, 0.0001);
         action?.setEffectiveTimeScale(clipDuration / duration);
@@ -6477,7 +6477,7 @@ export class Player {
 
     triggerFaintCrashExplosion(impactPoint) {
         this.faintCrashExplosionTriggered = true;
-        this.levelObjectManager?.triggerDynoFaintCrashExplosion?.(impactPoint, this.getCeilingFaintConfig());
+        this.levelObjectManager?.triggerDinoFaintCrashExplosion?.(impactPoint, this.getCeilingFaintConfig());
         this.logDebugChange(
             'ceilingFaint',
             'crash',
@@ -6490,7 +6490,7 @@ export class Player {
         if (this.isTurning) {
             // Ground reversals should begin visually right away while preserving braking.
             this.velocity.x = this.moveToward(this.velocity.x, 0, CONFIG.walkSlowdownSpeedDecrease * dt);
-            if (Math.abs(this.velocity.x) < DYNO_MODEL_SETTINGS.animationSpeedDeadZone) {
+            if (Math.abs(this.velocity.x) < DINO_MODEL_SETTINGS.animationSpeedDeadZone) {
                 this.velocity.x = 0;
             }
             this.velocity.y = 0;
@@ -6535,10 +6535,10 @@ export class Player {
             `[Player] Ground speed: current=${this.velocity.x.toFixed(2)} target=${targetVelocityX.toFixed(2)} maxStep=${maxSpeedDelta.toFixed(3)} dt=${dt.toFixed(3)}`
         );
 */
-        if (!hasHorizontalInput && Math.abs(this.velocity.x) < DYNO_MODEL_SETTINGS.animationSpeedDeadZone) {
+        if (!hasHorizontalInput && Math.abs(this.velocity.x) < DINO_MODEL_SETTINGS.animationSpeedDeadZone) {
             this.velocity.x = 0;
         }
-        if (isRequestingReverse && Math.abs(this.velocity.x) < DYNO_MODEL_SETTINGS.animationSpeedDeadZone) {
+        if (isRequestingReverse && Math.abs(this.velocity.x) < DINO_MODEL_SETTINGS.animationSpeedDeadZone) {
             this.velocity.x = 0;
         }
 
@@ -6701,7 +6701,7 @@ export class Player {
 
     updateAirMode(input, inputLength, isAirReverseRequested) {
         if (this.isCarryHoverOnlyActive()) {
-            // Carrying keeps the dyno in the responsive hover control family so pickup / carry
+            // Carrying keeps the dino in the responsive hover control family so pickup / carry
             // gameplay stays readable and never transitions into faster flight / dive states.
             this.airMode = 'hover';
             this.cancelFlightTurn();
@@ -6719,7 +6719,7 @@ export class Player {
         }
 
         if (this.shouldLockHoverNearGround()) {
-            // Near the surface, keep hover stable so the dyno does not accidentally pop into
+            // Near the surface, keep hover stable so the dino does not accidentally pop into
             // faster air states before it has clearly climbed away from the ground below.
             this.airMode = 'hover';
             this.flightFacingRotationY = 0;
@@ -6760,7 +6760,7 @@ export class Player {
             ? (Math.max(airSpeed, requestedSpeed) < flyEnterThreshold ? 'hover' : 'fly')
             : ((airSpeed < hoverEnterThreshold && (requestedSpeed < flyEnterThreshold || isAirReverseRequested)) ? 'hover' : 'fly');
 
-        // During an airborne side reversal, force a stable hover phase until the dyno has slowed
+        // During an airborne side reversal, force a stable hover phase until the dino has slowed
         // enough to complete the upright hover turn instead of jittering between fly and hover.
         if (isAirReverseRequested) {
             nextAirMode = airSpeed < flyEnterThreshold ? 'hover' : 'fly';
@@ -6880,8 +6880,8 @@ export class Player {
             return baseSpeed;
         }
 
-        const maxSpeedAtMaxLiftWeight = Number.isFinite(CONFIG.DYNO_CARRY?.flightMaxSpeedAtMaxLiftWeight)
-            ? CONFIG.DYNO_CARRY.flightMaxSpeedAtMaxLiftWeight
+        const maxSpeedAtMaxLiftWeight = Number.isFinite(CONFIG.DINO_CARRY?.flightMaxSpeedAtMaxLiftWeight)
+            ? CONFIG.DINO_CARRY.flightMaxSpeedAtMaxLiftWeight
             : baseSpeed;
         return THREE.MathUtils.lerp(baseSpeed, maxSpeedAtMaxLiftWeight, this.getCarryWeightRatio());
     }
@@ -6995,7 +6995,7 @@ export class Player {
 
     getFlightBaseRotationY(facing) {
         // Flight mode owns the side-switch on a dedicated pivot. Keep right-facing as the base
-        // orientation and rotate 180deg on Y when the dyno should be viewed from the other side.
+        // orientation and rotate 180deg on Y when the dino should be viewed from the other side.
         return facing > 0 ? 0 : -Math.PI;
     }
 
@@ -7023,7 +7023,7 @@ export class Player {
             );
         }
 
-        const hasStoppedHorizontally = Math.abs(this.velocity.x) <= DYNO_MODEL_SETTINGS.animationSpeedDeadZone;
+        const hasStoppedHorizontally = Math.abs(this.velocity.x) <= DINO_MODEL_SETTINGS.animationSpeedDeadZone;
         const canCompleteImmediately = hasStoppedHorizontally && this.lastAirborneHorizontalBlocked === true;
         if ((progress >= 1 && hasStoppedHorizontally) || canCompleteImmediately) {
             this.isFlightTurning = false;
@@ -7173,7 +7173,7 @@ export class Player {
         const maxDragSpeed = this.getDragBackwardMaxWalkSpeed();
         const forwardInput = inputX * this.getDragFacingDirection();
         if (!this.isMouthDraggingObject() && forwardInput > 0) {
-            const divisor = Number.isFinite(CONFIG.DYNO_DRAG?.pushSpeedDivisor) ? CONFIG.DYNO_DRAG.pushSpeedDivisor : 1.8;
+            const divisor = Number.isFinite(CONFIG.DINO_DRAG?.pushSpeedDivisor) ? CONFIG.DINO_DRAG.pushSpeedDivisor : 1.8;
             const maxPushSpeed = maxDragSpeed / divisor;
             return THREE.MathUtils.clamp(targetVelocityX, -maxPushSpeed, maxPushSpeed);
         }
@@ -7211,7 +7211,7 @@ export class Player {
         }
 
         if (this.isGrabStruggleActive()) {
-            // Too-heavy grab keeps the dyno anchored to the object; keep facing stable so
+            // Too-heavy grab keeps the dino anchored to the object; keep facing stable so
             // stick input does not trigger side-switch turns during the struggle.
             this.cancelTurn();
             this.debugState.delete('turnWaitForStop');
@@ -7220,14 +7220,14 @@ export class Player {
 
         if (this.isPullDraggingObject()) {
             // Dragging locks rotation: backward velocity must not trigger a side-switch, because
-            // the dyno should keep facing the object while pulling it with the mouth.
+            // the dino should keep facing the object while pulling it with the mouth.
             this.cancelTurn();
             this.debugState.delete('turnWaitForStop');
             return;
         }
 
         const inputSign = this.getSignWithDeadZone(inputX, 0.05);
-        const movementSign = this.getSignWithDeadZone(this.velocity.x, DYNO_MODEL_SETTINGS.animationSpeedDeadZone);
+        const movementSign = this.getSignWithDeadZone(this.velocity.x, DINO_MODEL_SETTINGS.animationSpeedDeadZone);
 
         if (!this.isTurning) {
             if (inputSign !== 0 && inputSign !== this.lastFacingDirection) {
@@ -7274,7 +7274,7 @@ export class Player {
         const progress = this.getTurnCompletionRatio();
 
         // Surface water: drive flightFacingRotationY through the turn so the flight pivot
-        // smoothly rotates from start facing to target facing (dynoTurnPivot is suppressed).
+        // smoothly rotates from start facing to target facing (dinoTurnPivot is suppressed).
         if (isSurfaceWater) {
             const startPivot = this.getFlightBaseRotationY(this.turnStartFacing);
             const targetPivot = this.getFlightBaseRotationY(-this.turnStartFacing);
@@ -7283,7 +7283,7 @@ export class Player {
             this.flightTurnVisualRotation = this.flightFacingRotationY;
         }
 
-        // Always rotate the dyno forward toward the camera during side switching.
+        // Always rotate the dino forward toward the camera during side switching.
 
         if (this.doDebug !== false) {
             const progressBucket = Math.min(4, Math.floor(progress * 4));
@@ -7309,46 +7309,46 @@ export class Player {
 
     updateFacingDirection(inputX) {
         if (this.isAutoDragActive() || this.isAutoPickupActive()) {
-            this.dynoFacingPivot.rotation.y = this.lastFacingDirection > 0
-                ? DYNO_MODEL_SETTINGS.facingYaw.right
-                : DYNO_MODEL_SETTINGS.facingYaw.left;
+            this.dinoFacingPivot.rotation.y = this.lastFacingDirection > 0
+                ? DINO_MODEL_SETTINGS.facingYaw.right
+                : DINO_MODEL_SETTINGS.facingYaw.left;
             return;
         }
 
         if (this.isPullDraggingObject()) {
             const dragFacing = this.getDragFacingDirection();
             this.lastFacingDirection = dragFacing;
-            this.dynoFacingPivot.rotation.y = dragFacing > 0
-                ? DYNO_MODEL_SETTINGS.facingYaw.right
-                : DYNO_MODEL_SETTINGS.facingYaw.left;
+            this.dinoFacingPivot.rotation.y = dragFacing > 0
+                ? DINO_MODEL_SETTINGS.facingYaw.right
+                : DINO_MODEL_SETTINGS.facingYaw.left;
             return;
         }
 
         if (this.isTurning) {
             if (this.isInWater) {
                 // In water the flight pivot owns facing — facingPivot stays locked to right.
-                this.dynoFacingPivot.rotation.y = DYNO_MODEL_SETTINGS.facingYaw.right;
+                this.dinoFacingPivot.rotation.y = DINO_MODEL_SETTINGS.facingYaw.right;
             } else {
-                this.dynoFacingPivot.rotation.y = this.turnStartFacing > 0
-                    ? DYNO_MODEL_SETTINGS.facingYaw.right
-                    : DYNO_MODEL_SETTINGS.facingYaw.left;
+                this.dinoFacingPivot.rotation.y = this.turnStartFacing > 0
+                    ? DINO_MODEL_SETTINGS.facingYaw.right
+                    : DINO_MODEL_SETTINGS.facingYaw.left;
             }
             return;
         }
 
         if (!this.onGround && (this.airMode === 'fly' || this.isFlightTurning)) {
             // Flight side-switching is handled by the dedicated flight-turn pivot, so do not add a second flip here.
-            this.dynoFacingPivot.rotation.y = DYNO_MODEL_SETTINGS.facingYaw.right;
+            this.dinoFacingPivot.rotation.y = DINO_MODEL_SETTINGS.facingYaw.right;
             return;
         }
 
         if (this.isInWater) {
             // All water states use the flight-turn pivot for Y-axis facing — facingPivot locked to right.
-            this.dynoFacingPivot.rotation.y = DYNO_MODEL_SETTINGS.facingYaw.right;
+            this.dinoFacingPivot.rotation.y = DINO_MODEL_SETTINGS.facingYaw.right;
             return;
         }
 
-        const velocitySign = this.getSignWithDeadZone(this.velocity.x, DYNO_MODEL_SETTINGS.animationSpeedDeadZone);
+        const velocitySign = this.getSignWithDeadZone(this.velocity.x, DINO_MODEL_SETTINGS.animationSpeedDeadZone);
         const inputSign = this.getSignWithDeadZone(inputX, 0.05);
         const shouldFollowVelocityFacing = velocitySign !== 0 &&
             (inputSign === 0 || inputSign === velocitySign);
@@ -7356,9 +7356,9 @@ export class Player {
             this.lastFacingDirection = velocitySign;
         }
 
-        this.dynoFacingPivot.rotation.y = this.lastFacingDirection > 0
-            ? DYNO_MODEL_SETTINGS.facingYaw.right
-            : DYNO_MODEL_SETTINGS.facingYaw.left;
+        this.dinoFacingPivot.rotation.y = this.lastFacingDirection > 0
+            ? DINO_MODEL_SETTINGS.facingYaw.right
+            : DINO_MODEL_SETTINGS.facingYaw.left;
     }
 
     getImmediateFireFacingDirection() {
@@ -7426,9 +7426,9 @@ export class Player {
         const alignmentSpeed = this.onGround
             ? (Number.isFinite(CONFIG.groundRotationSpeed)
                 ? CONFIG.groundRotationSpeed
-                : DYNO_MODEL_SETTINGS.tiltLerpSpeed)
+                : DINO_MODEL_SETTINGS.tiltLerpSpeed)
             : (this.isDeepWaterSwim() || this.waterState === 'swimDive')
-                ? (CONFIG.DYNO_WATER.swimTiltRotationSpeed ?? 3)
+                ? (CONFIG.DINO_WATER.swimTiltRotationSpeed ?? 3)
                 : CONFIG.flightRotationSpeed;
         const lerpAlpha = Math.min(1, alignmentSpeed * dt);
         const useFlightPivot = (!this.onGround && (this.airMode === 'fly' || this.isFlightTurning)) ||
@@ -7438,10 +7438,10 @@ export class Player {
             : 0;
 
         this.currentGroundTilt = THREE.MathUtils.lerp(this.currentGroundTilt, targetTilt, lerpAlpha);
-        this.dynoFlightTurnPivot.rotation.y = flightTurnRotationY;
-        this.dynoTiltPivot.rotation.z = this.currentGroundTilt;
-        // In water the flight pivot owns Y-facing; suppress dynoTurnPivot to avoid double-rotation.
-        this.dynoTurnPivot.rotation.y = this.isInWater ? 0 : this.currentTurnRotation;
+        this.dinoFlightTurnPivot.rotation.y = flightTurnRotationY;
+        this.dinoTiltPivot.rotation.z = this.currentGroundTilt;
+        // In water the flight pivot owns Y-facing; suppress dinoTurnPivot to avoid double-rotation.
+        this.dinoTurnPivot.rotation.y = this.isInWater ? 0 : this.currentTurnRotation;
 
         if (this.doDebug !== false) {
             if (!this.onGround && this.airMode === 'fly') {
@@ -7465,7 +7465,7 @@ export class Player {
 //            console.info('[Player] Airborne -> grounded');
         } else {
 //            console.info('[Player] Grounded -> airborne');
-            // Release non-mouth ground drag when the dyno becomes airborne.
+            // Release non-mouth ground drag when the dino becomes airborne.
             if (this.isPullDraggingObject() && !this.isMouthDraggingObject()) {
                 this.releaseDraggedObject({ force: true });
             }
@@ -7558,7 +7558,7 @@ export class Player {
         const absSpeed = this.isPullDraggingObject()
             ? this.actualHorizontalSpeed
             : Math.abs(this.velocity.x);
-        const movementBand = absSpeed <= DYNO_MODEL_SETTINGS.animationSpeedDeadZone
+        const movementBand = absSpeed <= DINO_MODEL_SETTINGS.animationSpeedDeadZone
             ? 'idle'
             : absSpeed < CONFIG.startRunSpeed
                 ? 'walk'
@@ -7872,7 +7872,7 @@ export class Player {
 
         this.transitionAction = this.animationActions[resolvedState];
         this.queuedLoopState = followUpState;
-        this.playAnimation(resolvedState, DYNO_MODEL_SETTINGS.fadeDuration, true);
+        this.playAnimation(resolvedState, DINO_MODEL_SETTINGS.fadeDuration, true);
     }
 
     playLoopAnimation(state) {
@@ -7881,7 +7881,7 @@ export class Player {
             return;
         }
 
-        this.playAnimation(resolvedState, DYNO_MODEL_SETTINGS.fadeDuration, false);
+        this.playAnimation(resolvedState, DINO_MODEL_SETTINGS.fadeDuration, false);
     }
 
     resolveTimelineClipAction(name) {
@@ -7917,14 +7917,14 @@ export class Player {
             this.playResolvedAnimationAction(
                 directClipAction,
                 resolvedState,
-                DYNO_MODEL_SETTINGS.fadeDuration,
+                DINO_MODEL_SETTINGS.fadeDuration,
                 !loop
             );
         }
     }
 
     resolveStateWithFallback(state) {
-        const fallbackOrder = DYNO_MODEL_SETTINGS.fallbackOrder[state] || [state];
+        const fallbackOrder = DINO_MODEL_SETTINGS.fallbackOrder[state] || [state];
 
         for (const candidate of fallbackOrder) {
             if (this.animationActions[candidate]) {
@@ -7947,7 +7947,7 @@ export class Player {
         return null;
     }
 
-    playAnimation(state, fadeDuration = DYNO_MODEL_SETTINGS.fadeDuration, loopOnce = false) {
+    playAnimation(state, fadeDuration = DINO_MODEL_SETTINGS.fadeDuration, loopOnce = false) {
         const nextAction = this.animationActions[state];
         if (!nextAction) {
             return;
@@ -7956,7 +7956,7 @@ export class Player {
         this.playResolvedAnimationAction(nextAction, state, fadeDuration, loopOnce);
     }
 
-    playResolvedAnimationAction(nextAction, stateLabel, fadeDuration = DYNO_MODEL_SETTINGS.fadeDuration, loopOnce = false) {
+    playResolvedAnimationAction(nextAction, stateLabel, fadeDuration = DINO_MODEL_SETTINGS.fadeDuration, loopOnce = false) {
         if (!nextAction) {
             return;
         }
@@ -8146,7 +8146,7 @@ export class Player {
         this.velocity.y = launchVelocityY;
         this.position.y += 0.02;
         this.cancelTurn();
-        this.audioManager?.play?.('dynoLiftoff', { volume: 0.85 });
+        this.audioManager?.play?.('dinoLiftoff', { volume: 0.85 });
         this.audioManager?.stopLoop?.('gallop');
 
         //console.info(
@@ -8220,7 +8220,7 @@ export class Player {
                 this.airHoverRecoveryLock = true;
             } else if (this.airMode === 'hover' && this.isWithinNearGroundHoverLockDistance()) {
                 // Turn completion should not immediately kick low-altitude hover back into flight.
-                // Once the dyno climbs above the hover-lock distance, normal air transitions
+                // Once the dino climbs above the hover-lock distance, normal air transitions
                 // become available again through updateAirMode().
                 this.airMode = 'hover';
                 this.airHoverRecoveryLock = false;
@@ -8232,7 +8232,7 @@ export class Player {
             if (!this.isCarryHoverOnlyActive() && this.airMode === 'fly' && shouldResumeFlightImmediately) {
                 // Hover turns can complete straight into flight mode. When that happens, the flight
                 // side-view pivot must immediately inherit the freshly completed facing direction,
-                // otherwise the dyno can visually keep the previous side while movement resumes.
+                // otherwise the dino can visually keep the previous side while movement resumes.
                 this.flightFacingRotationY = this.getFlightBaseRotationY(this.lastFacingDirection);
                 this.flightTurnVisualRotation = this.flightFacingRotationY;
             } else {
@@ -8289,13 +8289,13 @@ export class Player {
         const airborneAnimationSpeed = airborneAnimationReference.speed;
 
         if (this.isInWater) {
-            const waterMaxSpeed = (CONFIG.DYNO_WATER?.waterMaxSpeed ?? 4) * this.getCurrentSpeedMultiplier();
+            const waterMaxSpeed = (CONFIG.DINO_WATER?.waterMaxSpeed ?? 4) * this.getCurrentSpeedMultiplier();
             const swimSpeed = Math.hypot(this.velocity.x, this.velocity.y);
             const swimScale = waterMaxSpeed > 0 ? THREE.MathUtils.clamp(swimSpeed / waterMaxSpeed, 0, 2) : 1;
             locomotionTimeScales.swimNormal = swimScale;
             locomotionTimeScales.swimDive = swimScale;
             // Surface idle: base speed + linear ramp from horizontal movement
-            const idleBase = CONFIG.DYNO_WATER?.swimIdleBaseSpeed ?? 0.6;
+            const idleBase = CONFIG.DINO_WATER?.swimIdleBaseSpeed ?? 0.6;
             const idleScale = idleBase + (waterMaxSpeed > 0 ? THREE.MathUtils.clamp(Math.abs(this.velocity.x) / waterMaxSpeed, 0, 1) : 0);
             locomotionTimeScales.swimIdle = idleScale;
             locomotionTimeScales.swimIdleUp = idleScale;
@@ -8307,9 +8307,9 @@ export class Player {
             locomotionTimeScales.drag = this.getCycleSyncedTimeScale('drag', absGroundSpeed, CONFIG.walkCycleDistance);
             locomotionTimeScales.run = this.getCycleSyncedTimeScale('run', absGroundSpeed, CONFIG.runCycleDistance);
             if (this.isPullDraggingObject()) {
-                if (heavyDragStandstillAnimationSpeed > 0 && absGroundSpeed <= DYNO_MODEL_SETTINGS.animationSpeedDeadZone) {
+                if (heavyDragStandstillAnimationSpeed > 0 && absGroundSpeed <= DINO_MODEL_SETTINGS.animationSpeedDeadZone) {
                     // Overweight pull attempts are movement-locked. Drive drag-loop from the
-                    // equivalent max-drag-weight pull speed so the dyno visibly slides in place.
+                    // equivalent max-drag-weight pull speed so the dino visibly slides in place.
                     locomotionTimeScales.drag = this.getCycleSyncedTimeScale(
                         'drag',
                         heavyDragStandstillAnimationSpeed,
@@ -8317,7 +8317,7 @@ export class Player {
                     );
                 }
                 locomotionTimeScales.drag *= this.getDragAnimationSpeedMultiplier();
-                // Dragging moves opposite the dyno's facing direction. Play the ground cycle
+                // Dragging moves opposite the dino's facing direction. Play the ground cycle
                 // backward so the feet read as a backward pull instead of a forward walk.
                 locomotionTimeScales.walk *= -1;
                 locomotionTimeScales.drag *= -1;
@@ -8359,7 +8359,7 @@ export class Player {
                 ? this.groundTravelDistance * this.getDragAnimationSpeedMultiplier()
                 : this.groundTravelDistance;
             this.syncGroundCycleAnimationPhase('walk', CONFIG.walkCycleDistance, groundCycleDirection);
-            if (!(heavyDragStandstillAnimationSpeed > 0 && absGroundSpeed <= DYNO_MODEL_SETTINGS.animationSpeedDeadZone)) {
+            if (!(heavyDragStandstillAnimationSpeed > 0 && absGroundSpeed <= DINO_MODEL_SETTINGS.animationSpeedDeadZone)) {
                 this.syncGroundCycleAnimationPhase(
                     'drag',
                     CONFIG.walkCycleDistance,
@@ -8450,7 +8450,7 @@ export class Player {
             const fullClimbReferenceSpeed = this.getVerticalFlightMaxSpeed(1);
 
             // Hovering in thin air should still flap as hard as an upward climb, even if the
-            // current Y input is neutral and the dyno is simply trying to hold altitude.
+            // current Y input is neutral and the dino is simply trying to hold altitude.
             chosenReference.speed = Math.max(chosenReference.speed, fullClimbReferenceSpeed);
 
             // Higher climbing near the ceiling should visibly cost more effort even while the
@@ -8494,7 +8494,7 @@ export class Player {
             return Math.max(0, horizontalFactor);
         }
 
-        // In air mode, the current stick direction chooses how hard the dyno appears to flap:
+        // In air mode, the current stick direction chooses how hard the dino appears to flap:
         // up can speed the loop up, while down can keep it calmer or even slower.
         const baseInputMultiplier = (
             (horizontalMagnitude * horizontalFactor) +
@@ -8506,8 +8506,8 @@ export class Player {
         }
 
         const struggleIntent = Math.max(horizontalMagnitude, climbMagnitude);
-        const struggleBoost = Number.isFinite(CONFIG.DYNO_CARRY?.struggleFlapInputBoost)
-            ? CONFIG.DYNO_CARRY.struggleFlapInputBoost
+        const struggleBoost = Number.isFinite(CONFIG.DINO_CARRY?.struggleFlapInputBoost)
+            ? CONFIG.DINO_CARRY.struggleFlapInputBoost
             : 1.2;
         const weightedStruggleBoost = THREE.MathUtils.lerp(
             0,
@@ -8531,7 +8531,7 @@ export class Player {
         return THREE.MathUtils.clamp(
             rawTimeScale,
             0,
-            DYNO_MODEL_SETTINGS.locomotionTimeScaleMax
+            DINO_MODEL_SETTINGS.locomotionTimeScaleMax
         );
     }
 
@@ -8548,7 +8548,7 @@ export class Player {
             : normalizedCycleProgress;
 
         // Keep the walk/run foot phase tied to actual traveled distance instead of frame time,
-        // so the dyno pose stays consistent across devices while grounded.
+        // so the dino pose stays consistent across devices while grounded.
         action.time = directedProgress * clipDuration;
     }
 
@@ -8558,7 +8558,7 @@ export class Player {
             Math.max(CONFIG.flightMaxSpeed, CONFIG.flightMaxSpeedUp, CONFIG.flightMaxSpeedDown)
         );
         const normalizedSpeed = airSpeed / referenceSpeed;
-        return THREE.MathUtils.clamp(normalizedSpeed * 2.2, 0.35, DYNO_MODEL_SETTINGS.locomotionTimeScaleMax);
+        return THREE.MathUtils.clamp(normalizedSpeed * 2.2, 0.35, DINO_MODEL_SETTINGS.locomotionTimeScaleMax);
     }
 
     getAirborneStateTimeScale(state, baseScale) {
@@ -8568,11 +8568,11 @@ export class Player {
         const stateMultiplier = Number.isFinite(stateMultipliers[state]) ? stateMultipliers[state] : 1;
         const baseMaxTimeScale = Number.isFinite(flapSyncConfig.maxTimeScale)
             ? Math.max(flapSyncConfig.maxTimeScale, 0)
-            : DYNO_MODEL_SETTINGS.locomotionTimeScaleMax;
+            : DINO_MODEL_SETTINGS.locomotionTimeScaleMax;
         let maxTimeScale = baseMaxTimeScale;
         if (this.isGrabStruggleActive()) {
-            const struggleMax = Number.isFinite(CONFIG.DYNO_CARRY?.struggleFlapMaxTimeScaleAtMaxLiftWeight)
-                ? Math.max(CONFIG.DYNO_CARRY.struggleFlapMaxTimeScaleAtMaxLiftWeight, 0)
+            const struggleMax = Number.isFinite(CONFIG.DINO_CARRY?.struggleFlapMaxTimeScaleAtMaxLiftWeight)
+                ? Math.max(CONFIG.DINO_CARRY.struggleFlapMaxTimeScaleAtMaxLiftWeight, 0)
                 : baseMaxTimeScale;
             maxTimeScale = THREE.MathUtils.lerp(baseMaxTimeScale, struggleMax, this.getCarryWeightRatio());
         }
@@ -8707,7 +8707,7 @@ export class Player {
             const vx = this.velocity.x;
             const vy = this.velocity.y;
             const speed = Math.sqrt(vx * vx + vy * vy);
-            const waterMaxSpeed = (CONFIG.DYNO_WATER?.waterMaxSpeed ?? 4) * this.getCurrentSpeedMultiplier();
+            const waterMaxSpeed = (CONFIG.DINO_WATER?.waterMaxSpeed ?? 4) * this.getCurrentSpeedMultiplier();
             const desiredHorizontalSpeed = Math.abs(this.currentInput.x) * waterMaxSpeed;
             const desiredVerticalSpeed = this.currentInput.y * waterMaxSpeed;
             const velocityAngle = Math.atan2(vy, Math.max(Math.abs(vx), 0.001));
@@ -8780,7 +8780,7 @@ export class Player {
         if (angleDifference > THREE.MathUtils.degToRad(18)) {
             // After a diagonal flight turn, the velocity vector can briefly be much steeper than
             // the intended joystick angle. Keep trusting the intended angle until those two are
-            // close enough again, otherwise the dyno appears to "jump" in pitch.
+            // close enough again, otherwise the dino appears to "jump" in pitch.
             assistBlend = Math.min(assistBlend, 0.12);
         }
 

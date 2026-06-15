@@ -88,7 +88,7 @@ export class ChopperObject extends LevelObject {
             speed: Math.max(0.001, Number(this.config.missileSpeed ?? missileConfig.speed ?? 12)),
             acceleration: Math.max(0.001, Number(this.config.missileAcceleration ?? missileConfig.acceleration ?? 20)),
             maxTurnRate: Math.max(0, Number(this.config.missileMaxTurnRate ?? missileConfig.maxTurnRate ?? 2.5)),
-            damageToDyno: Math.max(0, Number(this.config.missileDamageToDyno ?? missileConfig.damageToDyno ?? 25)),
+            damageToDino: Math.max(0, Number(this.config.missileDamageToDino ?? missileConfig.damageToDino ?? 25)),
             lifetime: Math.max(0.05, Number(this.config.missileLifetime ?? missileConfig.lifetime ?? 5)),
             fireInterval: Math.max(0.05, Number(this.config.missileFireInterval ?? missileConfig.fireInterval ?? 2)),
             requiresDamage: this.config.missileRequiresDamage !== false && missileConfig.requiresDamage !== false,
@@ -142,7 +142,7 @@ export class ChopperObject extends LevelObject {
         }
     }
 
-    getDynoTargetWorld(target, out = new THREE.Vector3()) {
+    getDinoTargetWorld(target, out = new THREE.Vector3()) {
         const hitCircle = target?.getWorldCollisionCircle?.();
         if (hitCircle && Number.isFinite(hitCircle.centerX) && Number.isFinite(hitCircle.centerY)) {
             out.set(hitCircle.centerX, hitCircle.centerY, this.container.position.z);
@@ -157,7 +157,7 @@ export class ChopperObject extends LevelObject {
     }
 
     updateFacingTarget(target) {
-        const targ = this.getDynoTargetWorld(target, TMP_TARGET_DELTA);
+        const targ = this.getDinoTargetWorld(target, TMP_TARGET_DELTA);
         if (!targ) {
             return;
         }
@@ -263,7 +263,7 @@ export class ChopperObject extends LevelObject {
         return out;
     }
 
-    updateMissileCombat(delta, dynoTarget) {
+    updateMissileCombat(delta, dinoTarget) {
         if (
             !this.missileLauncher ||
             (this.missileConfig.requiresDamage && !this.hasTakenDamage()) ||
@@ -280,7 +280,7 @@ export class ChopperObject extends LevelObject {
             return;
         }
 
-        const target = this.getDynoTargetWorld(dynoTarget, TMP_TARGET_DELTA);
+        const target = this.getDinoTargetWorld(dinoTarget, TMP_TARGET_DELTA);
         if (!target) {
             return;
         }
@@ -296,7 +296,7 @@ export class ChopperObject extends LevelObject {
         this.missileLauncher.launch({
             position: this.getMissileLaunchWorldPosition(TMP_LAUNCH_POSITION),
             direction: this.getMissileLaunchDirection(TMP_LAUNCH_DIRECTION),
-            target: dynoTarget
+            target: dinoTarget
         });
         this.missileCooldown = this.missileConfig.fireInterval;
     }
@@ -344,7 +344,7 @@ export class ChopperObject extends LevelObject {
         super.destroy();
     }
 
-    update(delta, level, dynoTarget = null) {
+    update(delta, level, dinoTarget = null) {
         if (!this.loaded) {
             return;
         }
@@ -352,7 +352,7 @@ export class ChopperObject extends LevelObject {
         this.updateRotorSpin(delta);
         this.updateHealthBarVisual();
         this.updateDestructionSequence(delta);
-        this.missileLauncher?.update(delta, dynoTarget);
+        this.missileLauncher?.update(delta, dinoTarget);
         this.alwaysUpdate = this.missileLauncher?.hasActiveWork?.() ?? false;
         if (this.markedForRemoval || this.isDestroyed) {
             return;
@@ -366,9 +366,9 @@ export class ChopperObject extends LevelObject {
         // Alive airborne patrol mode.
         this.state = LEVEL_OBJECT_STATES.IDLE;
         this.gravityEnabled = false;
-        this.updateFacingTarget(dynoTarget);
+        this.updateFacingTarget(dinoTarget);
         this.applyFacingRotation(delta);
-        this.updateMissileCombat(delta, dynoTarget);
+        this.updateMissileCombat(delta, dinoTarget);
         this.updatePatrolMovement(delta);
     }
 

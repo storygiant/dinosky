@@ -3,10 +3,10 @@ $ErrorActionPreference = 'Stop'
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $root = if (Test-Path -LiteralPath (Join-Path $scriptDir 'package.json')) {
   $scriptDir
-} elseif (Test-Path -LiteralPath (Join-Path $scriptDir 'dyno\package.json')) {
-  Join-Path $scriptDir 'dyno'
+} elseif (Test-Path -LiteralPath (Join-Path $scriptDir 'dino\package.json')) {
+  Join-Path $scriptDir 'dino'
 } else {
-  throw 'Could not find dyno game folder from build-desktop.ps1 location.'
+  throw 'Could not find dino game folder from build-desktop.ps1 location.'
 }
 
 $outputDir = Split-Path -Parent $root

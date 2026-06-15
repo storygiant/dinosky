@@ -53,7 +53,7 @@ export class MissileProjectile {
         this.speed = 0;
         this.age = 0;
         this.active = false;
-        this.damageToDyno = 0;
+        this.damageToDino = 0;
         this.hitRadius = 0.4;
         this.lifetime = 5;
         this.targetSpeed = 12;
@@ -79,7 +79,7 @@ export class MissileProjectile {
         this.speed = Math.max(0, Number.isFinite(config.initialSpeed) ? config.initialSpeed : 0);
         this.age = 0;
         this.active = true;
-        this.damageToDyno = Math.max(0, Number.isFinite(config.damageToDyno) ? config.damageToDyno : 25);
+        this.damageToDino = Math.max(0, Number.isFinite(config.damageToDino) ? config.damageToDino : 25);
         this.hitRadius = Math.max(0, Number.isFinite(config.hitRadius) ? config.hitRadius : 0.45);
         this.lifetime = Math.max(0.05, Number.isFinite(config.lifetime) ? config.lifetime : 5);
         this.targetSpeed = Math.max(0.001, Number.isFinite(config.speed) ? config.speed : 12);
@@ -118,8 +118,8 @@ export class MissileProjectile {
         this.syncVisual();
         this.emitTrail(delta);
 
-        if (this.hitDyno(target)) {
-            const damage = Math.max(0, Number.isFinite(this.damageToDyno) ? this.damageToDyno : 0);
+        if (this.hitDino(target)) {
+            const damage = Math.max(0, Number.isFinite(this.damageToDino) ? this.damageToDino : 0);
             target?.applyDamage?.(damage, 'missile', {
                 projectileDirection: {
                     x: this.direction.x,
@@ -132,7 +132,7 @@ export class MissileProjectile {
                     z: this.position.z
                 }
             });
-            this.destroyMissile('hitDyno');
+            this.destroyMissile('hitDino');
             return { active: false, hit: true };
         }
 
@@ -144,7 +144,7 @@ export class MissileProjectile {
             return;
         }
 
-        // Homing direction is the vector from missile to the current dyno target point.
+        // Homing direction is the vector from missile to the current dino target point.
         TMP_TO_TARGET.copy(TMP_TARGET_POSITION).sub(this.position);
         TMP_TO_TARGET.z = 0;
         if (TMP_TO_TARGET.lengthSq() <= 0.0001) {
@@ -181,7 +181,7 @@ export class MissileProjectile {
         return false;
     }
 
-    hitDyno(target) {
+    hitDino(target) {
         const targetCircle = target?.getWorldCollisionCircle?.();
         if (!targetCircle) {
             return false;
@@ -433,7 +433,7 @@ export class MissileLauncher {
             return;
         }
 
-        if (reason === 'hitDyno' || reason === 'timeout' || reason === 'groundCull' || reason === 'hitByDynoFire') {
+        if (reason === 'hitDino' || reason === 'timeout' || reason === 'groundCull' || reason === 'hitByDinoFire') {
             this.spawnMissileExplosion(position);
         }
     }

@@ -425,7 +425,7 @@ export class BurnableSceneryManager {
         return Math.max(0, Math.min(this.particles.length, Math.floor(this.particles.length * scale)));
     }
 
-    applyDynoFireDamage(player) {
+    applyDinoFireDamage(player) {
         void player;
     }
 

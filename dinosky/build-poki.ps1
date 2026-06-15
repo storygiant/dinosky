@@ -3,10 +3,10 @@ $ErrorActionPreference = 'Stop'
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $root = if (Test-Path -LiteralPath (Join-Path $scriptDir 'VERSION.txt')) {
   $scriptDir
-} elseif (Test-Path -LiteralPath (Join-Path $scriptDir 'dyno\VERSION.txt')) {
-  Join-Path $scriptDir 'dyno'
+} elseif (Test-Path -LiteralPath (Join-Path $scriptDir 'dino\VERSION.txt')) {
+  Join-Path $scriptDir 'dino'
 } else {
-  throw 'Could not find dyno game folder from build-poki.ps1 location.'
+  throw 'Could not find dino game folder from build-poki.ps1 location.'
 }
 $outputDir = Split-Path -Parent $root
 $stagingDir = Join-Path $outputDir '.tmp_poki_export'
@@ -108,7 +108,7 @@ function Copy-PokiFiles {
       return
     }
 
-    if ($name -like 'dyno_*.zip') {
+    if ($name -like 'dino_*.zip') {
       return
     }
 
@@ -144,7 +144,7 @@ if (-not (Test-Path -LiteralPath $versionFilePath)) {
 
 $currentVersion = Get-Content -LiteralPath $versionFilePath -Raw
 $nextVersion = Get-NextVersion -CurrentVersion $currentVersion
-$zipFileName = "dyno_$nextVersion.zip"
+$zipFileName = "dino_$nextVersion.zip"
 $zipPath = Join-Path $outputDir $zipFileName
 
 if (Test-Path -LiteralPath $stagingDir) {

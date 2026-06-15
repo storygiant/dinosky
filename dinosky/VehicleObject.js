@@ -171,8 +171,8 @@ export class VehicleObject extends LevelObject {
         this.contactPersistence = 0;
     }
 
-    pickUp(dyno, socket, options = {}) {
-        const didPickUp = super.pickUp(dyno, socket, options);
+    pickUp(dino, socket, options = {}) {
+        const didPickUp = super.pickUp(dino, socket, options);
         if (!didPickUp) {
             return false;
         }
@@ -198,8 +198,8 @@ export class VehicleObject extends LevelObject {
         return true;
     }
 
-    startDrag(dyno, grabPointName) {
-        const didStartDrag = super.startDrag(dyno, grabPointName);
+    startDrag(dino, grabPointName) {
+        const didStartDrag = super.startDrag(dino, grabPointName);
         if (!didStartDrag) {
             return false;
         }
@@ -733,7 +733,7 @@ export class VehicleObject extends LevelObject {
     keepDraggedFreeCornerOnGround(level, stepDelta) {
         if (
             !this.isBeingDragged() ||
-            !CONFIG.DYNO_DRAG?.keepFreeCornerGrounded ||
+            !CONFIG.DINO_DRAG?.keepFreeCornerGrounded ||
             (!level?.getGroundInfoAtWorld && !level?.getGroundInfoBelowWorld)
         ) {
             return false;
@@ -752,8 +752,8 @@ export class VehicleObject extends LevelObject {
         }
 
         const gap = freeCornerWorld.y - groundInfo.surfaceHeight;
-        const slop = Number.isFinite(CONFIG.DYNO_DRAG?.freeCornerGroundSlop)
-            ? CONFIG.DYNO_DRAG.freeCornerGroundSlop
+        const slop = Number.isFinite(CONFIG.DINO_DRAG?.freeCornerGroundSlop)
+            ? CONFIG.DINO_DRAG.freeCornerGroundSlop
             : 0.03;
         if (gap <= slop) {
             return false;
@@ -1065,11 +1065,11 @@ export class VehicleObject extends LevelObject {
         this.gravityEnabled = true;
 
         this.velocity.y -= gravity * stepDelta;
-        const linearDamping = dragging && Number.isFinite(CONFIG.DYNO_DRAG?.linearDamping)
-            ? CONFIG.DYNO_DRAG.linearDamping
+        const linearDamping = dragging && Number.isFinite(CONFIG.DINO_DRAG?.linearDamping)
+            ? CONFIG.DINO_DRAG.linearDamping
             : this.linearDamping;
-        const angularDamping = dragging && Number.isFinite(CONFIG.DYNO_DRAG?.angularDamping)
-            ? CONFIG.DYNO_DRAG.angularDamping
+        const angularDamping = dragging && Number.isFinite(CONFIG.DINO_DRAG?.angularDamping)
+            ? CONFIG.DINO_DRAG.angularDamping
             : this.angularDamping;
         this.velocity.multiplyScalar(linearDamping);
         this.angularVelocity *= angularDamping;
@@ -1130,7 +1130,7 @@ export class VehicleObject extends LevelObject {
         this.tryFinalizePendingDestroy();
     }
 
-    update(delta, level, dynoTarget = null, airTargets = []) {
+    update(delta, level, dinoTarget = null, airTargets = []) {
         super.update(delta, level);
         if (!this.container.visible) return;
         this.grounded = this.state === LEVEL_OBJECT_STATES.IDLE && !this.gravityEnabled;
@@ -1178,7 +1178,7 @@ export class VehicleObject extends LevelObject {
 
         // Extend each endpoint outward by half the configured gap tolerance so that two
         // blocks within walkableGapTolerance world-units of each other produce overlapping
-        // edges — the dyno walks across the gap without leaving the grounded surface.
+        // edges — the dino walks across the gap without leaving the grounded surface.
         const gapTolerance = Number.isFinite(this.config.walkableGapTolerance)
             ? this.config.walkableGapTolerance
             : 0;

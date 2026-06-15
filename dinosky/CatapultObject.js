@@ -12,16 +12,16 @@ const TMP_RIGHT_TIP = new THREE.Vector3();
  * Lifecycle:
  *   - load(): builds placeholder geometry (poles, basket, ropes).
  *   - update(): runs each frame. Detects loadable objects entering the basket,
- *     tracks dyno proximity to drive the pull, and handles launch/release.
+ *     tracks dino proximity to drive the pull, and handles launch/release.
  *
  * Interaction model:
- *   1. Dyno flies above the catapult carrying an accepted object and drops it.
+ *   1. Dino flies above the catapult carrying an accepted object and drops it.
  *      The basket detects overlap and adopts the object as its loaded projectile.
- *   2. Dyno flies close to the loaded basket. While the dyno is inside
- *      `grabActivationRadius`, the basket position follows the dyno's position
+ *   2. Dino flies close to the loaded basket. While the dino is inside
+ *      `grabActivationRadius`, the basket position follows the dino's position
  *      (clamped to `maxPullDistance` from rest).
- *   3. When the dyno moves outside the grab radius (or the basket reaches
- *      max stretch and the dyno keeps moving), the basket "releases" —
+ *   3. When the dino moves outside the grab radius (or the basket reaches
+ *      max stretch and the dino keeps moving), the basket "releases" —
  *      the loaded object gets an impulse based on the pull vector and the
  *      basket springs back to rest.
  *
@@ -79,9 +79,9 @@ export class CatapultObject extends LevelObject {
         // before it has escaped the basket area.
         this._recentlyLaunched = null;
         this._recentlyLaunchedTimer = 0;
-        // Constraint object pushed onto dynoTarget.positionConstraints while pulling.
-        this._dynoConstraint = null;
-        this._constrainedDyno = null;
+        // Constraint object pushed onto dinoTarget.positionConstraints while pulling.
+        this._dinoConstraint = null;
+        this._constrainedDino = null;
         // True once the basket has returned fully to rest — skips rope redraws.
         this._basketAtRest = false;
         // Aim trail dot meshes (created in _buildPlaceholderVisuals).
@@ -210,27 +210,27 @@ export class CatapultObject extends LevelObject {
         positions.needsUpdate = true;
     }
 
-    _registerDynoConstraint(dyno) {
-        if (!dyno?.positionConstraints || this._dynoConstraint) return;
-        this._constrainedDyno = dyno;
-        this._dynoConstraint = {
+    _registerDinoConstraint(dino) {
+        if (!dino?.positionConstraints || this._dinoConstraint) return;
+        this._constrainedDino = dino;
+        this._dinoConstraint = {
             cx: this._restPosition.x,
             cy: this._restPosition.y,
             radius: this._catapultCfg.maxPullDistance
         };
-        dyno.positionConstraints.push(this._dynoConstraint);
+        dino.positionConstraints.push(this._dinoConstraint);
     }
 
-    _unregisterDynoConstraint(dyno) {
-        if (!this._dynoConstraint) return;
-        const target = dyno ?? this._constrainedDyno;
+    _unregisterDinoConstraint(dino) {
+        if (!this._dinoConstraint) return;
+        const target = dino ?? this._constrainedDino;
         const arr = target?.positionConstraints;
         if (arr) {
-            const idx = arr.indexOf(this._dynoConstraint);
+            const idx = arr.indexOf(this._dinoConstraint);
             if (idx >= 0) arr.splice(idx, 1);
         }
-        this._dynoConstraint = null;
-        this._constrainedDyno = null;
+        this._dinoConstraint = null;
+        this._constrainedDino = null;
     }
 
     // Is `obj` a valid projectile candidate?
@@ -242,7 +242,7 @@ export class CatapultObject extends LevelObject {
 
     // Scan nearby objects for one that has entered the basket area.
     // Accepted states: IDLE (settled in basket) and FALLING (dropped from above
-    // by the dyno — caught mid-fall). Excluded: CARRIED/GRABBED/DRAGGED, and
+    // by the dino — caught mid-fall). Excluded: CARRIED/GRABBED/DRAGGED, and
     // the recently-launched object (cooldown).
     _tryDetectLoad(allObjects) {
         if (this._loadedObject) return;
@@ -254,7 +254,7 @@ export class CatapultObject extends LevelObject {
 
         for (const obj of allObjects) {
             if (!this._isAcceptedType(obj)) continue;
-            // Skip anything currently held by the dyno.
+            // Skip anything currently held by the dino.
             if (
                 obj.state === LEVEL_OBJECT_STATES.CARRIED ||
                 obj.state === LEVEL_OBJECT_STATES.GRABBED ||
@@ -449,7 +449,7 @@ export class CatapultObject extends LevelObject {
 
     // Hand control back to the physics system with the given launch velocity.
     // Teleports the object to the basket position first so the launch visually
-    // starts from the slingshot, not from wherever the dyno dropped it.
+    // starts from the slingshot, not from wherever the dino dropped it.
     _releaseLoadedObject(launchVX, launchVY) {
         const obj = this._loadedObject;
         const basketPos = this._basketNode?.position;
@@ -495,7 +495,7 @@ export class CatapultObject extends LevelObject {
         }
     }
 
-    update(delta, level, dynoTarget, allObjects) {
+    update(delta, level, dinoTarget, allObjects) {
         if (!this.loaded || !this._basketNode) return;
 
         // snapToGroundOnLoad repositions container AFTER load() runs, so we must
@@ -528,35 +528,35 @@ export class CatapultObject extends LevelObject {
         const restPos = this._restPosition;
 
         // 1) If no loaded object, scan for one entering the basket — but only when
-        // the dyno is close enough that a drop is plausible. This avoids iterating
+        // the dino is close enough that a drop is plausible. This avoids iterating
         // all level objects every frame when the catapult is on-screen but unused.
         if (!this._loadedObject) {
-            const dynoPos = dynoTarget?.position;
+            const dinoPos = dinoTarget?.position;
             const scanRadius = this._catapultCfg.maxPullDistance + this._catapultCfg.basketRadius + 4;
-            const dynoNear = dynoPos &&
-                Math.hypot(dynoPos.x - restPos.x, dynoPos.y - restPos.y) < scanRadius;
-            if (dynoNear) {
+            const dinoNear = dinoPos &&
+                Math.hypot(dinoPos.x - restPos.x, dinoPos.y - restPos.y) < scanRadius;
+            if (dinoNear) {
                 this._tryDetectLoad(allObjects);
             }
         }
 
-        // 2) Grab is driven by the dyno's existing pickup/drag system.
-        // While the dyno is holding the loaded object, the basket follows the
+        // 2) Grab is driven by the dino's existing pickup/drag system.
+        // While the dino is holding the loaded object, the basket follows the
         // object's position (clamped to maxPullDistance from rest). When the
-        // dyno releases the object, we fire it using the pull vector.
+        // dino releases the object, we fire it using the pull vector.
         if (this._loadedObject) {
             const obj = this._loadedObject;
-            const isHeldByDyno = (
+            const isHeldByDino = (
                 obj.state === LEVEL_OBJECT_STATES.CARRIED ||
                 obj.state === LEVEL_OBJECT_STATES.GRABBED ||
                 obj.state === LEVEL_OBJECT_STATES.DRAGGED
             );
 
-            if (isHeldByDyno) {
+            if (isHeldByDino) {
                 this._isGrabbed = true;
-                this._registerDynoConstraint(dynoTarget);
+                this._registerDinoConstraint(dinoTarget);
 
-                // Carried objects are re-parented to the dyno's carry socket, so
+                // Carried objects are re-parented to the dino's carry socket, so
                 // container.position is a local offset. Walk the parent chain to get
                 // the actual world position.
                 obj.container.updateWorldMatrix(true, false);
@@ -576,8 +576,8 @@ export class CatapultObject extends LevelObject {
                 }
                 basketPos.set(bx, by, restPos.z);
             } else if (this._isGrabbed) {
-                // Dyno just dropped the loaded object — fire the catapult.
-                this._unregisterDynoConstraint(dynoTarget);
+                // Dino just dropped the loaded object — fire the catapult.
+                this._unregisterDinoConstraint(dinoTarget);
                 this._launch();
             } else {
                 // Object idling in the basket — keep it parked at basket position.
@@ -620,7 +620,7 @@ export class CatapultObject extends LevelObject {
 
     dispose() {
         this.trajectoryBounds = null;
-        this._unregisterDynoConstraint(null);
+        this._unregisterDinoConstraint(null);
         if (this._loadedObject) {
             this._releaseLoadedObject(0, 0);
         }

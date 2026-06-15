@@ -6,7 +6,7 @@ import { CONFIG } from './config.js';
 const BOB_PERIOD = 2.2;
 const BOB_AMPLITUDE = 0.18;
 const CALLOUT_BG_URL = './gfx/UI/missioncallout.webp';
-const ZONE_SHOW_RADIUS = 30;   // world units — zone appears when dyno is within this distance
+const ZONE_SHOW_RADIUS = 30;   // world units — zone appears when dino is within this distance
 const ZONE_OPACITY = 0.18;
 // The speech bubble body occupies roughly the top 78% of the image; the pointer is below.
 const BUBBLE_BODY_RATIO = 0.78;
@@ -24,7 +24,7 @@ const BUBBLE_BODY_RATIO = 0.78;
  *
  * The sprite mesh is parented directly to the Gameplay layer group from LevelRenderer
  * so it inherits the exact same renderOrder and Z depth as gameplay tiles, placing it
- * behind the dyno and all foreground layers automatically.
+ * behind the dino and all foreground layers automatically.
  */
 export class MissionCalloutObject extends LevelObject {
     constructor(options) {
@@ -183,7 +183,7 @@ export class MissionCalloutObject extends LevelObject {
         }
     }
 
-    update(delta, level, dynoTarget, allObjects) {
+    update(delta, level, dinoTarget, allObjects) {
         if (!this.loaded || !this._sprite) return;
 
         const visible = this.missionId
@@ -195,12 +195,12 @@ export class MissionCalloutObject extends LevelObject {
             this._lastVisible = visible;
         }
 
-        // Zone visibility — show when callout is visible and dyno is nearby.
+        // Zone visibility — show when callout is visible and dino is nearby.
         if (this._zoneMesh) {
             let zoneVisible = false;
-            if (visible && dynoTarget?.position) {
-                const dx = dynoTarget.position.x - this.container.position.x;
-                const dy = dynoTarget.position.y - this.container.position.y;
+            if (visible && dinoTarget?.position) {
+                const dx = dinoTarget.position.x - this.container.position.x;
+                const dy = dinoTarget.position.y - this.container.position.y;
                 zoneVisible = (dx * dx + dy * dy) <= ZONE_SHOW_RADIUS * ZONE_SHOW_RADIUS;
             }
             this._zoneMesh.visible = zoneVisible;

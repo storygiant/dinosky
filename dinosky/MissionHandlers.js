@@ -411,7 +411,7 @@ export class FlyToZoneMission extends MissionTypeHandler {
 
 // Glowing particle trail that follows the race route.
 // Uses cheap untextured InstancedMesh quads with the same depth/renderOrder rules
-// as DynoFireBreath so it stays in front of the same level layers.
+// as DinoFireBreath so it stays in front of the same level layers.
 class RaceTrail {
     constructor(scene, pathPoints, z = 1, renderOrder = 6.5) {
         this.scene = scene;
@@ -714,7 +714,7 @@ export class RaceMission extends MissionTypeHandler {
         if (game?.scene && this._smoothedPath?.length >= 2) {
             const trailZ = Number.isFinite(game.player?.position?.z) ? game.player.position.z : 1;
             const trailRenderOrder = game.player?.visualRenderOrder ??
-                game.levelRenderer?.getDynoRenderOrder?.() ??
+                game.levelRenderer?.getDinoRenderOrder?.() ??
                 6.5;
             this._trail = new RaceTrail(game.scene, this._smoothedPath, trailZ, trailRenderOrder);
             // Hide trail visually if requested (top-level or params).
@@ -766,8 +766,8 @@ export class RaceMission extends MissionTypeHandler {
         if (!this._rings.length) return [];
 
         const waypoints = [];
-        const dynoPos = game?.player?.position;
-        if (dynoPos) waypoints.push({ x: dynoPos.x, y: dynoPos.y });
+        const dinoPos = game?.player?.position;
+        if (dinoPos) waypoints.push({ x: dinoPos.x, y: dinoPos.y });
 
         for (const ring of this._rings) {
             ring.container?.updateWorldMatrix?.(true, true);
@@ -829,7 +829,7 @@ export class RaceMission extends MissionTypeHandler {
         }
         this._trail?.setRenderOrder(
             game?.player?.visualRenderOrder ??
-            game?.levelRenderer?.getDynoRenderOrder?.()
+            game?.levelRenderer?.getDinoRenderOrder?.()
         );
         this._trail?.setRenderDepth(
             game?.player?.position?.z

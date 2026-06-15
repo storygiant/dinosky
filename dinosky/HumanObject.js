@@ -77,13 +77,13 @@ export class HumanObject extends VehicleObject {
         ));
         this.runAnimationSpeed = getFiniteNumber(this.config.runAnimationSpeed, 1);
 
-        // Dyno reaction — fleeRange maps to dynoReactDistance.
-        // reactToDyno: false disables it entirely.
-        const reactToDyno = wb.reactToDyno !== false;
-        this.fleeRange = reactToDyno
-            ? Math.max(0, getFiniteNumber(wb.dynoReactDistance ?? this.config.fleeRange, 40))
+        // Dino reaction — fleeRange maps to dinoReactDistance.
+        // reactToDino: false disables it entirely.
+        const reactToDino = wb.reactToDino !== false;
+        this.fleeRange = reactToDino
+            ? Math.max(0, getFiniteNumber(wb.dinoReactDistance ?? this.config.fleeRange, 40))
             : 0;
-        this.fleeOnDynoProximity = wb.fleeOnDynoProximity === true || this.config.fleeOnDynoProximity === true;
+        this.fleeOnDinoProximity = wb.fleeOnDinoProximity === true || this.config.fleeOnDinoProximity === true;
         this.fleeTurnDelay = Math.max(0, getFiniteNumber(this.config.fleeTurnDelay, 0.45));
         this.fleeCorrectionTimer = 0;
         this.fleeDirectionLock = 0;
@@ -91,10 +91,10 @@ export class HumanObject extends VehicleObject {
         // Running allowed only when config says so and run-loop exists (checked after load).
         // allowRun defaults true for backward compat with male.
         this.allowRun = wb.allowRun !== false && this.config.allowRun !== false;
-        this.moveAwayFromDyno = wb.moveAwayFromDyno !== false;
-        // For male (no walkingBehavior), moveAwayFromDyno defaults true (existing flee).
+        this.moveAwayFromDino = wb.moveAwayFromDino !== false;
+        // For male (no walkingBehavior), moveAwayFromDino defaults true (existing flee).
         if (!this.config.walkingBehavior) {
-            this.moveAwayFromDyno = true;
+            this.moveAwayFromDino = true;
         }
         this.canWalkSlope = wb.canWalkSlope !== false;
         this.idleOnSlopeAfterDrop = wb.idleOnSlopeAfterDrop === true;
@@ -201,7 +201,7 @@ export class HumanObject extends VehicleObject {
 
     advanceWalkingStateMachine(delta) {
         if (this.walkState === 'runAway') {
-            return; // Dyno reaction overrides normal cycle; released in updateFleeState.
+            return; // Dino reaction overrides normal cycle; released in updateFleeState.
         }
 
         const safeDelta = Number.isFinite(delta) ? Math.max(delta, 0) : 0;
@@ -238,7 +238,7 @@ export class HumanObject extends VehicleObject {
 
     // ── Update ───────────────────────────────────────────────────────────────
 
-    update(delta, level, dynoTarget = null, airTargets = []) {
+    update(delta, level, dinoTarget = null, airTargets = []) {
         if (!this.loaded) {
             return;
         }
@@ -263,7 +263,7 @@ export class HumanObject extends VehicleObject {
             } else {
                 this.stopLocomotionAnimation();
             }
-            super.update(delta, level, dynoTarget, airTargets);
+            super.update(delta, level, dinoTarget, airTargets);
             return;  // No turn animation while carried/falling/grabbed.
         }
 
@@ -279,8 +279,8 @@ export class HumanObject extends VehicleObject {
             }
         }
 
-        if (!this.isDynoWithinAiActivationRange(dynoTarget)) {
-            this._lastDynoTarget = null;
+        if (!this.isDinoWithinAiActivationRange(dinoTarget)) {
+            this._lastDinoTarget = null;
             this.isFleeing = false;
             this.fleeDirectionLock = 0;
             this.fleeCorrectionTimer = 0;
@@ -288,7 +288,7 @@ export class HumanObject extends VehicleObject {
                 this.walkState = 'walk';
                 this.walkStateTimer = this.getNextWalkDuration();
             }
-            // Only advance state machine, no movement or animation updates when dyno is far away
+            // Only advance state machine, no movement or animation updates when dino is far away
             this.advanceWalkingStateMachine(delta);
             this.velocity.set(0, 0, 0);
             this.stopLocomotionAnimation();
@@ -297,8 +297,8 @@ export class HumanObject extends VehicleObject {
             return;
         }
 
-        this._lastDynoTarget = dynoTarget;
-        this.updateFleeState(delta, level, dynoTarget);
+        this._lastDinoTarget = dinoTarget;
+        this.updateFleeState(delta, level, dinoTarget);
 
         const isMoving = this.walkState !== 'idle' && !this._postDropIdleTimer;
         const animName = this.getLocomotionAnimationName();
@@ -478,31 +478,31 @@ export class HumanObject extends VehicleObject {
         this.applyGroundAlignment();
     }
 
-    // ── Flee / dyno reaction ────────────────────────────────────────────────
+    // ── Flee / dino reaction ────────────────────────────────────────────────
 
-    isDynoWithinAiActivationRange(dynoTarget) {
+    isDinoWithinAiActivationRange(dinoTarget) {
         if (this.aiActivationRange <= 0) return false;
-        const dynoPosition = this.getDynoPosition(dynoTarget);
-        if (!dynoPosition) return false;
-        const dx = dynoPosition.x - this.container.position.x;
-        const dy = dynoPosition.y - this.container.position.y;
+        const dinoPosition = this.getDinoPosition(dinoTarget);
+        if (!dinoPosition) return false;
+        const dx = dinoPosition.x - this.container.position.x;
+        const dy = dinoPosition.y - this.container.position.y;
         if (!Number.isFinite(dx) || !Number.isFinite(dy)) return false;
         return (dx * dx + dy * dy) <= (this.aiActivationRange * this.aiActivationRange);
     }
 
-    isDynoNearForWalkActivation(dynoTarget) {
+    isDinoNearForWalkActivation(dinoTarget) {
         if (this.walkActivationRange <= 0) return false;
-        const dynoPosition = this.getDynoPosition(dynoTarget);
-        if (!dynoPosition) return false;
-        const dx = dynoPosition.x - this.container.position.x;
-        const dy = dynoPosition.y - this.container.position.y;
+        const dinoPosition = this.getDinoPosition(dinoTarget);
+        if (!dinoPosition) return false;
+        const dx = dinoPosition.x - this.container.position.x;
+        const dy = dinoPosition.y - this.container.position.y;
         if (!Number.isFinite(dx) || !Number.isFinite(dy)) return false;
         if (Math.abs(dy) > 4) return false;
         return Math.abs(dx) <= this.walkActivationRange;
     }
 
-    updateFleeState(delta, level, dynoTarget) {
-        const dynoPosition = this.getDynoPosition(dynoTarget);
+    updateFleeState(delta, level, dinoTarget) {
+        const dinoPosition = this.getDinoPosition(dinoTarget);
 
         const stopFleeing = () => {
             if (this.isFleeing) {
@@ -514,40 +514,40 @@ export class HumanObject extends VehicleObject {
             }
         };
 
-        if (!dynoPosition || this.fleeRange <= 0) {
+        if (!dinoPosition || this.fleeRange <= 0) {
             stopFleeing();
             return;
         }
 
-        const dx = dynoPosition.x - this.container.position.x;
-        const dy = dynoPosition.y - this.container.position.y;
+        const dx = dinoPosition.x - this.container.position.x;
+        const dy = dinoPosition.y - this.container.position.y;
 
-        // Condition 3: dyno must be on the ground (not airborne).
+        // Condition 3: dino must be on the ground (not airborne).
         const groundThreshold = (level?.tileHeight ?? 2) * 0.75;
         if (dy > groundThreshold) {
             stopFleeing();
             return;
         }
 
-        // Condition 1: dyno in range.
+        // Condition 1: dino in range.
         const inRange = (dx * dx + dy * dy) <= (this.fleeRange * this.fleeRange);
         if (!inRange) {
             stopFleeing();
             return;
         }
 
-        // Condition 2: dyno facing toward the cow (dynoFacing * dx < 0 means facing our way).
-        const dynoFacing = dynoTarget?.lastFacingDirection >= 0 ? 1 : -1;
-        const dynoFacingCow = dynoFacing * dx < 0;
+        // Condition 2: dino facing toward the cow (dinoFacing * dx < 0 means facing our way).
+        const dinoFacing = dinoTarget?.lastFacingDirection >= 0 ? 1 : -1;
+        const dinoFacingCow = dinoFacing * dx < 0;
 
-        // Condition 4: cow facing the dyno (walkDirection toward dyno).
-        const cowFacingDyno = this.walkDirection * dx > 0;
+        // Condition 4: cow facing the dino (walkDirection toward dino).
+        const cowFacingDino = this.walkDirection * dx > 0;
 
-        const shouldFleeFromFacingThreat = dynoFacingCow && cowFacingDyno;
-        const shouldFleeFromProximity = this.fleeOnDynoProximity;
+        const shouldFleeFromFacingThreat = dinoFacingCow && cowFacingDino;
+        const shouldFleeFromProximity = this.fleeOnDinoProximity;
 
         if (!shouldFleeFromFacingThreat && !shouldFleeFromProximity) {
-            // Dyno not threatening — stop fleeing but don't turn back if already fleeing away.
+            // Dino not threatening — stop fleeing but don't turn back if already fleeing away.
             stopFleeing();
             return;
         }
@@ -555,7 +555,7 @@ export class HumanObject extends VehicleObject {
         const wasFleeing = this.isFleeing;
         this.isFleeing = true;
 
-        if (this.moveAwayFromDyno) {
+        if (this.moveAwayFromDino) {
             this.walkState = 'runAway';
             const desiredDirection = dx >= 0 ? -1 : 1;
             if (!wasFleeing || this.fleeDirectionLock === 0 || this.fleeDirectionLock !== desiredDirection) {
@@ -577,14 +577,14 @@ export class HumanObject extends VehicleObject {
                 return;
             }
 
-            // Turn away from the dyno (preserve new direction so we never face it again
+            // Turn away from the dino (preserve new direction so we never face it again
             // while it stays in range and facing us).
             this.turnAround(level, { delayFleeCorrection: true, preserveDirection: false });
         }
     }
 
-    getDynoPosition(dynoTarget) {
-        const position = dynoTarget?.position || dynoTarget?.mesh?.position || null;
+    getDinoPosition(dinoTarget) {
+        const position = dinoTarget?.position || dinoTarget?.mesh?.position || null;
         if (!position || !Number.isFinite(position.x) || !Number.isFinite(position.y)) {
             return null;
         }
@@ -622,8 +622,8 @@ export class HumanObject extends VehicleObject {
         });
     }
 
-    pickUp(dyno, socket, options = {}) {
-        const didPickUp = super.pickUp(dyno, socket, options);
+    pickUp(dino, socket, options = {}) {
+        const didPickUp = super.pickUp(dino, socket, options);
         if (didPickUp) {
             this.snapTurnToFacing();
             this.playPickupStartSound();
@@ -631,8 +631,8 @@ export class HumanObject extends VehicleObject {
         return didPickUp;
     }
 
-    grab(dyno, socket) {
-        const didGrab = super.grab(dyno, socket);
+    grab(dino, socket) {
+        const didGrab = super.grab(dino, socket);
         if (didGrab) {
             this.snapTurnToFacing();
             this.playPickupStartSound();
@@ -640,8 +640,8 @@ export class HumanObject extends VehicleObject {
         return didGrab;
     }
 
-    startDrag(dyno, grabPointName) {
-        const didStartDrag = super.startDrag(dyno, grabPointName);
+    startDrag(dino, grabPointName) {
+        const didStartDrag = super.startDrag(dino, grabPointName);
         if (didStartDrag) {
             this.playPickupStartSound();
         }
@@ -813,21 +813,21 @@ export class HumanObject extends VehicleObject {
         if (!options.preserveDirection) {
             const newDirection = this.walkDirection * -1;
 
-            // Don't turn if doing so would face the cow toward a threatening grounded dyno.
-            if (this._lastDynoTarget) {
-                const dynoPos = this.getDynoPosition(this._lastDynoTarget);
-                if (dynoPos) {
-                    const dx = dynoPos.x - this.container.position.x;
-                    const dy = dynoPos.y - this.container.position.y;
+            // Don't turn if doing so would face the cow toward a threatening grounded dino.
+            if (this._lastDinoTarget) {
+                const dinoPos = this.getDinoPosition(this._lastDinoTarget);
+                if (dinoPos) {
+                    const dx = dinoPos.x - this.container.position.x;
+                    const dy = dinoPos.y - this.container.position.y;
                     const groundThreshold = (level?.tileHeight ?? 2) * 0.75;
-                    const dynoGrounded = dy <= groundThreshold;
-                    const dynoFacing = this._lastDynoTarget?.lastFacingDirection >= 0 ? 1 : -1;
-                    const dynoFacingCow = dynoFacing * dx < 0;
+                    const dinoGrounded = dy <= groundThreshold;
+                    const dinoFacing = this._lastDinoTarget?.lastFacingDirection >= 0 ? 1 : -1;
+                    const dinoFacingCow = dinoFacing * dx < 0;
                     const inRange = (dx * dx + dy * dy) <= (this.fleeRange * this.fleeRange);
-                    const wouldFaceDyno = newDirection * dx > 0;
+                    const wouldFaceDino = newDirection * dx > 0;
 
-                    if (dynoGrounded && dynoFacingCow && inRange && wouldFaceDyno) {
-                        // Turning would face the dyno — go idle instead of looping.
+                    if (dinoGrounded && dinoFacingCow && inRange && wouldFaceDino) {
+                        // Turning would face the dino — go idle instead of looping.
                         this.velocity.set(0, 0, 0);
                         this.angularVelocity = 0;
                         if (this.availableAnimations.idle) {

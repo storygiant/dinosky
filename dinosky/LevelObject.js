@@ -1532,9 +1532,9 @@ export class LevelObject {
         }
 
         // Use the authored pickup root as the carry anchor. Carry pose should be a fixed local
-        // pose under the dyno, then the dyno's carry socket provides the world-facing turn.
+        // pose under the dino, then the dino's carry socket provides the world-facing turn.
         // That keeps lifting consistent regardless of how the object was lying on the ground or
-        // which way the dyno is facing when it picks the object up.
+        // which way the dino is facing when it picks the object up.
         this.sceneObject.position.set(0, 0, 0);
         this.sceneObject.rotation.set(
             this.baseRotation.x + this.pickupOffset.rotation.x,
@@ -1732,7 +1732,7 @@ export class LevelObject {
             return;
         }
 
-        // While held by the dyno, keep the object at dyno Z rather than snapping
+        // While held by the dino, keep the object at dino Z rather than snapping
         // back to groundLayerZ — otherwise physics re-sync drops it behind other objects.
         if (this.draggedBy || this.carriedBy) {
             this.syncDraggedLayerZ();
@@ -1744,30 +1744,30 @@ export class LevelObject {
     }
 
     getDraggedLayerZ() {
-        const dyno = this.draggedBy ?? this.carriedBy;
-        if (!dyno) {
+        const dino = this.draggedBy ?? this.carriedBy;
+        if (!dino) {
             return null;
         }
 
-        const fallbackDynoZ = Number.isFinite(dyno.position?.z)
-            ? dyno.position.z
-            : (Number.isFinite(dyno.mesh?.position?.z) ? dyno.mesh.position.z : null);
-        const dynoBackMostZ = typeof dyno.getBackMostVisualZ === 'function'
-            ? dyno.getBackMostVisualZ()
-            : fallbackDynoZ;
-        if (!Number.isFinite(dynoBackMostZ)) {
+        const fallbackDinoZ = Number.isFinite(dino.position?.z)
+            ? dino.position.z
+            : (Number.isFinite(dino.mesh?.position?.z) ? dino.mesh.position.z : null);
+        const dinoBackMostZ = typeof dino.getBackMostVisualZ === 'function'
+            ? dino.getBackMostVisualZ()
+            : fallbackDinoZ;
+        if (!Number.isFinite(dinoBackMostZ)) {
             return null;
         }
 
-        const behindDynoOffset = Number.isFinite(CONFIG.DYNO_DRAG?.draggedBehindDynoZOffset)
-            ? CONFIG.DYNO_DRAG.draggedBehindDynoZOffset
+        const behindDinoOffset = Number.isFinite(CONFIG.DINO_DRAG?.draggedBehindDinoZOffset)
+            ? CONFIG.DINO_DRAG.draggedBehindDinoZOffset
             : 0.02;
-        const inFrontOfObjectsOffset = Number.isFinite(CONFIG.DYNO_DRAG?.draggedInFrontOfObjectsZOffset)
-            ? CONFIG.DYNO_DRAG.draggedInFrontOfObjectsZOffset
+        const inFrontOfObjectsOffset = Number.isFinite(CONFIG.DINO_DRAG?.draggedInFrontOfObjectsZOffset)
+            ? CONFIG.DINO_DRAG.draggedInFrontOfObjectsZOffset
             : 0.01;
-        const targetBehindDyno = dynoBackMostZ - behindDynoOffset;
+        const targetBehindDino = dinoBackMostZ - behindDinoOffset;
         const minInFrontOfObjects = this.groundLayerZ + inFrontOfObjectsOffset;
-        return Math.max(minInFrontOfObjects, targetBehindDyno);
+        return Math.max(minInFrontOfObjects, targetBehindDino);
     }
 
     syncDraggedLayerZ() {
@@ -2639,9 +2639,9 @@ export class LevelObject {
         return this.convertAttachmentLocalOffsetToBodyLocal(pickupRootLocal);
     }
 
-    canBeDraggedBy(dyno) {
+    canBeDraggedBy(dino) {
         return Boolean(
-            dyno &&
+            dino &&
             this.loaded &&
             this.draggable &&
             this.configuredCollisionRect &&
@@ -2676,8 +2676,8 @@ export class LevelObject {
         return this.getPickupRootWorldPosition(target);
     }
 
-    canBePickedUpBy(dyno) {
-        if (!dyno || !this.loaded || this.isDestroyed || !this.container.visible) {
+    canBePickedUpBy(dino) {
+        if (!dino || !this.loaded || this.isDestroyed || !this.container.visible) {
             return false;
         }
 
@@ -2689,15 +2689,15 @@ export class LevelObject {
             return false;
         }
 
-        if (typeof dyno.canPickupObject === 'function' && !dyno.canPickupObject(this)) {
+        if (typeof dino.canPickupObject === 'function' && !dino.canPickupObject(this)) {
             return false;
         }
 
         return true;
     }
 
-    pickUp(dyno, socket, options = {}) {
-        if (!this.canBePickedUpBy(dyno) || !socket) {
+    pickUp(dino, socket, options = {}) {
+        if (!this.canBePickedUpBy(dino) || !socket) {
             return false;
         }
 
@@ -2709,7 +2709,7 @@ export class LevelObject {
         this._sleepTimer = 0;
         this.pendingDestroy = false;
         this.dropVisualPoseLocked = false;
-        this.carriedBy = dyno;
+        this.carriedBy = dino;
         this.carriedSocket = socket;
         this.draggedBy = null;
         this.dragGrabPointName = null;
@@ -2724,11 +2724,11 @@ export class LevelObject {
             this.getCarryTargetWorldPosition(new THREE.Vector3(), socket),
             null,
             {
-                stiffness: Number.isFinite(CONFIG.DYNO_DRAG?.matterCarryConstraintStiffness)
-                    ? CONFIG.DYNO_DRAG.matterCarryConstraintStiffness
+                stiffness: Number.isFinite(CONFIG.DINO_DRAG?.matterCarryConstraintStiffness)
+                    ? CONFIG.DINO_DRAG.matterCarryConstraintStiffness
                     : 1,
-                damping: Number.isFinite(CONFIG.DYNO_DRAG?.matterCarryConstraintDamping)
-                    ? CONFIG.DYNO_DRAG.matterCarryConstraintDamping
+                damping: Number.isFinite(CONFIG.DINO_DRAG?.matterCarryConstraintDamping)
+                    ? CONFIG.DINO_DRAG.matterCarryConstraintDamping
                     : 0.5,
                 length: 0,
                 usePickupRoot: true
@@ -2750,10 +2750,10 @@ export class LevelObject {
         this.sceneObject?.getWorldQuaternion(worldQuaternion);
         this.sceneObject?.getWorldScale(worldScale);
 
-        // Auto-pickup has already moved the dyno so the foot socket reaches the object's
+        // Auto-pickup has already moved the dino so the foot socket reaches the object's
         // root. Keep the container locked directly to that socket, then restore the visible
         // object pose underneath it. This avoids socket.attach() producing a different local
-        // offset under the scaled dyno rig, which made carried objects drift during turns.
+        // offset under the scaled dino rig, which made carried objects drift during turns.
         socket.updateWorldMatrix(true, false);
         socket.add(this.container);
         this.container.position.set(0, 0, 0);
@@ -2791,22 +2791,22 @@ export class LevelObject {
         return true;
     }
 
-    grab(dyno, socket) {
-        if (!this.canBePickedUpBy(dyno) || !socket) {
+    grab(dino, socket) {
+        if (!this.canBePickedUpBy(dino) || !socket) {
             return false;
         }
 
         const pickupRootName = this.getSelectedPickupRootName();
-        // Too-heavy objects keep their exact world transform. The dyno enters a grabbed/struggle
+        // Too-heavy objects keep their exact world transform. The dino enters a grabbed/struggle
         // state, but the object itself stays in Matter as a normal sleeping body. We do not
-        // disable collision here; the dyno simply cannot move the object because it is too heavy.
+        // disable collision here; the dino simply cannot move the object because it is too heavy.
         this.velocity.set(0, 0, 0);
         this.angularVelocity = 0;
         this.gravityEnabled = false;
         this.fallStartY = null;
         this.pendingDestroy = false;
         this.dropVisualPoseLocked = false;
-        this.carriedBy = dyno;
+        this.carriedBy = dino;
         this.carriedSocket = socket;
         this.state = LEVEL_OBJECT_STATES.GRABBED;
         this.physicsWorld?.sleepLevelObject?.(this);
@@ -2814,16 +2814,16 @@ export class LevelObject {
         return true;
     }
 
-    startDrag(dyno, grabPointName) {
-        if (!this.canBeDraggedBy(dyno) || !grabPointName) {
+    startDrag(dino, grabPointName) {
+        if (!this.canBeDraggedBy(dino) || !grabPointName) {
             return false;
         }
 
         if (this.mouthDragEnabled) {
-            return this.startMouthDrag(dyno, grabPointName);
+            return this.startMouthDrag(dino, grabPointName);
         }
 
-        this.draggedBy = dyno;
+        this.draggedBy = dino;
         this.dragGrabPointName = grabPointName;
         this.velocity.set(0, 0, 0);
         this.angularVelocity = 0;
@@ -2845,14 +2845,14 @@ export class LevelObject {
             this.getGrabPointWorldPosition(grabPointName, new THREE.Vector3()),
             {
                 stretchWhenTargetInsideTerrain: true,
-                stiffness: Number.isFinite(CONFIG.DYNO_DRAG?.matterGroundDragConstraintStiffness)
-                    ? CONFIG.DYNO_DRAG.matterGroundDragConstraintStiffness
+                stiffness: Number.isFinite(CONFIG.DINO_DRAG?.matterGroundDragConstraintStiffness)
+                    ? CONFIG.DINO_DRAG.matterGroundDragConstraintStiffness
                     : undefined,
-                damping: Number.isFinite(CONFIG.DYNO_DRAG?.matterGroundDragConstraintDamping)
-                    ? CONFIG.DYNO_DRAG.matterGroundDragConstraintDamping
+                damping: Number.isFinite(CONFIG.DINO_DRAG?.matterGroundDragConstraintDamping)
+                    ? CONFIG.DINO_DRAG.matterGroundDragConstraintDamping
                     : undefined,
-                length: Number.isFinite(CONFIG.DYNO_DRAG?.matterGroundDragRopeLength)
-                    ? Math.max(CONFIG.DYNO_DRAG.matterGroundDragRopeLength, 0)
+                length: Number.isFinite(CONFIG.DINO_DRAG?.matterGroundDragRopeLength)
+                    ? Math.max(CONFIG.DINO_DRAG.matterGroundDragRopeLength, 0)
                     : 0
             }
         );
@@ -2860,13 +2860,13 @@ export class LevelObject {
         return true;
     }
 
-    startMouthDrag(dyno, grabPointName) {
-        const mouthSocket = dyno?.getMouthAttachmentObject?.() || dyno?.mouthObject || null;
+    startMouthDrag(dino, grabPointName) {
+        const mouthSocket = dino?.getMouthAttachmentObject?.() || dino?.mouthObject || null;
         if (!mouthSocket) {
             return false;
         }
 
-        this.draggedBy = dyno;
+        this.draggedBy = dino;
         this.dragGrabPointName = grabPointName;
         this.velocity.set(0, 0, 0);
         this.angularVelocity = 0;
@@ -2885,14 +2885,14 @@ export class LevelObject {
             this.getDragTargetWorldPosition(new THREE.Vector3(), mouthSocket),
             this.getGrabPointWorldPosition(grabPointName, new THREE.Vector3()),
             {
-                stiffness: Number.isFinite(CONFIG.DYNO_DRAG?.matterGroundDragConstraintStiffness)
-                    ? CONFIG.DYNO_DRAG.matterGroundDragConstraintStiffness
+                stiffness: Number.isFinite(CONFIG.DINO_DRAG?.matterGroundDragConstraintStiffness)
+                    ? CONFIG.DINO_DRAG.matterGroundDragConstraintStiffness
                     : undefined,
-                damping: Number.isFinite(CONFIG.DYNO_DRAG?.matterGroundDragConstraintDamping)
-                    ? CONFIG.DYNO_DRAG.matterGroundDragConstraintDamping
+                damping: Number.isFinite(CONFIG.DINO_DRAG?.matterGroundDragConstraintDamping)
+                    ? CONFIG.DINO_DRAG.matterGroundDragConstraintDamping
                     : undefined,
-                length: Number.isFinite(CONFIG.DYNO_DRAG?.matterGroundDragRopeLength)
-                    ? Math.max(CONFIG.DYNO_DRAG.matterGroundDragRopeLength, 0)
+                length: Number.isFinite(CONFIG.DINO_DRAG?.matterGroundDragRopeLength)
+                    ? Math.max(CONFIG.DINO_DRAG.matterGroundDragRopeLength, 0)
                     : 0
             }
         );
@@ -2976,7 +2976,7 @@ export class LevelObject {
             this._physDebugCount = 0;
             this._physUpdateCount = 0;
             this.stopInteractionAnimation();
-            // Inherit dyno velocity so the object carries forward momentum on release.
+            // Inherit dino velocity so the object carries forward momentum on release.
             if (initialVelocity && (initialVelocity.x !== 0 || initialVelocity.y !== 0)) {
                 this.velocity.copy(initialVelocity);
             }

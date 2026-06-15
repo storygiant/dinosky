@@ -11,7 +11,7 @@
  * 
  * USAGE:
  *   const timeline = new Timeline(sequenceConfig);
- *   timeline.registerActors({ dyno, tank_1, chopper_1 });
+ *   timeline.registerActors({ dino, tank_1, chopper_1 });
  *   await playTimeline(timeline);
  * 
  * Or as a helper:
@@ -584,7 +584,7 @@ class SfxTrack extends Track {
  * 
  * USAGE:
  *   const timeline = new Timeline(config);
- *   timeline.registerActors({ dyno, tank_1 });
+ *   timeline.registerActors({ dino, tank_1 });
  *   timeline.update(deltaTime);
  *   if (timeline.isFinished()) { ... }
  */
@@ -842,9 +842,9 @@ export function previewTimeline(sequenceConfig, context = {}, time = 0) {
 /**
  * Apply a sequence to its final state immediately, without animation.
  *
- * For the dyno actor track: only hideNodes/showNodes/nodeVisibility keyframes
- * are applied (in order, so the last one wins), and the dyno is forced visible.
- * Position, rotation, and animation tracks on the dyno are skipped — the game
+ * For the dino actor track: only hideNodes/showNodes/nodeVisibility keyframes
+ * are applied (in order, so the last one wins), and the dino is forced visible.
+ * Position, rotation, and animation tracks on the dino are skipped — the game
  * keeps control of those after a skip.
  *
  * For every other actor track: the full final-frame state is applied.
@@ -869,23 +869,23 @@ export function applySequenceInstantly(sequenceConfig, context = {}) {
         game:   timeline.game  || null,
     };
 
-    const dynoActor = trackContext.actors?.dyno ?? null;
+    const dinoActor = trackContext.actors?.dino ?? null;
 
     for (const track of timeline.tracks) {
         if (!track || track instanceof EventTrack || track instanceof SfxTrack || track instanceof CameraTrack) continue;
 
-        const isDynoActorTrack = track instanceof ActorTrack && track.actor === 'dyno';
+        const isDinoActorTrack = track instanceof ActorTrack && track.actor === 'dino';
 
-        if (isDynoActorTrack) {
-            // Dyno: apply only node-visibility keyframes in order
+        if (isDinoActorTrack) {
+            // Dino: apply only node-visibility keyframes in order
             for (const kf of track.keyframes) {
-                applyActorNodeVisibility(dynoActor, kf);
+                applyActorNodeVisibility(dinoActor, kf);
             }
-            // Ensure the dyno is always visible after a skip, flame always off.
-            if (dynoActor) {
-                setActorVisible(dynoActor, true);
-                setActorFlame(dynoActor, false, null);
-                dynoActor.onTimelineTransformUpdated?.();
+            // Ensure the dino is always visible after a skip, flame always off.
+            if (dinoActor) {
+                setActorVisible(dinoActor, true);
+                setActorFlame(dinoActor, false, null);
+                dinoActor.onTimelineTransformUpdated?.();
             }
         } else {
             track.update(timeline.duration, trackContext);
@@ -906,15 +906,15 @@ export function applySequenceInstantly(sequenceConfig, context = {}) {
  * Helper to collect actors by ID from game state.
  * 
  * USAGE:
- *   const actors = collectActors(game, ['dyno', 'tank_1', 'chopper_2']);
+ *   const actors = collectActors(game, ['dino', 'tank_1', 'chopper_2']);
  */
 export function collectActors(game, actorIds) {
     const actors = {};
     
     for (const id of actorIds) {
         const actorId = String(id);
-        if (id === 'dyno') {
-            actors.dyno = game.player;
+        if (id === 'dino') {
+            actors.dino = game.player;
         } else {
             // Look for actor in level objects
             const actor = game.levelObjectManager?.objects?.find(

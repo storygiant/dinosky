@@ -1587,7 +1587,7 @@ export class Joystick {
         return true;
     }
 
-    // One-shot read of the Dyno Fury trigger (KeyR). Returns true once per press.
+    // One-shot read of the Dino Fury trigger (KeyR). Returns true once per press.
     consumeFuryPressed() {
         if (!this.furyPressed) {
             return false;

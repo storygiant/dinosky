@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { createGLTFLoader } from './createGLTFLoader.js';
-import { DYNO_MODEL_SETTINGS } from './Player.js';
+import { DINO_MODEL_SETTINGS } from './Player.js';
 import { t } from './i18n.js';
 
 const PREVIEW_MODEL_TARGET_SIZE = 11;
@@ -8,14 +8,14 @@ const PREVIEW_CAMERA_BASE_VIEW_HEIGHT = 13;
 const PREVIEW_CAMERA_MIN_VIEW_WIDTH = 14;
 
 function injectGameOverDialogStyles() {
-    if (document.getElementById('dyno-game-over-dialog-styles')) {
+    if (document.getElementById('dino-game-over-dialog-styles')) {
         return;
     }
 
     const style = document.createElement('style');
-    style.id = 'dyno-game-over-dialog-styles';
+    style.id = 'dino-game-over-dialog-styles';
     style.textContent = `
-        .dyno-game-over-screen {
+        .dino-game-over-screen {
             position: fixed;
             inset: 0;
             z-index: 1100;
@@ -34,13 +34,13 @@ function injectGameOverDialogStyles() {
             transition: opacity 180ms ease, visibility 180ms ease;
         }
 
-        .dyno-game-over-screen.is-visible {
+        .dino-game-over-screen.is-visible {
             opacity: 1;
             visibility: visible;
             pointer-events: auto;
         }
 
-        .dyno-game-over-card {
+        .dino-game-over-card {
             width: min(100%, 478px);
             height: calc(100vh - 48px);
             height: calc(100dvh - 48px);
@@ -61,7 +61,7 @@ function injectGameOverDialogStyles() {
             font-family: "Orbitron";
         }
 
-        .dyno-game-over-kicker {
+        .dino-game-over-kicker {
             margin: 0 0 12px;
             font-size: 12px;
             font-weight: 700;
@@ -71,7 +71,7 @@ function injectGameOverDialogStyles() {
             color: rgba(215, 240, 255, 0.72);
         }
 
-        .dyno-game-over-preview {
+        .dino-game-over-preview {
             position: relative;
             flex: 1 1 auto;
             min-height: 160px;
@@ -85,7 +85,7 @@ function injectGameOverDialogStyles() {
                 linear-gradient(180deg, rgba(6, 30, 64, 0.64) 0%, rgba(4, 18, 42, 0.18) 100%);
         }
 
-        .dyno-game-over-preview::after {
+        .dino-game-over-preview::after {
             content: "";
             position: absolute;
             inset: auto 9% 10px;
@@ -96,14 +96,14 @@ function injectGameOverDialogStyles() {
             pointer-events: none;
         }
 
-        .dyno-game-over-preview canvas {
+        .dino-game-over-preview canvas {
             position: absolute;
             inset: 0;
             width: 100%;
             height: 100%;
         }
 
-        .dyno-game-over-title {
+        .dino-game-over-title {
             margin: 0 0 24px;
             font-size: clamp(34px, 7vw, 48px);
             font-weight: 700;
@@ -112,14 +112,14 @@ function injectGameOverDialogStyles() {
             text-transform: uppercase;
         }
 
-        .dyno-game-over-actions {
+        .dino-game-over-actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 36px;
             overflow: visible;
         }
 
-        .dyno-game-over-button {
+        .dino-game-over-button {
             position: relative;
             min-height: 46px;
             padding: 12px 18px;
@@ -140,7 +140,7 @@ function injectGameOverDialogStyles() {
             transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
         }
 
-        .dyno-game-over-button-ad {
+        .dino-game-over-button-ad {
             position: absolute;
             top: 0;
             right: 0;
@@ -151,8 +151,8 @@ function injectGameOverDialogStyles() {
             user-select: none;
         }
 
-        .dyno-game-over-button:hover,
-        .dyno-game-over-button:focus-visible {
+        .dino-game-over-button:hover,
+        .dino-game-over-button:focus-visible {
             transform: translateY(-1px);
             box-shadow:
                 0 16px 34px rgba(255, 160, 55, 0.42),
@@ -161,11 +161,11 @@ function injectGameOverDialogStyles() {
             outline: none;
         }
 
-        .dyno-game-over-button:active {
+        .dino-game-over-button:active {
             transform: translateY(1px);
         }
 
-        .dyno-game-over-button:disabled {
+        .dino-game-over-button:disabled {
             cursor: default;
             filter: saturate(0.75) brightness(0.9);
             opacity: 0.72;
@@ -173,28 +173,28 @@ function injectGameOverDialogStyles() {
         }
 
         @media (max-width: 420px) {
-            .dyno-game-over-card {
+            .dino-game-over-card {
                 padding: 20px;
             }
 
-            .dyno-game-over-actions {
+            .dino-game-over-actions {
                 gap: 14px;
             }
 
-            .dyno-game-over-button-ad {
+            .dino-game-over-button-ad {
                 width: 44px;
                 transform: translate(28%, -40%);
             }
         }
 
         @media (max-height: 560px) and (orientation: landscape) {
-            .dyno-game-over-screen {
+            .dino-game-over-screen {
                 align-items: flex-start;
                 overflow-y: auto;
                 padding: 10px 12px;
             }
 
-            .dyno-game-over-card {
+            .dino-game-over-card {
                 width: min(100%, 620px);
                 height: calc(100vh - 20px);
                 height: calc(100dvh - 20px);
@@ -202,13 +202,13 @@ function injectGameOverDialogStyles() {
                 border-radius: 16px;
             }
 
-            .dyno-game-over-preview {
+            .dino-game-over-preview {
                 min-height: 80px;
                 margin-bottom: 12px;
                 border-radius: 12px;
             }
 
-            .dyno-game-over-title {
+            .dino-game-over-title {
                 margin-bottom: 12px;
                 font-size: clamp(24px, 9vh, 36px);
             }
@@ -237,37 +237,37 @@ export class GameOverDialog {
         };
 
         this.root = document.createElement('div');
-        this.root.className = 'dyno-game-over-screen';
+        this.root.className = 'dino-game-over-screen';
 
         this.card = document.createElement('div');
-        this.card.className = 'dyno-game-over-card';
+        this.card.className = 'dino-game-over-card';
 
         this.kicker = document.createElement('p');
-        this.kicker.className = 'dyno-game-over-kicker';
-        this.kicker.textContent = 'DYNO THE DYNO';
+        this.kicker.className = 'dino-game-over-kicker';
+        this.kicker.textContent = 'DINO THE DINO';
 
         this.previewContainer = document.createElement('div');
-        this.previewContainer.className = 'dyno-game-over-preview';
+        this.previewContainer.className = 'dino-game-over-preview';
 
         this.title = document.createElement('h1');
-        this.title.className = 'dyno-game-over-title';
+        this.title.className = 'dino-game-over-title';
         this.title.textContent = t('game_over_title');
 
         this.actions = document.createElement('div');
-        this.actions.className = 'dyno-game-over-actions';
+        this.actions.className = 'dino-game-over-actions';
 
         this.retryButton = document.createElement('button');
-        this.retryButton.className = 'dyno-game-over-button';
+        this.retryButton.className = 'dino-game-over-button';
         this.retryButton.type = 'button';
         this.retryButton.textContent = t('game_over_retry');
 
         this.reviveButton = document.createElement('button');
-        this.reviveButton.className = 'dyno-game-over-button';
+        this.reviveButton.className = 'dino-game-over-button';
         this.reviveButton.type = 'button';
         this.reviveButton.textContent = t('game_over_revive');
 
         this.reviveAdIcon = document.createElement('img');
-        this.reviveAdIcon.className = 'dyno-game-over-button-ad';
+        this.reviveAdIcon.className = 'dino-game-over-button-ad';
         this.reviveAdIcon.src = 'gfx/UI/ad.webp';
         this.reviveAdIcon.alt = 'Ad';
         this.reviveAdIcon.draggable = false;
@@ -388,7 +388,7 @@ export class GameOverDialog {
             this.resizePreview();
             this.loadPreviewModel();
         } catch (error) {
-            console.warn('[GameOverDialog] Dyno preview unavailable.', error);
+            console.warn('[GameOverDialog] Dino preview unavailable.', error);
             this.previewContainer.style.display = 'none';
         }
     }
@@ -398,31 +398,31 @@ export class GameOverDialog {
             const loader = createGLTFLoader();
             const textureLoader = new THREE.TextureLoader();
             const [gltf, texture] = await Promise.all([
-                loader.loadAsync(DYNO_MODEL_SETTINGS.path),
-                textureLoader.loadAsync(DYNO_MODEL_SETTINGS.texturePath).catch(() => null)
+                loader.loadAsync(DINO_MODEL_SETTINGS.path),
+                textureLoader.loadAsync(DINO_MODEL_SETTINGS.texturePath).catch(() => null)
             ]);
 
-            const dynoModel = gltf.scene;
-            this.preparePreviewModel(dynoModel, texture);
-            this.preview.root.add(dynoModel);
-            this.fitPreviewToStage(dynoModel);
-            this.applyDeadPose(dynoModel, gltf.animations);
+            const dinoModel = gltf.scene;
+            this.preparePreviewModel(dinoModel, texture);
+            this.preview.root.add(dinoModel);
+            this.fitPreviewToStage(dinoModel);
+            this.applyDeadPose(dinoModel, gltf.animations);
             if (this.visible) {
                 this.startPreview();
             }
         } catch (error) {
-            console.warn('[GameOverDialog] Failed to load dyno preview.', error);
+            console.warn('[GameOverDialog] Failed to load dino preview.', error);
             this.previewContainer.style.display = 'none';
         }
     }
 
-    preparePreviewModel(dynoModel, texture) {
+    preparePreviewModel(dinoModel, texture) {
         if (texture) {
             texture.colorSpace = THREE.SRGBColorSpace;
             texture.flipY = false;
         }
 
-        dynoModel.traverse((child) => {
+        dinoModel.traverse((child) => {
             if (!child.isMesh) {
                 return;
             }
@@ -430,7 +430,7 @@ export class GameOverDialog {
             child.frustumCulled = false;
             const materials = Array.isArray(child.material) ? child.material : [child.material];
             const previewMaterials = materials.map((material) => new THREE.MeshBasicMaterial({
-                    color: new THREE.Color(DYNO_MODEL_SETTINGS.monotoneColor || '#ffffff'),
+                    color: new THREE.Color(DINO_MODEL_SETTINGS.monotoneColor || '#ffffff'),
                 map: texture || material?.map || null,
                 transparent: material?.transparent === true,
                 opacity: material?.opacity ?? 1,
@@ -444,34 +444,34 @@ export class GameOverDialog {
             child.material = Array.isArray(child.material) ? previewMaterials : previewMaterials[0];
         });
 
-        dynoModel.rotation.set(
-            DYNO_MODEL_SETTINGS.extraRotation.x,
-            DYNO_MODEL_SETTINGS.facingYaw.right + DYNO_MODEL_SETTINGS.extraRotation.y,
-            DYNO_MODEL_SETTINGS.extraRotation.z
+        dinoModel.rotation.set(
+            DINO_MODEL_SETTINGS.extraRotation.x,
+            DINO_MODEL_SETTINGS.facingYaw.right + DINO_MODEL_SETTINGS.extraRotation.y,
+            DINO_MODEL_SETTINGS.extraRotation.z
         );
-        dynoModel.scale.setScalar(1);
+        dinoModel.scale.setScalar(1);
     }
 
-    fitPreviewToStage(dynoModel) {
-        const bounds = new THREE.Box3().setFromObject(dynoModel);
+    fitPreviewToStage(dinoModel) {
+        const bounds = new THREE.Box3().setFromObject(dinoModel);
         const size = bounds.getSize(new THREE.Vector3());
         const center = bounds.getCenter(new THREE.Vector3());
         const scale = PREVIEW_MODEL_TARGET_SIZE / Math.max(size.x, size.y, 0.001);
 
-        dynoModel.scale.setScalar(scale);
-        dynoModel.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
-        dynoModel.position.y -= PREVIEW_MODEL_TARGET_SIZE * 0.12;
+        dinoModel.scale.setScalar(scale);
+        dinoModel.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+        dinoModel.position.y -= PREVIEW_MODEL_TARGET_SIZE * 0.12;
         this.preview.root.rotation.z = 0;
     }
 
-    applyDeadPose(dynoModel, clips = []) {
+    applyDeadPose(dinoModel, clips = []) {
         const deadClip = clips.find((clip) => String(clip?.name || '').toLowerCase() === 'dead') ||
             clips.find((clip) => String(clip?.name || '').toLowerCase().includes('dead'));
         if (!deadClip) {
             return;
         }
 
-        this.preview.mixer = new THREE.AnimationMixer(dynoModel);
+        this.preview.mixer = new THREE.AnimationMixer(dinoModel);
         const action = this.preview.mixer.clipAction(deadClip);
         action.enabled = true;
         action.setLoop(THREE.LoopOnce, 1);

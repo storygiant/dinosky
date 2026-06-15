@@ -169,7 +169,7 @@ export class FlyingAIController {
 
     // ── public API ────────────────────────────────────────────────────────────
 
-    update(delta, level, dynoTarget) {
+    update(delta, level, dinoTarget) {
         const obj = this.owner;
         if (!obj?.container) return;
 
@@ -214,12 +214,12 @@ export class FlyingAIController {
         }
 
         if (this.movementType === 'plane') {
-            this._updatePlane(delta, level, dynoTarget);
+            this._updatePlane(delta, level, dinoTarget);
         } else {
             // Drone path is reused for swim — the controller treats swim as a drone
             // with a polygon-constrained allowed region. Owner-specific visuals
             // (e.g. underwater bob) are not handled here.
-            this._updateDrone(delta, level, dynoTarget);
+            this._updateDrone(delta, level, dinoTarget);
             this._applyDroneFacingRotation(delta);
         }
     }
@@ -243,14 +243,14 @@ export class FlyingAIController {
 
     // ── plane movement ────────────────────────────────────────────────────────
 
-    _updatePlane(delta, level, dynoTarget) {
+    _updatePlane(delta, level, dinoTarget) {
         const obj = this.owner;
         const pos = obj.container.position;
 
         this._lastDelta = delta;
 
         if (this.behaviorMode === 'flee') {
-            this._updatePlaneFleeTarget(dynoTarget, level);
+            this._updatePlaneFleeTarget(dinoTarget, level);
         }
 
         if (!this._hasPatrolTarget && !this._isFleeing) {
@@ -354,8 +354,8 @@ export class FlyingAIController {
     // forced detours mid-flight), so it can still clip terrain if it turns badly —
     // that's intentional: flee crashes are allowed.
 
-    _updatePlaneFleeTarget(dynoTarget, level) {
-        const targetPos = this._getDynoXY(dynoTarget);
+    _updatePlaneFleeTarget(dinoTarget, level) {
+        const targetPos = this._getDinoXY(dinoTarget);
         if (!targetPos) return;
 
         const pos = this.owner.container.position;
@@ -402,7 +402,7 @@ export class FlyingAIController {
         let fleeX = null, fleeY = null;
 
         for (let attempt = 0; attempt < FLEE_PATH_RETRIES && fleeX === null; attempt++) {
-            // Random jink angle biased away from dyno.
+            // Random jink angle biased away from dino.
             const a = awayAngle + randomInRange(-FLEE_JINK_HALF, FLEE_JINK_HALF);
             const tx = pos.x + Math.cos(a) * this.fleeDistance;
             const ty = pos.y + Math.sin(a) * this.fleeDistance;
@@ -556,9 +556,9 @@ export class FlyingAIController {
 
     // ── drone movement (legacy) ───────────────────────────────────────────────
 
-    _updateDrone(delta, level, dynoTarget) {
+    _updateDrone(delta, level, dinoTarget) {
         if (this.behaviorMode === 'flee') {
-            this._updateDroneFlee(delta, level, dynoTarget);
+            this._updateDroneFlee(delta, level, dinoTarget);
         } else {
             this._updateDronePatrol(delta, level);
         }
@@ -569,9 +569,9 @@ export class FlyingAIController {
         this._droneMoveTowardTarget(delta, level, this.patrolTarget, this.moveSpeed);
     }
 
-    _updateDroneFlee(delta, level, dynoTarget) {
+    _updateDroneFlee(delta, level, dinoTarget) {
         const pos = this.owner.container.position;
-        const targetPos = this._getDynoXY(dynoTarget);
+        const targetPos = this._getDinoXY(dinoTarget);
         if (targetPos && Math.hypot(targetPos.x - pos.x, targetPos.y - pos.y) < this.fleeRange) {
             this._fleeing = true;
             this._fleeTimer = this.fleeResumeDelay;
@@ -779,13 +779,13 @@ export class FlyingAIController {
         }
     }
 
-    _getDynoXY(dynoTarget) {
-        if (!dynoTarget) return null;
-        const hc = dynoTarget.getWorldCollisionCircle?.();
+    _getDinoXY(dinoTarget) {
+        if (!dinoTarget) return null;
+        const hc = dinoTarget.getWorldCollisionCircle?.();
         if (hc && Number.isFinite(hc.centerX)) return { x: hc.centerX, y: hc.centerY };
-        if (dynoTarget.getWorldPosition) {
+        if (dinoTarget.getWorldPosition) {
             const tmp = new THREE.Vector3();
-            dynoTarget.getWorldPosition(tmp);
+            dinoTarget.getWorldPosition(tmp);
             return { x: tmp.x, y: tmp.y };
         }
         return null;

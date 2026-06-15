@@ -561,12 +561,12 @@ export class LevelObjectManager {
         this._activeFireballIds = new Set();
         this._scratchFireballPoint = { x: 0, y: 0 };
         this.objectSpatialGrid = new SpatialGrid(LevelObjectManager.DEFAULT_OBJECT_GRID_CELL_SIZE);
-        this.dynoTarget = null;
+        this.dinoTarget = null;
         this.projectileRenderBand = null;
         this.respawnQueue = [];
         this.levelSpawnTemplates = [];
         this.cameraViewRect = null;
-        this.lastRingPassDynoPoint = null;
+        this.lastRingPassDinoPoint = null;
         this.chopperLoopActive = false;
         this.chopperLoopVolume = 0;
         this.planeLoopActive = false;
@@ -1371,21 +1371,21 @@ export class LevelObjectManager {
     }
 
     updateRingPassProgress() {
-        const dynoCircle = this.dynoTarget?.getWorldCollisionCircle?.();
+        const dinoCircle = this.dinoTarget?.getWorldCollisionCircle?.();
         if (
-            !dynoCircle ||
-            !Number.isFinite(dynoCircle.centerX) ||
-            !Number.isFinite(dynoCircle.centerY)
+            !dinoCircle ||
+            !Number.isFinite(dinoCircle.centerX) ||
+            !Number.isFinite(dinoCircle.centerY)
         ) {
-            this.lastRingPassDynoPoint = null;
+            this.lastRingPassDinoPoint = null;
             return;
         }
 
         const currentPoint = {
-            x: dynoCircle.centerX,
-            y: dynoCircle.centerY
+            x: dinoCircle.centerX,
+            y: dinoCircle.centerY
         };
-        const previousPoint = this.lastRingPassDynoPoint || currentPoint;
+        const previousPoint = this.lastRingPassDinoPoint || currentPoint;
 
         const now = performance.now();
         for (const object of this.objects) {
@@ -1433,7 +1433,7 @@ export class LevelObjectManager {
             this.onRingPassed?.(object);
         }
 
-        this.lastRingPassDynoPoint = currentPoint;
+        this.lastRingPassDinoPoint = currentPoint;
     }
 
     applyAreaDamage(explosionCenter, maxExplosionDistance, maxExplosionDamage, damageType = 'explosion', sourceObject = null) {
@@ -1485,7 +1485,7 @@ export class LevelObjectManager {
         this.applyAreaDamage(explosionCenter, maxExplosionDistance, maxExplosionDamage, 'explosion', sourceObject);
     }
 
-    triggerDynoFaintCrashExplosion(position, faintConfig = {}) {
+    triggerDinoFaintCrashExplosion(position, faintConfig = {}) {
         if (!position || !Number.isFinite(position.x) || !Number.isFinite(position.y)) {
             return;
         }
@@ -1497,7 +1497,7 @@ export class LevelObjectManager {
         this.applyAreaDamage({ x: position.x, y: position.y }, radius, damage, 'faintCrashExplosion');
     }
 
-    applyDynoFireDamage(player, delta) {
+    applyDinoFireDamage(player, delta) {
         void player;
         void delta;
     }
@@ -1507,8 +1507,8 @@ export class LevelObjectManager {
             return;
         }
 
-        const dynoCircle = player.getWorldCollisionCircle?.();
-        if (!dynoCircle) {
+        const dinoCircle = player.getWorldCollisionCircle?.();
+        if (!dinoCircle) {
             return;
         }
 
@@ -1532,17 +1532,17 @@ export class LevelObjectManager {
                     Number.isFinite(bullet.radius) ? bullet.radius : 0
                 );
 
-                const distanceToDyno = pointToCircleDistance(
+                const distanceToDino = pointToCircleDistance(
                     { x: bullet.x, y: bullet.y },
-                    dynoCircle
+                    dinoCircle
                 );
-                if (distanceToDyno > bulletRadius) {
+                if (distanceToDino > bulletRadius) {
                     continue;
                 }
 
                 const damage = Math.max(
                     0,
-                    Number.isFinite(bullet.damageToDyno) ? bullet.damageToDyno : 0
+                    Number.isFinite(bullet.damageToDino) ? bullet.damageToDino : 0
                 );
                 if (damage <= 0) {
                     object.consumeBulletById?.(bullet.id);
@@ -1569,11 +1569,11 @@ export class LevelObjectManager {
         }
     }
 
-    applyDynoFireballDamage(player) {
+    applyDinoFireballDamage(player) {
         void player;
     }
 
-    applyDynoContinuousFlameDamage(player, delta) {
+    applyDinoContinuousFlameDamage(player, delta) {
         void player;
         void delta;
     }
@@ -1588,7 +1588,7 @@ export class LevelObjectManager {
         this.audioManager?.play?.(this.getObjectHitSoundName(object), options);
     }
 
-    // Dyno Fury — single-shot radial inferno blast. Damages every enemy within `radius`
+    // Dino Fury — single-shot radial inferno blast. Damages every enemy within `radius`
     // (full strength at the origin, falling off to `falloffMinFactor` at the rim), flings
     // physics props outward, and shatters breakable terrain. Returns the number of objects hit.
     // Orchestrated by main.js; the expanding visual lives in InfernoShockwave.
@@ -1606,7 +1606,7 @@ export class LevelObjectManager {
         for (let i = 0, n = objs.length; i < n; i++) {
             const obj = objs[i];
             if (!obj || obj.isDestroyed || obj.markedForRemoval) continue;
-            if (obj === this.dynoTarget) continue;
+            if (obj === this.dinoTarget) continue;
             // Skip purely logical / non-combat world objects.
             if (obj.type === 'missioncallout' || obj.type === 'ring') continue;
             const pos = obj.container?.position;
@@ -1684,7 +1684,7 @@ export class LevelObjectManager {
         }
         this.activeEffects = [];
         this.fireballHitRegistry.clear();
-        this.dynoTarget = null;
+        this.dinoTarget = null;
         this.audioManager?.stopLoop?.('chopper');
         this.chopperLoopActive = false;
         this.audioManager?.stopLoop?.('plane');
@@ -1692,8 +1692,8 @@ export class LevelObjectManager {
         this.physicsWorld.dispose();
     }
 
-    setDynoTarget(target) {
-        this.dynoTarget = target || null;
+    setDinoTarget(target) {
+        this.dinoTarget = target || null;
     }
 
     // Called after MissionManager is constructed so mission world objects can call back.
@@ -1725,8 +1725,8 @@ export class LevelObjectManager {
         const objectsToRemove = this._scratchObjectsToRemove || (this._scratchObjectsToRemove = []);
         objectsToRemove.length = 0;
 
-        const dynoPos = this.dynoTarget?.position;
-        if (dynoPos) this.physicsWorld.setFocalPoint(dynoPos.x, dynoPos.y);
+        const dinoPos = this.dinoTarget?.position;
+        if (dinoPos) this.physicsWorld.setFocalPoint(dinoPos.x, dinoPos.y);
 
         if (!CONFIG.disableLevelObjectUpdate) {
             this._offScreenCheckFrame = ((this._offScreenCheckFrame || 0) + 1) % 6;
@@ -1739,7 +1739,7 @@ export class LevelObjectManager {
                     object.isOffScreen = this.isObjectOffScreen(object, 20);
                 }
                 if (!object.isOffScreen || object.alwaysUpdate) {
-                    object.update(delta, this.level, this.dynoTarget, objs);
+                    object.update(delta, this.level, this.dinoTarget, objs);
                     this.physicsWorld.syncPassiveBodyFromLevelObject(object);
                     const detached = object.dequeueDetachedEffects?.();
                     if (detached && detached.length) {
@@ -1753,7 +1753,7 @@ export class LevelObjectManager {
         }
 
         this.updateRingPassProgress();
-        this.applyTankBulletDamage(this.dynoTarget);
+        this.applyTankBulletDamage(this.dinoTarget);
 
         for (let i = 0, n = objectsToRemove.length; i < n; i++) {
             this.remove(objectsToRemove[i]);
@@ -1766,7 +1766,7 @@ export class LevelObjectManager {
         // so we must allocate a fresh one each frame.
         if (this.level?.setDynamicCollisionEdges) {
             const dynamicEdges = [];
-            const dPos = this.dynoTarget?.position;
+            const dPos = this.dinoTarget?.position;
             const objs = this.objects;
             for (let i = 0, n = objs.length; i < n; i++) {
                 const object = objs[i];
@@ -1791,22 +1791,22 @@ export class LevelObjectManager {
         }
 
         // Carry the player along with any moving platform they are standing on.
-        const dyno = this.dynoTarget;
-        const groundEdge = dyno?.groundContact?.edge;
-        if (groundEdge?._object && dyno?.onGround && !dyno?.carriedBy) {
+        const dino = this.dinoTarget;
+        const groundEdge = dino?.groundContact?.edge;
+        if (groundEdge?._object && dino?.onGround && !dino?.carriedBy) {
             const platform = groundEdge._object;
             if (Number.isFinite(platform.frameDeltaX) || Number.isFinite(platform.frameDeltaY)) {
-                dyno.position.x += platform.frameDeltaX ?? 0;
-                dyno.position.y += platform.frameDeltaY ?? 0;
+                dino.position.x += platform.frameDeltaX ?? 0;
+                dino.position.y += platform.frameDeltaY ?? 0;
 
-                // If the platform carried the dyno outside level bounds, slide them off.
+                // If the platform carried the dino outside level bounds, slide them off.
                 const lvl = this.level;
                 if (lvl) {
                     const levelLeft  = lvl.worldOriginX ?? 0;
                     const levelRight = levelLeft + (lvl.width ?? 0) * (lvl.tileWidth ?? 1);
-                    if (dyno.position.x < levelLeft || dyno.position.x > levelRight) {
-                        dyno.position.x = Math.max(levelLeft, Math.min(levelRight, dyno.position.x));
-                        dyno.setAirborneState?.();
+                    if (dino.position.x < levelLeft || dino.position.x > levelRight) {
+                        dino.position.x = Math.max(levelLeft, Math.min(levelRight, dino.position.x));
+                        dino.setAirborneState?.();
                     }
                 }
             }
@@ -1821,11 +1821,11 @@ export class LevelObjectManager {
             }
         }
 
-        // Feed dyno position/velocity before the physics update so pushLevelObjectsFromDyno
+        // Feed dino position/velocity before the physics update so pushLevelObjectsFromDino
         // runs every substep rather than once per frame — reliable on slow/mobile devices.
-        this.physicsWorld.setDynoState(
-            this.dynoTarget?.position ?? null,
-            this.dynoTarget?.velocity ?? null
+        this.physicsWorld.setDinoState(
+            this.dinoTarget?.position ?? null,
+            this.dinoTarget?.velocity ?? null
         );
         this.physicsWorld.update(delta);
 
@@ -1835,7 +1835,7 @@ export class LevelObjectManager {
     }
 
     updateChopperAudioLoop(delta = 0) {
-        const targetPosition = this.dynoTarget?.position || null;
+        const targetPosition = this.dinoTarget?.position || null;
         const minDistance = 8;
         const maxDistance = 48;
         const maxVolume = 0.45;
@@ -1887,7 +1887,7 @@ export class LevelObjectManager {
     }
 
     updatePlaneAudioLoop(delta = 0) {
-        const targetPosition = this.dynoTarget?.position || null;
+        const targetPosition = this.dinoTarget?.position || null;
         const minDistance = 8;
         const maxDistance = 48;
         const maxVolume = 0.45;
@@ -1938,12 +1938,12 @@ export class LevelObjectManager {
         this.audioManager?.startLoop?.('plane', { volume: this.planeLoopVolume });
     }
 
-    findNearestPickupableObject(position, radius, dyno) {
+    findNearestPickupableObject(position, radius, dino) {
         let nearestObject = null;
         let nearestDistance = Number.POSITIVE_INFINITY;
 
         for (const object of this.queryNearbyObjects(position, radius)) {
-            if (!object.canBePickedUpBy(dyno)) {
+            if (!object.canBePickedUpBy(dino)) {
                 continue;
             }
 
@@ -1963,9 +1963,9 @@ export class LevelObjectManager {
         return nearestObject;
     }
 
-    getInteractionAnchorWorldPosition(object, dyno, useGrabPoints, scratch) {
-        if (useGrabPoints && typeof object.getGrabPointWorldPosition === 'function' && typeof dyno?.selectDragGrabPoint === 'function') {
-            const grabPointName = dyno.selectDragGrabPoint(object);
+    getInteractionAnchorWorldPosition(object, dino, useGrabPoints, scratch) {
+        if (useGrabPoints && typeof object.getGrabPointWorldPosition === 'function' && typeof dino?.selectDragGrabPoint === 'function') {
+            const grabPointName = dino.selectDragGrabPoint(object);
             return object.getGrabPointWorldPosition(grabPointName, scratch);
         }
         if (!useGrabPoints && typeof object.getPickupRootWorldPosition === 'function') {
@@ -1974,7 +1974,7 @@ export class LevelObjectManager {
         return object.getWorldPosition(scratch);
     }
 
-    findNearestInteractableObject(position, radius, dyno, useGrabPoints = false) {
+    findNearestInteractableObject(position, radius, dino, useGrabPoints = false) {
         let nearestObject = null;
         let nearestDistance = Number.POSITIVE_INFINITY;
 
@@ -1991,9 +1991,9 @@ export class LevelObjectManager {
             const objectBoundingRadius = rect ? Math.hypot(rect.width, rect.height) * 0.5 : 0;
             if (centerDist - objectBoundingRadius > radius) continue;
 
-            if (!dyno?.canUsePickupDropButton?.(object)) continue;
+            if (!dino?.canUsePickupDropButton?.(object)) continue;
 
-            const anchorPos = this.getInteractionAnchorWorldPosition(object, dyno, useGrabPoints, this._scratchVec3);
+            const anchorPos = this.getInteractionAnchorWorldPosition(object, dino, useGrabPoints, this._scratchVec3);
             const adx = anchorPos.x - position.x;
             const ady = anchorPos.y - position.y;
             const effectiveDistance = Math.sqrt(adx * adx + ady * ady);

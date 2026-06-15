@@ -198,7 +198,7 @@
  * mission_005_with_intro
  *   ├─ Type: LIFT_OBJECT_FOR_DURATION
  *   ├─ Has: startSequence only
- *   ├─ Features: Camera pan, dyno animation, event
+ *   ├─ Features: Camera pan, dino animation, event
  *   └─ Duration: 3 seconds intro + gameplay
  * 
  * mission_006_with_outro
@@ -263,7 +263,7 @@
  *   □ Confirm sequence.duration > 0
  *   □ Check sequence.tracks array is not empty
  *   □ Verify track types are spelled correctly
- *   □ Check actor IDs (use 'dyno' for player)
+ *   □ Check actor IDs (use 'dino' for player)
  *   □ Verify camera object exists
  *   □ Run example missions first (they work guaranteed)
  * 

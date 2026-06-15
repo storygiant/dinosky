@@ -127,7 +127,7 @@ export class LevelObjectFactory {
             return new HumanObject(commonOptions);
         }
 
-        // Boss dyno removed for Dyno Sky — fall back to generic LevelObject
+        // Boss dino removed for Dino Sky — fall back to generic LevelObject
 
         if (normalizedType === 'car' || mergedConfig.behavior === 'vehicle') {
             return new VehicleObject(commonOptions);

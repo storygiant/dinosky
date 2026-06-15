@@ -52,10 +52,10 @@ export const MISSIONS = [
         // After completing this mission, auto-offer the next one.
         nextMission: 'mission_001',
         coinReward: 10,
-        requireGrounded: true, // Optional: require the dyno to be landed on the ground to start this mission
+        requireGrounded: true, // Optional: require the dino to be landed on the ground to start this mission
         // Replay rules: can replay after 5 minutes, up to 3 times total.
         replay: { cooldownSeconds: 300, maxReplays: 3 },
-        // Dyno must land and stop in this zone to start the mission.
+        // Dino must land and stop in this zone to start the mission.
         //disabledButtons: ['fire', 'speed'],
         completeDelaySeconds: .2,
         // Optional: Play cinematic sequence before gameplay starts
@@ -96,7 +96,7 @@ export const MISSIONS = [
                 },
                 {
                     type: 'ActorTrack',
-                    actor: 'dyno',
+                    actor: 'dino',
                     keyframes: [
                         { time: 0,tx: 2800, ty: 4305, ry: Math.PI*.5, visible: true, hideNodes: ['girl']  },
 //                        { time: 1, flame: true, fireAngle: -20 },
@@ -126,7 +126,7 @@ export const MISSIONS = [
                 },				
                 {
                     type: 'AnimationTrack',
-                    actor: 'dyno',
+                    actor: 'dino',
                     keyframes: [
                         { time: 0, animation: 'idle' },
                         { time: 1.2, animation: 'hugged', loop: false },
@@ -136,7 +136,7 @@ export const MISSIONS = [
                 {
                     type: 'EventTrack',
                     keyframes: [
-                        { time: 4, callback: (ctx) => console.log('[Timeline] Dyno is ready!') }
+                        { time: 4, callback: (ctx) => console.log('[Timeline] Dino is ready!') }
                     ]
                 },
                 {
@@ -157,7 +157,7 @@ export const MISSIONS = [
             objectType: 'statue',
             requiredCount: 1,
             zoneId: 'pedestal',
-                    actorIds: ['girl1','boss1'] // Optional: additional actors to control in the timeline (beyond the default "dyno" player reference)
+                    actorIds: ['girl1','boss1'] // Optional: additional actors to control in the timeline (beyond the default "dino" player reference)
         }
     },
 
@@ -175,13 +175,13 @@ export const MISSIONS = [
             text: 'Fly to the treetop!'
         },
         coinReward: 5,
-        requireGrounded: true, // Optional: require the dyno to be landed on the ground to start this mission
+        requireGrounded: true, // Optional: require the dino to be landed on the ground to start this mission
         // Requires mission_000 to be completed first.
         missionDependencies: ['mission_000'],
         nextMission: 'mission_destroy_boss',
         // Replay cooldown of 10 minutes, no total-replay limit.
         replay: { cooldownSeconds: 600 },
-        // Dyno must land and stop in this zone to start the mission.     
+        // Dino must land and stop in this zone to start the mission.     
         startSequence: {
             duration: 13,
             tracks: [
@@ -203,7 +203,7 @@ export const MISSIONS = [
                 },
                 {
                     type: 'ActorTrack',
-                    actor: 'bossdyno1',
+                    actor: 'bossdino1',
                     keyframes: [
                         { time: 0, tx: 6820, ty: 1765, ry:2, visible: true},//, flame: true },
 						{ time: 9, tx: 6820, ty: 1765, ry:2, visible: true },
@@ -213,7 +213,7 @@ export const MISSIONS = [
                 },
                 {
                     type: 'AnimationTrack',
-                    actor: 'bossdyno1',
+                    actor: 'bossdino1',
                     keyframes: [
                         { time: 0, animation: 'idle-loop' },
                         { time: 3.2, animation: 'gander', loop: false },
@@ -221,7 +221,7 @@ export const MISSIONS = [
                 },
                 {
                     type: 'ActorTrack',
-                    actor: 'dyno',
+                    actor: 'dino',
                     keyframes: [
                         { time: 0, tx: 2850, ty: 4150, ry:Math.PI*.4, visible: true },
 						{ time: 2, tx: 2800, ty: 4305, ry: Math.PI*.5, visible: true, ease: 'easeInOut' },
@@ -256,7 +256,7 @@ export const MISSIONS = [
                 },				
                 {
                     type: 'AnimationTrack',
-                    actor: 'dyno',
+                    actor: 'dino',
                     keyframes: [
                         { time: 0, animation: 'hover_turn_left-loop', loop:true },
                         { time: 1.6, animation: 'hugged'},
@@ -266,7 +266,7 @@ export const MISSIONS = [
                 {
                     type: 'EventTrack',
                     keyframes: [
-                        { time: 4, callback: (ctx) => console.log('[Timeline] Dyno is ready!') }
+                        { time: 4, callback: (ctx) => console.log('[Timeline] Dino is ready!') }
                     ]
                 },
                 {
@@ -310,7 +310,7 @@ export const MISSIONS = [
                 },
                 {
                     type: 'ActorTrack',
-                    actor: 'bossdyno1',
+                    actor: 'bossdino1',
                     keyframes: [
                         { time: 0, tx: 6770, ty: 450, ry:2, visible: true },
                         { time: 1.5, tx: 6770, ty: 450, ry:1.5, visible: true },
@@ -332,7 +332,7 @@ export const MISSIONS = [
                 },
                 {
                     type: 'AnimationTrack',
-                    actor: 'bossdyno1',
+                    actor: 'bossdino1',
                     keyframes: [
                         { time: 0, animation: 'z_flyinghard', loop: true },
                         { time: 8.11, animation: 'flying_glide-loop', loop: true },
@@ -343,7 +343,7 @@ export const MISSIONS = [
                 },
                 {
                     type: 'ActorTrack',
-                    actor: 'dyno',
+                    actor: 'dino',
                     keyframes: [
                         { time: 0, tx: 3927, ty: 70, rx: Math.PI*2, ry: Math.PI*1, visible: true },
                         { time: 1, tx: 3927, ty: 70, rx: Math.PI*2, ry: Math.PI*.5, visible: true },
@@ -388,7 +388,7 @@ export const MISSIONS = [
                 },				
                 {
                     type: 'AnimationTrack',
-                    actor: 'dyno',
+                    actor: 'dino',
                     keyframes: [
                         { time: 0, animation: 'hover_turn_right-loop', loop: false },
                         { time: 1.2, animation: 'z_hoverhit', loop: false },
@@ -400,7 +400,7 @@ export const MISSIONS = [
                 {
                     type: 'EventTrack',
                     keyframes: [
-                        { time: 4, callback: (ctx) => console.log('[Timeline] Dyno is ready!') }
+                        { time: 4, callback: (ctx) => console.log('[Timeline] Dino is ready!') }
                     ]
                 },
                 {
@@ -410,7 +410,7 @@ export const MISSIONS = [
                         { time: 1.2, sfx: 'growl', volume: 0.8  },
                         { time: 5.1, sfx: 'roar', volume: 0.8  },
                         { time: 5.8, sfx: 'gasp', volume: 0.8  },
-                        { time: 7, sfx: 'dynoLiftoff', volume: 0.8  },
+                        { time: 7, sfx: 'dinoLiftoff', volume: 0.8  },
                         { time: 7.7, sfx: 'scream', volume: 1  },
                         { time: 10.2, sfx: 'roar2', volume: 0.8  },
                     ]
@@ -421,7 +421,7 @@ export const MISSIONS = [
         params: {
             zoneDuration: 1,
             zoneId: 'garage',
-            actorIds: ['girl1','bossdyno1'] // Optional: additional actors to control in the timeline (beyond the default "dyno" player reference)
+            actorIds: ['girl1','bossdino1'] // Optional: additional actors to control in the timeline (beyond the default "dino" player reference)
         }
     },   
     {
@@ -453,7 +453,7 @@ export const MISSIONS = [
                 },
                 {
                     type: 'ActorTrack',
-                    actor: 'bossdyno1',
+                    actor: 'bossdino1',
                     keyframes: [
                         { time: 0, tx: 45305, ty: 705, ry:1.5, rx:0, rz:0, visible: true },
                         { time: 1.1, tx: 45305, ty: 705, ry:1.5, rx:0, rz:0,visible: true },
@@ -470,7 +470,7 @@ export const MISSIONS = [
                 },
                 {
                     type: 'AnimationTrack',
-                    actor: 'bossdyno1',
+                    actor: 'bossdino1',
                     keyframes: [
                         { time: 0, animation: 'guard-loop' },
                         { time: 1.2, animation: 'dead', loop: false },
@@ -481,7 +481,7 @@ export const MISSIONS = [
                 },
                 {
                     type: 'ActorTrack',
-                    actor: 'dyno',
+                    actor: 'dino',
                     keyframes: [
                         { time: 0,tx: 45045, ty: 655, ry: Math.PI*-.5, visible: true },
 //                        { time: 1, flame: true, fireAngle: -20 },
@@ -523,7 +523,7 @@ export const MISSIONS = [
                 },				
                 {
                     type: 'AnimationTrack',
-                    actor: 'dyno',
+                    actor: 'dino',
                     keyframes: [
                         { time: 0, animation: 'z_hoverhit', loop:false },	
                         { time: 2.5, animation: 'z_hoverhit', loop:true },
@@ -534,14 +534,14 @@ export const MISSIONS = [
                 {
                     type: 'EventTrack',
                     keyframes: [
-                        { time: 4, callback: (ctx) => console.log('[Timeline] Dyno is ready!') }
+                        { time: 4, callback: (ctx) => console.log('[Timeline] Dino is ready!') }
                     ]
                 },
                 {
                     type: 'SfxTrack',
                     keyframes: [
                         { time: .2, sfx: 'flameLoop', volume: 0.8  },
-                        { time: 1.3, sfx: 'dynoHit', volume: 0.8  },
+                        { time: 1.3, sfx: 'dinoHit', volume: 0.8  },
                         { time: 3.4, sfx: 'growl2', volume: 0.5  },
                         { time: 3.8, sfx: 'yay', volume: 0.8  },
                         { time: 4.7, sfx: 'giggle', volume: 0.8  },
@@ -553,8 +553,8 @@ export const MISSIONS = [
         },
         
         params: {
-			actorIds: ['girl1','bossdyno1'], 
-			targets: ['bossdyno1'],  // sourceObjectName(s) from Tiled
+			actorIds: ['girl1','bossdino1'], 
+			targets: ['bossdino1'],  // sourceObjectName(s) from Tiled
             noExplode: true     // true = freeze at health=0, no explosion
         }
     },
@@ -582,7 +582,7 @@ export const MISSIONS = [
         objectsFailDescription: 'Not enough cars in the level to complete this mission.',
         coinReward: 5,
         iconObjectType: 'car',
-        requireGrounded: true, // Optional: require the dyno to be landed on the ground to start this mission
+        requireGrounded: true, // Optional: require the dino to be landed on the ground to start this mission
         callout: {
             icon: 'car',
 
@@ -711,10 +711,10 @@ export const MISSIONS = [
         },
         // After completing this mission, auto-offer the next one.
         coinReward: 30,
-        requireGrounded: false, // Optional: require the dyno to be landed on the ground to start this mission
+        requireGrounded: false, // Optional: require the dino to be landed on the ground to start this mission
         // Replay rules: can replay after 5 minutes, up to 3 times total.
         replay: { cooldownSeconds: 300, maxReplays: 3 },
-        // Dyno must land and stop in this zone to start the mission.
+        // Dino must land and stop in this zone to start the mission.
         //disabledButtons: ['fire', 'speed'],
         completeDelaySeconds: .2,
         // Optional: Play cinematic sequence before gameplay starts
@@ -739,10 +739,10 @@ export const MISSIONS = [
         },
         // After completing this mission, auto-offer the next one.
         coinReward: 50,
-        requireGrounded: false, // Optional: require the dyno to be landed on the ground to start this mission
+        requireGrounded: false, // Optional: require the dino to be landed on the ground to start this mission
         // Replay rules: can replay after 5 minutes, up to 3 times total.
         replay: { cooldownSeconds: 300, maxReplays: 3 },
-        // Dyno must land and stop in this zone to start the mission.
+        // Dino must land and stop in this zone to start the mission.
         //disabledButtons: ['fire', 'speed'],
         completeDelaySeconds: .2,
         // Optional: Play cinematic sequence before gameplay starts
@@ -767,10 +767,10 @@ export const MISSIONS = [
         },
         // After completing this mission, auto-offer the next one.
         coinReward: 20,
-        requireGrounded: false, // Optional: require the dyno to be landed on the ground to start this mission
+        requireGrounded: false, // Optional: require the dino to be landed on the ground to start this mission
         // Replay rules: can replay after 5 minutes, up to 3 times total.
         replay: { cooldownSeconds: 300, maxReplays: 3 },
-        // Dyno must land and stop in this zone to start the mission.
+        // Dino must land and stop in this zone to start the mission.
         //disabledButtons: ['fire', 'speed'],
         completeDelaySeconds: .2,
         // Optional: Play cinematic sequence before gameplay starts
@@ -788,8 +788,8 @@ export const MISSIONS = [
         level: 'level_00',
         type: 'FLY_TO_ZONE',
         title: 'MISSION',
-        description: 'Follow the other dyno',
-        iconObjectType: 'bossdyno',
+        description: 'Follow the other dino',
+        iconObjectType: 'bossdino',
         completeDelaySeconds: .2,
         // Optional: Play cinematic sequence before gameplay starts
         // Input is locked during playback, then unlocked for gameplay
@@ -798,7 +798,7 @@ export const MISSIONS = [
         params: {
             zoneDuration: 1,
             zoneId: 'exit',
-            actorIds: ['girl1','bossdyno1'] // Optional: additional actors to control in the timeline (beyond the default "dyno" player reference)
+            actorIds: ['girl1','bossdino1'] // Optional: additional actors to control in the timeline (beyond the default "dino" player reference)
         }
     },           
     {

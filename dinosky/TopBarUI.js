@@ -198,7 +198,7 @@ export class TopBarUI {
         this.minimapRoot.add(this.minimapSprite);
         this.root.add(this.minimapRoot);
 
-        // Red dot showing dyno position on the minimap.
+        // Red dot showing dino position on the minimap.
         // Rendered as a separate sprite above the minimap image.
         this.minimapDotSprite = new THREE.Sprite(
             new THREE.SpriteMaterial({
@@ -1022,11 +1022,11 @@ export class TopBarUI {
         };
     }
 
-    // Maps the dyno's world position onto the minimap and positions the red dot.
+    // Maps the dino's world position onto the minimap and positions the red dot.
     // X maps relative to the full grid width; Y maps relative to the full grid height.
     // Aspect ratio is intentionally not corrected — the minimap image is the visual reference.
-    // The dot is clamped to minimap bounds in case the dyno flies outside the grid.
-    updateMinimapPlayerDot(dynoX, dynoY, level) {
+    // The dot is clamped to minimap bounds in case the dino flies outside the grid.
+    updateMinimapPlayerDot(dinoX, dinoY, level) {
         if (!level) { this.minimapDotSprite.visible = false; return; }
 
         const gridWorldWidth  = level.width  * level.tileWidth;
@@ -1045,20 +1045,20 @@ export class TopBarUI {
         const worldGridTop    = originY + gridWorldHeight;
         const worldCeiling    = level.flightCeilingY ?? worldGridTop;
 
-        let rx = (dynoX - originX) / gridWorldWidth;
+        let rx = (dinoX - originX) / gridWorldWidth;
         rx = THREE.MathUtils.clamp(rx, 0, 1);
 
         let mappedRy;
-        const dynoWorldY = dynoY;
-        if (dynoWorldY <= worldGridTop) {
+        const dinoWorldY = dinoY;
+        if (dinoWorldY <= worldGridTop) {
             // Below or at grid top — map into [gridTop .. gridBottom] image slice
-            const t = THREE.MathUtils.clamp((dynoWorldY - worldGridBottom) / Math.max(worldGridTop - worldGridBottom, 0.0001), 0, 1);
+            const t = THREE.MathUtils.clamp((dinoWorldY - worldGridBottom) / Math.max(worldGridTop - worldGridBottom, 0.0001), 0, 1);
             // t=0 → image gridBottom, t=1 → image gridTop
             mappedRy = gridBottom - t * (gridBottom - gridTop);
         } else {
             // Above grid top — map into [0 .. gridTop] image slice
             const aboveCeilingRange = Math.max(worldCeiling - worldGridTop, 0.0001);
-            const t = THREE.MathUtils.clamp((dynoWorldY - worldGridTop) / aboveCeilingRange, 0, 1);
+            const t = THREE.MathUtils.clamp((dinoWorldY - worldGridTop) / aboveCeilingRange, 0, 1);
             // t=0 → image gridTop, t=1 → image 0
             mappedRy = gridTop - t * gridTop;
         }

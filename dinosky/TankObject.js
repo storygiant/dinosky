@@ -76,7 +76,7 @@ export class TankObject extends VehicleObject {
             fireInterval: Number.isFinite(combat.fireInterval) ? combat.fireInterval : 0.8,
             bulletSpeed: Number.isFinite(combat.bulletSpeed) ? combat.bulletSpeed : 14,
             bulletLifetime: Number.isFinite(combat.bulletLifetime) ? combat.bulletLifetime : 2.5,
-            bulletDamageToDyno: Number.isFinite(combat.bulletDamageToDyno) ? Math.max(0, combat.bulletDamageToDyno) : 15,
+            bulletDamageToDino: Number.isFinite(combat.bulletDamageToDino) ? Math.max(0, combat.bulletDamageToDino) : 15,
             bulletScale: Number.isFinite(combat.bulletScale) ? combat.bulletScale : 0.75,
             bulletHitRadius: Number.isFinite(combat.bulletHitRadius) ? Math.max(0, combat.bulletHitRadius) : 0.6,
             bulletTexturePath: combat.bulletTexturePath || './gfx/levels/bullet.webp',
@@ -182,8 +182,8 @@ export class TankObject extends VehicleObject {
         return this;
     }
 
-    pickUp(dyno, socket, options = {}) {
-        const didPickUp = super.pickUp(dyno, socket, options);
+    pickUp(dino, socket, options = {}) {
+        const didPickUp = super.pickUp(dino, socket, options);
         if (!didPickUp) {
             return false;
         }
@@ -348,25 +348,25 @@ export class TankObject extends VehicleObject {
         return this.getWorldPosition(target);
     }
 
-    getTargetWorldPosition(dynoTarget, out = new THREE.Vector3()) {
-        const hitCircle = dynoTarget?.getWorldCollisionCircle?.();
+    getTargetWorldPosition(dinoTarget, out = new THREE.Vector3()) {
+        const hitCircle = dinoTarget?.getWorldCollisionCircle?.();
         if (
             hitCircle &&
             Number.isFinite(hitCircle.centerX) &&
             Number.isFinite(hitCircle.centerY)
         ) {
             // Aim at the same gameplay target used for hit detection so visual tracking
-            // and collision outcomes stay aligned (especially while the dyno is airborne).
+            // and collision outcomes stay aligned (especially while the dino is airborne).
             out.set(hitCircle.centerX, hitCircle.centerY, this.container.position.z);
             return out;
         }
 
-        if (dynoTarget?.getMouthWorldPosition) {
-            return dynoTarget.getMouthWorldPosition(out);
+        if (dinoTarget?.getMouthWorldPosition) {
+            return dinoTarget.getMouthWorldPosition(out);
         }
 
-        if (dynoTarget?.getWorldPosition) {
-            return dynoTarget.getWorldPosition(out);
+        if (dinoTarget?.getWorldPosition) {
+            return dinoTarget.getWorldPosition(out);
         }
 
         return null;
@@ -488,8 +488,8 @@ export class TankObject extends VehicleObject {
             : Math.abs(shortestAngleDelta(this.cannonCurrentOffset, 0));
     }
 
-    canTrackAndFire(dynoTarget, targetWorld) {
-        if (!dynoTarget || !targetWorld || !this.cannonPivot || !this.cannonNode) {
+    canTrackAndFire(dinoTarget, targetWorld) {
+        if (!dinoTarget || !targetWorld || !this.cannonPivot || !this.cannonNode) {
             return false;
         }
 
@@ -524,7 +524,7 @@ export class TankObject extends VehicleObject {
             speed: this.tankCombat.bulletSpeed,
             life: this.tankCombat.bulletLifetime,
             radius: this.tankCombat.bulletHitRadius,
-            damageToDyno: this.tankCombat.bulletDamageToDyno
+            damageToDino: this.tankCombat.bulletDamageToDino
         };
     }
 
@@ -569,7 +569,7 @@ export class TankObject extends VehicleObject {
         bullet.speed = this.tankCombat.bulletSpeed;
         bullet.life = this.tankCombat.bulletLifetime;
         bullet.radius = this.tankCombat.bulletHitRadius;
-        bullet.damageToDyno = this.tankCombat.bulletDamageToDyno;
+        bullet.damageToDino = this.tankCombat.bulletDamageToDino;
 
         bullet.sprite.visible = true;
         bullet.sprite.position.copy(bullet.position);
@@ -592,7 +592,7 @@ export class TankObject extends VehicleObject {
                 directionX: bullet.direction.x,
                 directionY: bullet.direction.y,
                 radius: bullet.radius,
-                damageToDyno: bullet.damageToDyno
+                damageToDino: bullet.damageToDino
             }));
     }
 
@@ -667,7 +667,7 @@ export class TankObject extends VehicleObject {
         }
     }
 
-    updateTankCombat(delta, dynoTarget) {
+    updateTankCombat(delta, dinoTarget) {
         if (!this.loaded || this.isDestroyed || this.markedForRemoval) {
             return;
         }
@@ -718,8 +718,8 @@ export class TankObject extends VehicleObject {
             return;
         }
 
-        const targetWorld = this.getTargetWorldPosition(dynoTarget, TMP_TARGET_WORLD);
-        const inRange = this.canTrackAndFire(dynoTarget, targetWorld);
+        const targetWorld = this.getTargetWorldPosition(dinoTarget, TMP_TARGET_WORLD);
+        const inRange = this.canTrackAndFire(dinoTarget, targetWorld);
         this.fireCooldown = Math.max(0, this.fireCooldown - delta);
 
         if (!inRange) {
@@ -736,9 +736,9 @@ export class TankObject extends VehicleObject {
         this.fireCooldown = this.tankCombat.fireInterval;
     }
 
-    update(delta, level, dynoTarget = null) {
+    update(delta, level, dinoTarget = null) {
         super.update(delta, level);
-        this.updateTankCombat(delta, dynoTarget);
+        this.updateTankCombat(delta, dinoTarget);
         this.updateBullets(delta);
         this.alwaysUpdate = this.activeBullets.length > 0;
     }

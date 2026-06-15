@@ -2,8 +2,8 @@ import { getPlayerIdentity } from './PlayerIdentity.js';
 
 const POKI_GAME_ID = '243cb571-38f5-4381-9be2-9e4febbc25f8';
 const BASE = `https://auds.poki.io/v0/${POKI_GAME_ID}/userdata`;
-const MY_ENTRIES_KEY = 'dynoMyLeaderboardEntries';
-const DESKTOP_LEADERBOARD_KEY = 'dynoDesktopRaceLeaderboards';
+const MY_ENTRIES_KEY = 'dinoMyLeaderboardEntries';
+const DESKTOP_LEADERBOARD_KEY = 'dinoDesktopRaceLeaderboards';
 const PAGE_SIZE = 100;
 const MAX_PAGES = 20; // fetch at most 2000 entries before cutting off
 

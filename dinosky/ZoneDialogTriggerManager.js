@@ -3,7 +3,7 @@
  *
  * This keeps the same cheap enter/leave/retrigger semantics as the original
  * dialog-zone system, but now a zone can also drive non-dialog effects such as
- * hiding authored layers while the dyno is inside.
+ * hiding authored layers while the dino is inside.
  *
  * AUTHORING
  *   Trigger zone:
@@ -26,7 +26,7 @@
  * RUNTIME RULES
  *   - Dialog triggers still require enter + stop + dwell before opening.
  *   - After a dialog opens, that zone must be left before it can retrigger.
- *   - Layer-hide effects are active immediately while the dyno remains inside.
+ *   - Layer-hide effects are active immediately while the dino remains inside.
  *   - All zone checks stay cheap: quick-radius reject first, exact shape second.
  */
 

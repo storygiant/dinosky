@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'dynoLanguage';
+const STORAGE_KEY = 'dinoLanguage';
 
 const LOCALES = {
     en: {
@@ -7,8 +7,8 @@ const LOCALES = {
         loading_status: 'Preparing level...',
         loading_detail: 'Please wait',
         loading_phase: 'Loading',
-        loading_preview_label: 'Loading dyno',
-        loading_preview_ready: 'Dyno ready',
+        loading_preview_label: 'Loading dino',
+        loading_preview_ready: 'Dino ready',
         loading_failed_status: 'Loading failed.',
         loading_error_phase: 'Error',
 
@@ -49,7 +49,7 @@ const LOCALES = {
         // Cinematic overlay
         cinematic_skip: 'Skip',
 
-        // Dyno Fury HUD
+        // Dino Fury HUD
         fury_label: 'FURY',
         fury_ready: 'FURY READY',
         'rage.ready': 'RAGE READY',
@@ -129,8 +129,8 @@ const LOCALES = {
         mission_shark_title: 'MISSION',
         mission_shark_description: 'Put a shark in the sharktank!',
 
-        // Dyno Skin Shop
-        'skins.title': 'Dyno Skins',
+        // Dino Skin Shop
+        'skins.title': 'Dino Skins',
         'skins.close': 'Close shop',
         'skins.prev': 'Previous skin',
         'skins.next': 'Next skin',
@@ -142,13 +142,13 @@ const LOCALES = {
         'skins.getExtraCoins': 'Get extra coins!',
         'skins.watchAd': 'Watch Ad',
         'skins.watchAdSub': 'Watch a short video and get extra coins.',
-        'skins.classic': 'Classic Dyno',
-        'skins.earth': 'Earth Dyno',
-        'skins.ice': 'Sapphire Dyno',
-        'skins.lava': 'Emerald Dyno',
-        'skins.forest': 'Seismic Dyno',
-        'skins.shadow': 'Blizzard Dyno',
-        'skins.gold': 'Phantasy Dyno',
+        'skins.classic': 'Classic Dino',
+        'skins.earth': 'Earth Dino',
+        'skins.ice': 'Sapphire Dino',
+        'skins.lava': 'Emerald Dino',
+        'skins.forest': 'Seismic Dino',
+        'skins.shadow': 'Blizzard Dino',
+        'skins.gold': 'Phantasy Dino',
     },
 
     nl: {
@@ -199,7 +199,7 @@ const LOCALES = {
         // Cinematic overlay
         cinematic_skip: 'Overslaan',
 
-        // Dyno Fury HUD
+        // Dino Fury HUD
         fury_label: 'FURY',
         fury_ready: 'FURY KLAAR',
         'rage.ready': 'FURY KLAAR',
@@ -279,7 +279,7 @@ const LOCALES = {
         mission_shark_title: 'MISSIE',
         mission_shark_description: 'Zet een haai in de haaientank!',
 
-        // Dyno Skin Shop
+        // Dino Skin Shop
         'skins.title': 'Draak Skins',
         'skins.close': 'Winkel sluiten',
         'skins.prev': 'Vorige skin',
@@ -349,7 +349,7 @@ const LOCALES = {
         // Cinematic overlay
         cinematic_skip: 'Saltar',
 
-        // Dyno Fury HUD
+        // Dino Fury HUD
         fury_label: 'FURIA',
         fury_ready: 'FURIA LISTA',
         'rage.ready': 'FURIA LISTA',
@@ -425,7 +425,7 @@ const LOCALES = {
         mission_shark_title: 'MISIÓN',
         mission_shark_description: '¡Mete un tiburón en el tanque de tiburones!',
 
-        // Dyno Skin Shop
+        // Dino Skin Shop
         'skins.title': 'Pieles de Dragón',
         'skins.close': 'Cerrar tienda',
         'skins.prev': 'Piel anterior',
@@ -495,7 +495,7 @@ const LOCALES = {
         // Cinematic overlay
         cinematic_skip: 'Pular',
 
-        // Dyno Fury HUD
+        // Dino Fury HUD
         fury_label: 'FÚRIA',
         fury_ready: 'FÚRIA PRONTA',
         'rage.ready': 'FÚRIA PRONTA',
@@ -571,7 +571,7 @@ const LOCALES = {
         mission_shark_title: 'MISSÃO',
         mission_shark_description: 'Coloque um tubarão no tanque de tubarões!',
 
-        // Dyno Skin Shop
+        // Dino Skin Shop
         'skins.title': 'Skins do Dragão',
         'skins.close': 'Fechar loja',
         'skins.prev': 'Skin anterior',
@@ -641,7 +641,7 @@ const LOCALES = {
         // Cinematic overlay
         cinematic_skip: 'Überspringen',
 
-        // Dyno Fury HUD
+        // Dino Fury HUD
         fury_label: 'FURY',
         fury_ready: 'FURY BEREIT',
         'rage.ready': 'FURY BEREIT',
@@ -717,7 +717,7 @@ const LOCALES = {
         mission_shark_title: 'MISSION',
         mission_shark_description: 'Wirf einen Hai in das Haibecken!',
 
-        // Dyno Skin Shop
+        // Dino Skin Shop
         'skins.title': 'Drachen-Skins',
         'skins.close': 'Shop schließen',
         'skins.prev': 'Vorheriger Skin',
@@ -745,8 +745,8 @@ const LOCALES = {
         loading_status: 'Préparation du niveau...',
         loading_detail: 'Veuillez patienter',
         loading_phase: 'Chargement',
-        loading_preview_label: 'Chargement du dyno',
-        loading_preview_ready: 'Dyno prêt',
+        loading_preview_label: 'Chargement du dino',
+        loading_preview_ready: 'Dino prêt',
         loading_failed_status: 'Échec du chargement.',
         loading_error_phase: 'Erreur',
 
@@ -787,7 +787,7 @@ const LOCALES = {
         // Cinematic overlay
         cinematic_skip: 'Passer',
 
-        // Dyno Fury HUD
+        // Dino Fury HUD
         fury_label: 'FUREUR',
         fury_ready: 'FUREUR PRÊTE',
         'rage.ready': 'FUREUR PRÊTE',
@@ -863,8 +863,8 @@ const LOCALES = {
         mission_shark_title: 'MISSION',
         mission_shark_description: 'Mettez un requin dans le bassin à requins !',
 
-        // Dyno Skin Shop
-        'skins.title': 'Skins du Dyno',
+        // Dino Skin Shop
+        'skins.title': 'Skins du Dino',
         'skins.close': 'Fermer la boutique',
         'skins.prev': 'Skin précédent',
         'skins.next': 'Skin suivant',
@@ -876,13 +876,13 @@ const LOCALES = {
         'skins.getExtraCoins': 'Gagnez des pièces supplémentaires !',
         'skins.watchAd': 'Voir la pub',
         'skins.watchAdSub': 'Regardez une courte vidéo et obtenez des pièces supplémentaires.',
-        'skins.classic': 'Dyno Classique',
-        'skins.earth': 'Dyno Terrestre',
-        'skins.ice': 'Dyno Saphir',
-        'skins.lava': 'Dyno Émeraude',
-        'skins.forest': 'Dyno Sismique',
-        'skins.shadow': 'Dyno Blizzard',
-        'skins.gold': 'Dyno Fantastique',
+        'skins.classic': 'Dino Classique',
+        'skins.earth': 'Dino Terrestre',
+        'skins.ice': 'Dino Saphir',
+        'skins.lava': 'Dino Émeraude',
+        'skins.forest': 'Dino Sismique',
+        'skins.shadow': 'Dino Blizzard',
+        'skins.gold': 'Dino Fantastique',
     },
 
     tr: {
@@ -933,7 +933,7 @@ const LOCALES = {
         // Cinematic overlay
         cinematic_skip: 'Atla',
 
-        // Dyno Fury HUD
+        // Dino Fury HUD
         fury_label: 'ÖFKE',
         fury_ready: 'ÖFKE HAZIR',
         'rage.ready': 'ÖFKE HAZIR',
@@ -1009,7 +1009,7 @@ const LOCALES = {
         mission_shark_title: 'GÖREV',
         mission_shark_description: 'Bir köpekbalığını köpekbalığı tankına koy!',
 
-        // Dyno Skin Shop
+        // Dino Skin Shop
         'skins.title': 'Ejderha Kostümleri',
         'skins.close': 'Mağazayı kapat',
         'skins.prev': 'Önceki kostüm',
@@ -1079,7 +1079,7 @@ const LOCALES = {
         // Cinematic overlay
         cinematic_skip: 'Пропустить',
 
-        // Dyno Fury HUD
+        // Dino Fury HUD
         fury_label: 'ЯРОСТЬ',
         fury_ready: 'ЯРОСТЬ ГОТОВА',
         'rage.ready': 'ЯРОСТЬ ГОТОВА',
@@ -1155,7 +1155,7 @@ const LOCALES = {
         mission_shark_title: 'МИССИЯ',
         mission_shark_description: 'Помести акулу в акуловый бассейн!',
 
-        // Dyno Skin Shop
+        // Dino Skin Shop
         'skins.title': 'Скины Дракона',
         'skins.close': 'Закрыть магазин',
         'skins.prev': 'Предыдущий скин',

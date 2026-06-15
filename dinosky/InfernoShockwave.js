@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-// InfernoShockwave — the visual half of the "Dyno Fury" ultimate.
+// InfernoShockwave — the visual half of the "Dino Fury" ultimate.
 //
 // A single full-screen-ish quad centred on the blast origin renders an expanding,
 // fire-coloured shockwave ring plus a bright central flash via a custom shader. All the

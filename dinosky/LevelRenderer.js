@@ -345,14 +345,14 @@ export class LevelRenderer {
         this.rebuildVersion = 0;
         this.zoneShowLayerNames = this.collectZoneShowLayerNames();
 
-        // The dyno model has real 3D depth and a forward visual Z offset, so front object
+        // The dino model has real 3D depth and a forward visual Z offset, so front object
         // layers need a clearly separated Z slot to fully occlude it when Tiled says they are
         // above Gameplay. Keep this large enough that the model cannot poke through.
         this.layerZSpacing = 8;
-        this.dynoWorldZ = Number.isFinite(CONFIG?.spawnPosition?.z) ? CONFIG.spawnPosition.z : 0;
+        this.dinoWorldZ = Number.isFinite(CONFIG?.spawnPosition?.z) ? CONFIG.spawnPosition.z : 0;
         this.postGameplayLayerSpacing = 0.5;
         this.gameplayLayerIndex = this.findGameplayLayerIndex();
-        this.dynoRenderOrder = this.getLayerRenderOrder(this.gameplayLayerIndex) + 0.5;
+        this.dinoRenderOrder = this.getLayerRenderOrder(this.gameplayLayerIndex) + 0.5;
 /*        
         this.materials = {
             solid: this.createLayerMaterial({ color: 0x4f4f5a }),
@@ -472,7 +472,7 @@ export class LevelRenderer {
 
     getLayerRenderOrder(layerIndex) {
         // Keep the visual order identical to the Tiled layers array. The only special case is
-        // the dyno split: layers after "Gameplay" get nudged forward so the dyno can sit
+        // the dino split: layers after "Gameplay" get nudged forward so the dino can sit
         // directly after the gameplay layer while preserving the rest of the order.
         if (layerIndex > this.gameplayLayerIndex) {
             return layerIndex + 1;
@@ -481,12 +481,12 @@ export class LevelRenderer {
         return layerIndex;
     }
 
-    getDynoRenderOrder() {
-        return this.dynoRenderOrder;
+    getDinoRenderOrder() {
+        return this.dinoRenderOrder;
     }
 
     // Returns renderOrder and layerDepth (Z) for objects that should appear in front of all
-    // foreground tile layers but still be occluded by the depth buffer (so the dyno,
+    // foreground tile layers but still be occluded by the depth buffer (so the dino,
     // which is at Z=0, naturally appears in front when it overlaps the object).
     getLayerGroupByName(name) {
         const lower = name.trim().toLowerCase();
@@ -544,7 +544,7 @@ export class LevelRenderer {
         const material = new THREE.MeshBasicMaterial({
             ...materialOptions,
             // Level layers still follow Tiled order, but they also need stable depth slots so
-            // transparent object-layer sprites can sit either in front of or behind the dyno.
+            // transparent object-layer sprites can sit either in front of or behind the dino.
             depthTest: true,
             depthWrite: false
         });
@@ -568,12 +568,12 @@ export class LevelRenderer {
             return (layerIndex - gameplayIndex) * this.layerZSpacing;
         }
 
-        // Keep the dyno in a fixed world-Z slot, then start the first layer after Gameplay
+        // Keep the dino in a fixed world-Z slot, then start the first layer after Gameplay
         // one full layer step in front of that slot so foreground art can always occlude it.
         // Additional foreground layers only need a small Z delta for stable depth sorting;
         // using the full layer spacing would quickly push later layers into/behind the camera.
         const postGameplayIndex = layerIndex - gameplayIndex - 1;
-        return this.dynoWorldZ + this.layerZSpacing + (postGameplayIndex * this.postGameplayLayerSpacing);
+        return this.dinoWorldZ + this.layerZSpacing + (postGameplayIndex * this.postGameplayLayerSpacing);
     }
 
     applyRenderOrder(root, renderOrder) {

@@ -206,7 +206,7 @@ export class RingObject extends ChopperObject {
     }
 
     updateFacingTarget() {
-        // Rings keep their authored yaw instead of tracking the dyno.
+        // Rings keep their authored yaw instead of tracking the dino.
     }
 
     applyFacingRotation() {

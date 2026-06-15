@@ -37,7 +37,7 @@ export class SharkObject extends LevelObject {
     constructor(options) {
         super(options);
 
-        // Lift/drop: shark uses the standard pickupable path so the dyno's grab
+        // Lift/drop: shark uses the standard pickupable path so the dino's grab
         // logic and root_top socket selection work without changes.
         this.pickupable = this.config.pickupable !== false;
         this.draggable  = this.config.draggable === true;
@@ -175,7 +175,7 @@ export class SharkObject extends LevelObject {
 
     // ── Main update ───────────────────────────────────────────────────────
 
-    update(delta, level, dynoTarget = null) {
+    update(delta, level, dinoTarget = null) {
         if (!this.loaded) return;
 
         this._cachedLevel = level;
@@ -237,7 +237,7 @@ export class SharkObject extends LevelObject {
             // Swim loop. Missing animation is a no-op (returns false silently).
             this._ensureSwimAnimation();
 
-            this.flyingAI.update(delta, level, dynoTarget);
+            this.flyingAI.update(delta, level, dinoTarget);
 
             // The physics body may have been put to sleep by the idle-sleep path.
             // Re-sync its position to match the visual so pickup proximity checks
@@ -297,7 +297,7 @@ export class SharkObject extends LevelObject {
 
     // Before the carry system reads the sceneObject world quaternion, reset rotation
     // to what applyGroundAlignment produces so the carry offset and facing are correct.
-    grab(dyno, socket) {
+    grab(dino, socket) {
         // Sync AI facingDirection → currentFacingDirection before grab so offsets
         // and rotation are consistent when the carry system reads them.
         if (this.flyingAI) {
@@ -312,7 +312,7 @@ export class SharkObject extends LevelObject {
             this.sceneObject.rotation.set(base.x, base.y + yaw, base.z);
             this.sceneObject.updateMatrixWorld(true);
         }
-        return super.grab(dyno, socket);
+        return super.grab(dino, socket);
     }
 
     // ── Damage / destruction ──────────────────────────────────────────────

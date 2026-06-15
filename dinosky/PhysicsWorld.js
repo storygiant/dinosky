@@ -245,7 +245,7 @@ export class PhysicsWorld {
         this.debugVisualRectLines = new Map();
         this.debugVisualAxisLines = new Map();
         this.debugGrabPointLines = new Map();
-        this.debugDynoAnchorLines = new Map();
+        this.debugDinoAnchorLines = new Map();
         this.debugJointLines = new Map();
         this.minTerrainY = Number.POSITIVE_INFINITY;
         this.maxTerrainY = Number.NEGATIVE_INFINITY;
@@ -345,38 +345,38 @@ export class PhysicsWorld {
     }
 
     getDragConstraintStiffness() {
-        return Number.isFinite(CONFIG.DYNO_DRAG?.matterConstraintStiffness)
-            ? THREE.MathUtils.clamp(CONFIG.DYNO_DRAG.matterConstraintStiffness, 0, 1)
+        return Number.isFinite(CONFIG.DINO_DRAG?.matterConstraintStiffness)
+            ? THREE.MathUtils.clamp(CONFIG.DINO_DRAG.matterConstraintStiffness, 0, 1)
             : 0.85;
     }
 
     getDragConstraintDamping() {
-        return Number.isFinite(CONFIG.DYNO_DRAG?.matterConstraintDamping)
-            ? Math.max(CONFIG.DYNO_DRAG.matterConstraintDamping, 0)
+        return Number.isFinite(CONFIG.DINO_DRAG?.matterConstraintDamping)
+            ? Math.max(CONFIG.DINO_DRAG.matterConstraintDamping, 0)
             : 0.18;
     }
 
     getDragConstraintLength() {
-        return Number.isFinite(CONFIG.DYNO_DRAG?.matterConstraintLength)
-            ? Math.max(CONFIG.DYNO_DRAG.matterConstraintLength, 0)
+        return Number.isFinite(CONFIG.DINO_DRAG?.matterConstraintLength)
+            ? Math.max(CONFIG.DINO_DRAG.matterConstraintLength, 0)
             : 0.15;
     }
 
     getDragAnchorTerrainStretchMargin() {
-        return Number.isFinite(CONFIG.DYNO_DRAG?.matterDragAnchorTerrainStretchMargin)
-            ? Math.max(CONFIG.DYNO_DRAG.matterDragAnchorTerrainStretchMargin, 0)
+        return Number.isFinite(CONFIG.DINO_DRAG?.matterDragAnchorTerrainStretchMargin)
+            ? Math.max(CONFIG.DINO_DRAG.matterDragAnchorTerrainStretchMargin, 0)
             : 0.55;
     }
 
     getDragAngularDamping() {
-        return Number.isFinite(CONFIG.DYNO_DRAG?.matterDragAngularDamping)
-            ? THREE.MathUtils.clamp(CONFIG.DYNO_DRAG.matterDragAngularDamping, 0, 1)
+        return Number.isFinite(CONFIG.DINO_DRAG?.matterDragAngularDamping)
+            ? THREE.MathUtils.clamp(CONFIG.DINO_DRAG.matterDragAngularDamping, 0, 1)
             : 0.82;
     }
 
     getCarryAngularDamping() {
-        return Number.isFinite(CONFIG.DYNO_DRAG?.matterCarryAngularDamping)
-            ? THREE.MathUtils.clamp(CONFIG.DYNO_DRAG.matterCarryAngularDamping, 0, 1)
+        return Number.isFinite(CONFIG.DINO_DRAG?.matterCarryAngularDamping)
+            ? THREE.MathUtils.clamp(CONFIG.DINO_DRAG.matterCarryAngularDamping, 0, 1)
             : 0.6;
     }
 
@@ -706,7 +706,7 @@ export class PhysicsWorld {
         }
 
         // During startup warmup we want every terrain collider and every block collision to stay
-        // active so fallOnLoad stacks settle exactly as if the dyno had been nearby all along.
+        // active so fallOnLoad stacks settle exactly as if the dino had been nearby all along.
         this.activateAllTerrainBodies();
         this.restoreAllDistanceRemovedBodies();
     }
@@ -747,7 +747,7 @@ export class PhysicsWorld {
         const activateR2 = activateRadius * activateRadius;
         const deactivateR2 = deactivateRadius * deactivateRadius;
 
-        // Build list of focal points: dyno + all unsettled falling object bodies.
+        // Build list of focal points: dino + all unsettled falling object bodies.
         const focalPoints = [{ x: fx, y: fy }];
         for (const [levelObject, body] of this.objectBodies.entries()) {
             if (this.isActiveFallingBody(levelObject, body) && !body.isSleeping) {
@@ -809,7 +809,7 @@ export class PhysicsWorld {
             return hasCollisionShape;
         }
 
-        // Choppers and other air actors keep their existing custom movement. The dyno also
+        // Choppers and other air actors keep their existing custom movement. The dino also
         // never gets a Matter body; Matter is only the replacement for LevelObject ground physics.
         if (levelObject.config?.snapToGroundOnLoad !== true && levelObject.config?.usePhysicsBody !== true) {
             return false;
@@ -1250,7 +1250,7 @@ export class PhysicsWorld {
     // Blasts a single level object's body outward from (originX, originY) at worldSpeed
     // (world units/sec), with an upward bias so debris lofts. Wakes/enables a dynamic body as
     // needed and returns true if an impulse was applied. Safe no-op when Matter is unavailable
-    // or the object has no usable body. Used by the Dyno Fury inferno blast.
+    // or the object has no usable body. Used by the Dino Fury inferno blast.
     applyRadialImpulseToLevelObject(levelObject, originX, originY, worldSpeed, upBias = 0) {
         if (!this.init() || !levelObject || !(worldSpeed > 0)) {
             return false;
@@ -1373,7 +1373,7 @@ export class PhysicsWorld {
             return false;
         }
 
-        // Start stretching slightly before the dyno anchor is visibly buried. A zero-length
+        // Start stretching slightly before the dino anchor is visibly buried. A zero-length
         // joint attached to one side of a rectangle creates strong torque; waiting until the
         // anchor is deeply inside terrain makes the object pop upright before the stretch kicks in.
         const samples = [
@@ -1387,13 +1387,13 @@ export class PhysicsWorld {
 
     getConstraintLengthForTightDrag(pointA, bodyAnchor) {
         const desiredLength = Math.max(
-            Number.isFinite(CONFIG.DYNO_DRAG?.matterGroundDragRopeLength)
-                ? CONFIG.DYNO_DRAG.matterGroundDragRopeLength
+            Number.isFinite(CONFIG.DINO_DRAG?.matterGroundDragRopeLength)
+                ? CONFIG.DINO_DRAG.matterGroundDragRopeLength
                 : 0,
             0
         );
         if (this.isWorldPointBlockedForDragAnchor(pointA)) {
-            // If the dyno anchor is pushed inside terrain, a zero-length constraint would
+            // If the dino anchor is pushed inside terrain, a zero-length constraint would
             // pull the object into solid ground. Let the rope stretch until the anchor exits.
             return Math.max(
                 desiredLength,
@@ -1655,7 +1655,7 @@ export class PhysicsWorld {
             ? Math.max(body.bounds.max.x - body.bounds.min.x, 1)
             : 1;
         // Pre-bias upward by half the body height so the search starts above the release
-        // surface rather than from inside it. This matters when the dyno is pressing down
+        // surface rather than from inside it. This matters when the dino is pressing down
         // into a ledge at release — the body is already half-buried and small steps won't
         // escape in time before Matter pushes it back through.
         const upBias = bodyHeight * 0.5;
@@ -2036,14 +2036,14 @@ export class PhysicsWorld {
 
         // When a sleeping IDLE body is woken by a Matter collision (block-block push,
         // external impulse), re-enable gravity so it falls naturally instead of freezing.
-        // Only for objects that opt in to dyno/object collision physics (collideWithDyno).
+        // Only for objects that opt in to dino/object collision physics (collideWithDino).
         if (
             levelObject.state === LEVEL_OBJECT_STATES.IDLE &&
             !levelObject.gravityEnabled &&
             !body.isSleeping &&
             !body.isStatic &&
             levelObject.config?.knockable !== false &&
-            levelObject.config?.collideWithDyno === true
+            levelObject.config?.collideWithDino === true
         ) {
             levelObject.gravityEnabled = true;
             levelObject.state = LEVEL_OBJECT_STATES.FALLING;
@@ -2268,9 +2268,9 @@ export class PhysicsWorld {
         }
     }
 
-    setDynoState(pos, vel) {
-        this._dynoPos = pos || null;
-        this._dynoVel = vel || null;
+    setDinoState(pos, vel) {
+        this._dinoPos = pos || null;
+        this._dinoVel = vel || null;
     }
 
     setFocalPoint(x, y) {
@@ -2299,7 +2299,7 @@ export class PhysicsWorld {
                 levelObject.state === LEVEL_OBJECT_STATES.IDLE &&
                 !levelObject.gravityEnabled &&
                 !body.isStatic &&
-                levelObject.config?.collideWithDyno === true;
+                levelObject.config?.collideWithDino === true;
 
             const isSleepingFalling =
                 this.isActiveFallingBody(levelObject, body) && body.isSleeping;
@@ -2346,9 +2346,9 @@ export class PhysicsWorld {
             this.applyWaterFriction();
             this.pushIdleBodiesFromMovingLevelObjects();
             this.applyLaunchVelocities();
-            // Dyno push runs every substep so it fires reliably regardless of framerate.
-            if (this._dynoPos) {
-                this.pushLevelObjectsFromDyno(this._dynoPos, this._dynoVel);
+            // Dino push runs every substep so it fires reliably regardless of framerate.
+            if (this._dinoPos) {
+                this.pushLevelObjectsFromDino(this._dinoPos, this._dinoVel);
             }
             this.Matter.Engine.update(this.engine, fixedStepMs);
             this.applyBouncyBodyRestitution();
@@ -2390,7 +2390,7 @@ export class PhysicsWorld {
         this.updateDebug();
     }
 
-    // Wake all sleeping collideWithDyno blocks within wakeRadius of the given body,
+    // Wake all sleeping collideWithDino blocks within wakeRadius of the given body,
     // then recursively wake their neighbours. Prevents stacked blocks from staying asleep
     // when a block below or beside them is knocked out.
     _wakeNeighbourBlocks(body, wakeRadius = 6) {
@@ -2400,7 +2400,7 @@ export class PhysicsWorld {
 
         for (const [lo, nb] of this.objectBodies.entries()) {
             if (nb === body) continue;
-            if (!lo.config?.collideWithDyno) continue;
+            if (!lo.config?.collideWithDino) continue;
             if (lo.config?.knockable === false) continue;
             if (lo.state !== LEVEL_OBJECT_STATES.IDLE || lo.gravityEnabled) continue;
             if (nb.isStatic) continue;
@@ -2472,7 +2472,7 @@ export class PhysicsWorld {
         // Collect moving bodies (FALLING, DRAGGED, CARRIED with physics joint).
         const movingBodies = [];
         for (const [lo, body] of this.objectBodies.entries()) {
-            if (!lo.config?.collideWithDyno) continue;
+            if (!lo.config?.collideWithDino) continue;
             if (body.isStatic || body.isSleeping) continue;
             if (this._deactivatedBodies?.has(lo)) continue;
             const isMoving =
@@ -2486,7 +2486,7 @@ export class PhysicsWorld {
         if (movingBodies.length === 0) return;
 
         for (const [idleLO, idleBody] of this.objectBodies.entries()) {
-            if (!idleLO.config?.collideWithDyno) continue;
+            if (!idleLO.config?.collideWithDino) continue;
             if (idleLO.state !== LEVEL_OBJECT_STATES.IDLE || idleLO.gravityEnabled) continue;
             if (idleLO.config?.knockable === false) continue;
             if (idleBody.isStatic) continue;
@@ -2601,13 +2601,13 @@ export class PhysicsWorld {
                 this.markLevelObjectBodyContact(otherObjectBodies[0], 'levelObject', otherObjectBodies[1]);
                 this.markLevelObjectBodyContact(otherObjectBodies[1], 'levelObject', otherObjectBodies[0]);
 
-                // Cascade-wake any IDLE collideWithDyno block hit by a moving one.
+                // Cascade-wake any IDLE collideWithDino block hit by a moving one.
                 for (const [idleBody, movingBody] of [
                     [otherObjectBodies[0], otherObjectBodies[1]],
                     [otherObjectBodies[1], otherObjectBodies[0]],
                 ]) {
                     const idleLO = idleBody?.plugin?.levelObject;
-                    if (!idleLO?.config?.collideWithDyno) continue;
+                    if (!idleLO?.config?.collideWithDino) continue;
                     if (idleLO.config?.knockable === false) continue;
                     if (idleLO.state !== LEVEL_OBJECT_STATES.IDLE || idleLO.gravityEnabled) continue;
                     if (idleBody.isStatic) continue;
@@ -2950,22 +2950,22 @@ applyLaunchVelocities() {
     }
 
     applyCarryAngleSpring() {
-        const carryStrength = Number.isFinite(CONFIG.DYNO_DRAG?.matterCarryAngleSpringStrength)
-            ? CONFIG.DYNO_DRAG.matterCarryAngleSpringStrength : 0.02;
-        const carryDamping = Number.isFinite(CONFIG.DYNO_DRAG?.matterCarryAngleSpringDamping)
-            ? CONFIG.DYNO_DRAG.matterCarryAngleSpringDamping : 0.6;
+        const carryStrength = Number.isFinite(CONFIG.DINO_DRAG?.matterCarryAngleSpringStrength)
+            ? CONFIG.DINO_DRAG.matterCarryAngleSpringStrength : 0.02;
+        const carryDamping = Number.isFinite(CONFIG.DINO_DRAG?.matterCarryAngleSpringDamping)
+            ? CONFIG.DINO_DRAG.matterCarryAngleSpringDamping : 0.6;
         const carryTargetRad = THREE.MathUtils.degToRad(
-            Number.isFinite(CONFIG.DYNO_DRAG?.matterCarryAngleSpringTargetDeg)
-                ? CONFIG.DYNO_DRAG.matterCarryAngleSpringTargetDeg : 0
+            Number.isFinite(CONFIG.DINO_DRAG?.matterCarryAngleSpringTargetDeg)
+                ? CONFIG.DINO_DRAG.matterCarryAngleSpringTargetDeg : 0
         );
 
-        const dragStrength = Number.isFinite(CONFIG.DYNO_DRAG?.matterDragAngleSpringStrength)
-            ? CONFIG.DYNO_DRAG.matterDragAngleSpringStrength : 0.02;
-        const dragDamping = Number.isFinite(CONFIG.DYNO_DRAG?.matterDragAngleSpringDamping)
-            ? CONFIG.DYNO_DRAG.matterDragAngleSpringDamping : 0.6;
+        const dragStrength = Number.isFinite(CONFIG.DINO_DRAG?.matterDragAngleSpringStrength)
+            ? CONFIG.DINO_DRAG.matterDragAngleSpringStrength : 0.02;
+        const dragDamping = Number.isFinite(CONFIG.DINO_DRAG?.matterDragAngleSpringDamping)
+            ? CONFIG.DINO_DRAG.matterDragAngleSpringDamping : 0.6;
         const dragTargetRad = THREE.MathUtils.degToRad(
-            Number.isFinite(CONFIG.DYNO_DRAG?.matterDragAngleSpringTargetDeg)
-                ? CONFIG.DYNO_DRAG.matterDragAngleSpringTargetDeg : 45
+            Number.isFinite(CONFIG.DINO_DRAG?.matterDragAngleSpringTargetDeg)
+                ? CONFIG.DINO_DRAG.matterDragAngleSpringTargetDeg : 45
         );
 
         for (const [levelObject] of this.dragConstraints.entries()) {
@@ -3124,29 +3124,29 @@ applyLaunchVelocities() {
         }
     }
 
-    // Wake and impulse all sleeping physics bodies whose AABB overlaps the dyno's
+    // Wake and impulse all sleeping physics bodies whose AABB overlaps the dino's
     // collision circle. Call this once per frame from LevelObjectManager after the
-    // physics update so blocks topple when the dyno flies into them.
-    pushLevelObjectsFromDyno(dynoPos, dynoVelocity) {
-        if (!this.Matter || !dynoPos) return;
+    // physics update so blocks topple when the dino flies into them.
+    pushLevelObjectsFromDino(dinoPos, dinoVelocity) {
+        if (!this.Matter || !dinoPos) return;
 
-        const velX = dynoVelocity?.x ?? 0;
-        const velY = dynoVelocity?.y ?? 0;
-        // Skip the O(n) body scan entirely when the dyno is barely moving —
+        const velX = dinoVelocity?.x ?? 0;
+        const velY = dinoVelocity?.y ?? 0;
+        // Skip the O(n) body scan entirely when the dino is barely moving —
         // it can't meaningfully push anything at low speed.
         if (velX * velX + velY * velY < 4) return;
 
-        const dynoRadius = 1.1;
-        const dx = dynoPos.x;
-        const dy = dynoPos.y;
+        const dinoRadius = 1.1;
+        const dx = dinoPos.x;
+        const dy = dinoPos.y;
         const fixedStepSec = this.getFixedStepSeconds();
         // Minimum push in world units/sec — guarantees a visible shove even when
-        // the dyno is hovering slowly into an object or the device is running slowly.
+        // the dino is hovering slowly into an object or the device is running slowly.
         const minPushSpeed = 8.0;
 
         for (const [levelObject, body] of this.objectBodies.entries()) {
             if (body.isStatic) continue;
-            if (!levelObject.config?.collideWithDyno) continue;
+            if (!levelObject.config?.collideWithDino) continue;
             if (levelObject.config?.knockable === false) continue;
             if (
                 levelObject.state !== LEVEL_OBJECT_STATES.IDLE &&
@@ -3161,9 +3161,9 @@ applyLaunchVelocities() {
             const closestX = Math.max(bMinX, Math.min(dx, bMaxX));
             const closestY = Math.max(bMinY, Math.min(dy, bMaxY));
             const distSq = (dx - closestX) ** 2 + (dy - closestY) ** 2;
-            if (distSq > dynoRadius * dynoRadius) continue;
+            if (distSq > dinoRadius * dinoRadius) continue;
 
-            // Derive the push direction. When the dyno is already inside the AABB
+            // Derive the push direction. When the dino is already inside the AABB
             // (closestX === dx, tunnelling on slow frames), use the body centre instead
             // so we always get a well-defined outward normal.
             let toNX, toNY;
@@ -3176,12 +3176,12 @@ applyLaunchVelocities() {
                 toNX = sepX / sepLen;
                 toNY = sepY / sepLen;
             } else {
-                // Dyno exactly at body centre — push upward as safe default.
+                // Dino exactly at body centre — push upward as safe default.
                 toNX = 0;
                 toNY = 1;
             }
 
-            // Skip if dyno is clearly moving away from this object already.
+            // Skip if dino is clearly moving away from this object already.
             const approachDot = velX * toNX + velY * toNY;
             const blockApproachDot = body.velocity.x * toNX + body.velocity.y * toNY;
             // Allow push even at zero velocity (contact without motion on slow devices).
@@ -3190,12 +3190,12 @@ applyLaunchVelocities() {
             // Wake the body.
             if (body.isSleeping) this.Matter.Sleeping.set(body, false);
 
-            // Transfer the dyno's velocity component toward the block, with a floor
+            // Transfer the dino's velocity component toward the block, with a floor
             // so slow devices still generate a visible push.
-            const dynoDot = velX * toNX * fixedStepSec + velY * toNY * fixedStepSec;
+            const dinoDot = velX * toNX * fixedStepSec + velY * toNY * fixedStepSec;
             const blockDot = body.velocity.x * toNX + body.velocity.y * toNY;
             const minDot = minPushSpeed * fixedStepSec;
-            const pushDot = Math.max(dynoDot, minDot);
+            const pushDot = Math.max(dinoDot, minDot);
 
             if (pushDot > blockDot) {
                 TMP_SET_VEL.x = body.velocity.x + (pushDot - blockDot) * toNX;
@@ -3365,14 +3365,14 @@ applyLaunchVelocities() {
             }
         }
 
-        for (const [levelObject, lines] of [...this.debugDynoAnchorLines.entries()]) {
+        for (const [levelObject, lines] of [...this.debugDinoAnchorLines.entries()]) {
             if (!this.objectBodies.has(levelObject)) {
                 for (const line of Object.values(lines)) {
                     line?.geometry?.dispose?.();
                     line?.material?.dispose?.();
                     line?.removeFromParent?.();
                 }
-                this.debugDynoAnchorLines.delete(levelObject);
+                this.debugDinoAnchorLines.delete(levelObject);
             }
         }
 
@@ -3540,8 +3540,8 @@ applyLaunchVelocities() {
             this.debugGrabPointLines.set(levelObject, grabLines);
 
             const constraint = this.dragConstraints.get(levelObject);
-            const dynoAnchorLines = this.debugDynoAnchorLines.get(levelObject) || {};
-            const dynoMarkerSpecs = [];
+            const dinoAnchorLines = this.debugDinoAnchorLines.get(levelObject) || {};
+            const dinoMarkerSpecs = [];
             if (constraint) {
                 const targetAnchor = this.getConstraintPointWorld(constraint, 'A');
                 // constraint.pointB is mutated by Matter each step — use the cached
@@ -3550,12 +3550,12 @@ applyLaunchVelocities() {
                 const bodyAnchor = (fixedLocalPoint && Number.isFinite(fixedLocalPoint.x))
                     ? this.getBodyWorldPointFromLocal(body, fixedLocalPoint)
                     : this.getConstraintPointWorld(constraint, 'B');
-                dynoMarkerSpecs.push({
+                dinoMarkerSpecs.push({
                     key: 'constraint_target',
                     color: 0x3399ff,
                     point: targetAnchor
                 });
-                dynoMarkerSpecs.push({
+                dinoMarkerSpecs.push({
                     key: 'constraint_body_anchor',
                     color: 0xff33ff,
                     point: bodyAnchor
@@ -3563,7 +3563,7 @@ applyLaunchVelocities() {
             }
 
             if (levelObject.state === LEVEL_OBJECT_STATES.CARRIED && typeof levelObject.getCarryTargetWorldPosition === 'function') {
-                dynoMarkerSpecs.push({
+                dinoMarkerSpecs.push({
                     key: 'carry_socket',
                     color: 0x66ddff,
                     point: levelObject.getCarryTargetWorldPosition(new THREE.Vector3())
@@ -3571,22 +3571,22 @@ applyLaunchVelocities() {
             }
 
             if (levelObject.state === LEVEL_OBJECT_STATES.DRAGGED && typeof levelObject.getDragTargetWorldPosition === 'function') {
-                dynoMarkerSpecs.push({
+                dinoMarkerSpecs.push({
                     key: 'mouth_drag_target',
                     color: 0x0066ff,
                     point: levelObject.getDragTargetWorldPosition(new THREE.Vector3())
                 });
             }
 
-            const activeDynoMarkerKeys = new Set();
-            for (const marker of dynoMarkerSpecs) {
-                activeDynoMarkerKeys.add(marker.key);
+            const activeDinoMarkerKeys = new Set();
+            for (const marker of dinoMarkerSpecs) {
+                activeDinoMarkerKeys.add(marker.key);
                 if (!marker.point || !Number.isFinite(marker.point.x) || !Number.isFinite(marker.point.y)) {
                     continue;
                 }
 
                 const markerGeometry = makeCrossGeometry(marker.point, 0.34, DEBUG_Z + 0.65);
-                let markerLine = dynoAnchorLines[marker.key];
+                let markerLine = dinoAnchorLines[marker.key];
                 if (!markerLine) {
                     markerLine = new THREE.LineSegments(
                         markerGeometry,
@@ -3602,7 +3602,7 @@ applyLaunchVelocities() {
                     markerLine.renderOrder = 1000012;
                     markerLine.frustumCulled = false;
                     group.add(markerLine);
-                    dynoAnchorLines[marker.key] = markerLine;
+                    dinoAnchorLines[marker.key] = markerLine;
                 } else {
                     markerLine.geometry?.dispose?.();
                     markerLine.geometry = markerGeometry;
@@ -3610,17 +3610,17 @@ applyLaunchVelocities() {
                 }
             }
 
-            for (const [key, line] of Object.entries(dynoAnchorLines)) {
-                if (activeDynoMarkerKeys.has(key)) {
+            for (const [key, line] of Object.entries(dinoAnchorLines)) {
+                if (activeDinoMarkerKeys.has(key)) {
                     continue;
                 }
 
                 line?.geometry?.dispose?.();
                 line?.material?.dispose?.();
                 line?.removeFromParent?.();
-                delete dynoAnchorLines[key];
+                delete dinoAnchorLines[key];
             }
-            this.debugDynoAnchorLines.set(levelObject, dynoAnchorLines);
+            this.debugDinoAnchorLines.set(levelObject, dinoAnchorLines);
 
             if (this.shouldDebugDropDiagnostics() && (levelObject.state === LEVEL_OBJECT_STATES.FALLING || body.isSleeping)) {
                 const visualAngleDelta = getAngleDeltaRadians(visualAngle, body.angle);
@@ -3663,7 +3663,7 @@ applyLaunchVelocities() {
                         visualAxisOverlayCount: this.debugVisualAxisLines.size,
                         grabPointOverlayCount: [...this.debugGrabPointLines.values()]
                             .reduce((sum, lines) => sum + Object.keys(lines || {}).length, 0),
-                        dynoAnchorOverlayCount: [...this.debugDynoAnchorLines.values()]
+                        dinoAnchorOverlayCount: [...this.debugDinoAnchorLines.values()]
                             .reduce((sum, lines) => sum + Object.keys(lines || {}).length, 0),
                         jointOverlayCount: this.debugJointLines.size,
                         debugGroupChildCount: this.debugGroup?.children?.length ?? 0,
@@ -3702,13 +3702,13 @@ applyLaunchVelocities() {
         }
         this.debugGrabPointLines.delete(levelObject);
 
-        const dynoAnchorLines = this.debugDynoAnchorLines.get(levelObject);
-        for (const dynoAnchorLine of Object.values(dynoAnchorLines || {})) {
-            dynoAnchorLine?.geometry?.dispose?.();
-            dynoAnchorLine?.material?.dispose?.();
-            dynoAnchorLine?.removeFromParent?.();
+        const dinoAnchorLines = this.debugDinoAnchorLines.get(levelObject);
+        for (const dinoAnchorLine of Object.values(dinoAnchorLines || {})) {
+            dinoAnchorLine?.geometry?.dispose?.();
+            dinoAnchorLine?.material?.dispose?.();
+            dinoAnchorLine?.removeFromParent?.();
         }
-        this.debugDynoAnchorLines.delete(levelObject);
+        this.debugDinoAnchorLines.delete(levelObject);
 
         const jointLine = this.debugJointLines.get(levelObject);
         jointLine?.geometry?.dispose?.();
@@ -3740,13 +3740,13 @@ applyLaunchVelocities() {
             }
         }
         this.debugGrabPointLines.clear();
-        for (const lines of this.debugDynoAnchorLines.values()) {
+        for (const lines of this.debugDinoAnchorLines.values()) {
             for (const line of Object.values(lines || {})) {
                 line?.geometry?.dispose?.();
                 line?.material?.dispose?.();
             }
         }
-        this.debugDynoAnchorLines.clear();
+        this.debugDinoAnchorLines.clear();
         for (const line of this.debugJointLines.values()) {
             line.geometry?.dispose?.();
             line.material?.dispose?.();

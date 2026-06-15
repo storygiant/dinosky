@@ -88,7 +88,7 @@ export class SkyBackground {
 
     update() {
         // The sky gradient is anchored in world space: the bottom of the plane stays at the
-        // configured level bottom, and the camera simply moves over that gradient as the dyno
+        // configured level bottom, and the camera simply moves over that gradient as the dino
         // climbs. X can still follow the camera so the plane always covers the visible width.
         this.mesh.position.x = this.camera.position.x;
         this.mesh.position.y = this.config.bottomY + this.config.height * 0.5;

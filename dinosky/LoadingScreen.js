@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { createGLTFLoader } from './createGLTFLoader.js';
-import { DYNO_MODEL_SETTINGS } from './Player.js';
+import { DINO_MODEL_SETTINGS } from './Player.js';
 import { t } from './i18n.js';
-import { loadPlayerData } from './DynoSkinShop.js';
+import { loadPlayerData } from './DinoSkinShop.js';
 import { CONFIG } from './config.js';
 
 const PREVIEW_ANIMATION_HOLD_SECONDS = 2.6;
@@ -12,14 +12,14 @@ const PREVIEW_CAMERA_BASE_VIEW_HEIGHT = 9.2;
 const PREVIEW_CAMERA_MIN_VIEW_WIDTH = 14;
 
 function injectLoadingScreenStyles() {
-    if (document.getElementById('dyno-loading-screen-styles')) {
+    if (document.getElementById('dino-loading-screen-styles')) {
         return;
     }
 
     const style = document.createElement('style');
-    style.id = 'dyno-loading-screen-styles';
+    style.id = 'dino-loading-screen-styles';
     style.textContent = `
-        .dyno-loading-screen {
+        .dino-loading-screen {
             position: fixed;
             inset: 0;
             z-index: 1000;
@@ -35,13 +35,13 @@ function injectLoadingScreenStyles() {
             transition: opacity 220ms ease, visibility 220ms ease;
         }
 
-        .dyno-loading-screen.is-hidden {
+        .dino-loading-screen.is-hidden {
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
         }
 
-        .dyno-loading-card {
+        .dino-loading-card {
             width: min(100%, 478px);
             height: calc(100vh - 48px);
             height: calc(100dvh - 48px);
@@ -65,7 +65,7 @@ function injectLoadingScreenStyles() {
             font-family: "Orbitron";
         }
 
-        .dyno-loading-kicker {
+        .dino-loading-kicker {
             margin: 0 0 12px;
             font-size: 12px;
             font-weight: 700;
@@ -75,7 +75,7 @@ function injectLoadingScreenStyles() {
             color: rgba(215, 240, 255, 0.72);
         }
 
-        .dyno-loading-preview {
+        .dino-loading-preview {
             position: relative;
             flex: 1 1 auto;
             min-height: 160px;
@@ -89,7 +89,7 @@ function injectLoadingScreenStyles() {
                 linear-gradient(180deg, rgba(6, 30, 64, 0.64) 0%, rgba(4, 18, 42, 0.18) 100%);
         }
 
-        .dyno-loading-preview::after {
+        .dino-loading-preview::after {
             content: "";
             position: absolute;
             inset: auto 9% 10px;
@@ -100,14 +100,14 @@ function injectLoadingScreenStyles() {
             pointer-events: none;
         }
 
-        .dyno-loading-preview canvas {
+        .dino-loading-preview canvas {
             position: absolute;
             inset: 0;
             width: 100%;
             height: 100%;
         }
 
-        .dyno-loading-preview-label {
+        .dino-loading-preview-label {
             position: absolute;
             right: 14px;
             bottom: 14px;
@@ -125,11 +125,11 @@ function injectLoadingScreenStyles() {
             text-overflow: ellipsis;
         }
 
-        .dyno-loading-preview.is-unavailable {
+        .dino-loading-preview.is-unavailable {
             display: none;
         }
 
-        .dyno-loading-title {
+        .dino-loading-title {
             margin: 0;
             font-size: clamp(28px, 5vw, 40px);
             font-weight: 700;
@@ -137,7 +137,7 @@ function injectLoadingScreenStyles() {
             text-transform: uppercase;
         }
 
-        .dyno-loading-status {
+        .dino-loading-status {
             margin: 14px 0 6px;
             min-height: 24px;
             font-size: 14px;
@@ -145,7 +145,7 @@ function injectLoadingScreenStyles() {
             color: rgba(246, 251, 255, 0.9);
         }
 
-        .dyno-loading-detail {
+        .dino-loading-detail {
             min-height: 20px;
             font-size: 12px;
             line-height: 1.5;
@@ -154,7 +154,7 @@ function injectLoadingScreenStyles() {
             color: rgba(198, 228, 255, 0.7);
         }
 
-        .dyno-loading-bar-track {
+        .dino-loading-bar-track {
             position: relative;
             height: 18px;
             margin-top: 20px;
@@ -164,7 +164,7 @@ function injectLoadingScreenStyles() {
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
         }
 
-        .dyno-loading-bar-fill {
+        .dino-loading-bar-fill {
             height: 100%;
             width: 0%;
             border-radius: inherit;
@@ -176,7 +176,7 @@ function injectLoadingScreenStyles() {
             transition: width 180ms ease;
         }
 
-        .dyno-loading-meta {
+        .dino-loading-meta {
             display: flex;
             justify-content: space-between;
             gap: 16px;
@@ -187,7 +187,7 @@ function injectLoadingScreenStyles() {
             color: rgba(221, 240, 255, 0.8);
         }
 
-        .dyno-loading-button {
+        .dino-loading-button {
             display: none;
             width: 100%;
             margin-top: 24px;
@@ -209,8 +209,8 @@ function injectLoadingScreenStyles() {
             transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
         }
 
-        .dyno-loading-button:hover,
-        .dyno-loading-button:focus-visible {
+        .dino-loading-button:hover,
+        .dino-loading-button:focus-visible {
             transform: translateY(-1px);
             box-shadow:
                 0 16px 34px rgba(255, 160, 55, 0.42),
@@ -219,27 +219,27 @@ function injectLoadingScreenStyles() {
             outline: none;
         }
 
-        .dyno-loading-button:active {
+        .dino-loading-button:active {
             transform: translateY(1px);
         }
 
-        .dyno-loading-button.is-visible {
+        .dino-loading-button.is-visible {
             display: block;
         }
 
         @media (max-height: 620px) {
-            .dyno-loading-preview {
+            .dino-loading-preview {
                 min-height: 120px;
                 margin-bottom: 12px;
             }
 
-            .dyno-loading-card {
+            .dino-loading-card {
                 padding: 20px;
             }
         }
 
         @media (max-height: 520px) and (orientation: landscape) {
-            .dyno-loading-screen {
+            .dino-loading-screen {
                 align-items: flex-start;
                 padding: 10px 12px;
                 padding:
@@ -250,7 +250,7 @@ function injectLoadingScreenStyles() {
                 overflow-y: auto;
             }
 
-            .dyno-loading-card {
+            .dino-loading-card {
                 display: grid;
                 grid-template-columns: minmax(150px, 38%) minmax(0, 1fr);
                 grid-template-areas:
@@ -271,11 +271,11 @@ function injectLoadingScreenStyles() {
                 border-radius: 16px;
             }
 
-            .dyno-loading-kicker {
+            .dino-loading-kicker {
                 display: none;
             }
 
-            .dyno-loading-preview {
+            .dino-loading-preview {
                 grid-area: preview;
                 height: 100%;
                 min-height: 0;
@@ -283,12 +283,12 @@ function injectLoadingScreenStyles() {
                 border-radius: 12px;
             }
 
-            .dyno-loading-title {
+            .dino-loading-title {
                 grid-area: title;
                 font-size: clamp(22px, 8vh, 32px);
             }
 
-            .dyno-loading-status {
+            .dino-loading-status {
                 grid-area: status;
                 min-height: 0;
                 margin: 4px 0 2px;
@@ -296,26 +296,26 @@ function injectLoadingScreenStyles() {
                 line-height: 1.35;
             }
 
-            .dyno-loading-detail {
+            .dino-loading-detail {
                 grid-area: detail;
                 min-height: 0;
                 font-size: 10px;
                 line-height: 1.35;
             }
 
-            .dyno-loading-bar-track {
+            .dino-loading-bar-track {
                 grid-area: bar;
                 height: 14px;
                 margin-top: 10px;
             }
 
-            .dyno-loading-meta {
+            .dino-loading-meta {
                 grid-area: meta;
                 margin-top: 6px;
                 font-size: 10px;
             }
                 
-            .dyno-loading-button {
+            .dino-loading-button {
                 grid-area: button;
                 margin-top: 10px;
                 padding: 11px 16px;
@@ -355,44 +355,44 @@ export class LoadingScreen {
         };
 
         this.root = document.createElement('div');
-        this.root.className = 'dyno-loading-screen';
+        this.root.className = 'dino-loading-screen';
 
         this.card = document.createElement('div');
-        this.card.className = 'dyno-loading-card';
+        this.card.className = 'dino-loading-card';
 
         this.kicker = document.createElement('p');
-        this.kicker.className = 'dyno-loading-kicker';
-        this.kicker.textContent = 'DYNO THE DYNO';
+        this.kicker.className = 'dino-loading-kicker';
+        this.kicker.textContent = 'DINO THE DINO';
 
         this.preview.container = document.createElement('div');
-        this.preview.container.className = 'dyno-loading-preview';
+        this.preview.container.className = 'dino-loading-preview';
 
         this.preview.label = document.createElement('div');
-        this.preview.label.className = 'dyno-loading-preview-label';
+        this.preview.label.className = 'dino-loading-preview-label';
         this.preview.label.textContent = t('loading_preview_label');
         this.preview.container.appendChild(this.preview.label);
 
         this.title = document.createElement('h1');
-        this.title.className = 'dyno-loading-title';
+        this.title.className = 'dino-loading-title';
         this.title.textContent = t('loading_title');
 
         this.status = document.createElement('p');
-        this.status.className = 'dyno-loading-status';
+        this.status.className = 'dino-loading-status';
         this.status.textContent = t('loading_status');
 
         this.detail = document.createElement('div');
-        this.detail.className = 'dyno-loading-detail';
+        this.detail.className = 'dino-loading-detail';
         this.detail.textContent = t('loading_detail');
 
         this.progressTrack = document.createElement('div');
-        this.progressTrack.className = 'dyno-loading-bar-track';
+        this.progressTrack.className = 'dino-loading-bar-track';
 
         this.progressFill = document.createElement('div');
-        this.progressFill.className = 'dyno-loading-bar-fill';
+        this.progressFill.className = 'dino-loading-bar-fill';
         this.progressTrack.appendChild(this.progressFill);
 
         this.meta = document.createElement('div');
-        this.meta.className = 'dyno-loading-meta';
+        this.meta.className = 'dino-loading-meta';
 
         this.percentLabel = document.createElement('span');
         this.percentLabel.textContent = '0%';
@@ -403,7 +403,7 @@ export class LoadingScreen {
         this.meta.append(this.percentLabel, this.phaseLabel);
 
         this.goButton = document.createElement('button');
-        this.goButton.className = 'dyno-loading-button';
+        this.goButton.className = 'dino-loading-button';
         this.goButton.type = 'button';
         this.goButton.textContent = t('loading_go');
 
@@ -420,7 +420,7 @@ export class LoadingScreen {
         this.root.appendChild(this.card);
         document.body.appendChild(this.root);
 
-        this.initDynoPreview();
+        this.initDinoPreview();
     }
 
     setProgress(progress) {
@@ -524,10 +524,10 @@ export class LoadingScreen {
         this.readyForGo = false;
         this.goButton.classList.remove('is-visible');        
         this.root.classList.add('is-hidden');
-        this.stopDynoPreview();
+        this.stopDinoPreview();
     }
 
-    initDynoPreview() {
+    initDinoPreview() {
         try {
             const renderer = new THREE.WebGLRenderer({
                 alpha: true,
@@ -549,33 +549,33 @@ export class LoadingScreen {
             this.preview.root = new THREE.Group();
             this.preview.scene.add(this.preview.root);
 
-            this.preview.resizeObserver = new ResizeObserver(() => this.resizeDynoPreview());
+            this.preview.resizeObserver = new ResizeObserver(() => this.resizeDinoPreview());
             this.preview.resizeObserver.observe(this.preview.container);
-            this.resizeDynoPreview();
+            this.resizeDinoPreview();
 
-            this.loadDynoPreview();
-            this.startDynoPreview();
+            this.loadDinoPreview();
+            this.startDinoPreview();
         } catch (error) {
-            console.warn('[LoadingScreen] Dyno preview unavailable.', error);
+            console.warn('[LoadingScreen] Dino preview unavailable.', error);
             this.preview.container.classList.add('is-unavailable');
         }
     }
 
-    async loadDynoPreview() {
+    async loadDinoPreview() {
         try {
             const loader = createGLTFLoader();
             const textureLoader = new THREE.TextureLoader();
 
             // Resolve equipped skin texture from stored player data.
             const playerData = loadPlayerData();
-            const equippedId = playerData?.equippedDynoSkinId;
-            const equippedSkin = (CONFIG.dynoSkins ?? []).find((s) => s.id === equippedId);
-            const texturePath = equippedSkin?.texture ?? DYNO_MODEL_SETTINGS.texturePath;
+            const equippedId = playerData?.equippedDinoSkinId;
+            const equippedSkin = (CONFIG.dinoSkins ?? []).find((s) => s.id === equippedId);
+            const texturePath = equippedSkin?.texture ?? DINO_MODEL_SETTINGS.texturePath;
 
             const [gltf, texture] = await Promise.all([
-                loader.loadAsync(DYNO_MODEL_SETTINGS.path),
+                loader.loadAsync(DINO_MODEL_SETTINGS.path),
                 textureLoader.loadAsync(texturePath).catch((error) => {
-                    console.warn('[LoadingScreen] Dyno preview texture failed; using embedded material.', error);
+                    console.warn('[LoadingScreen] Dino preview texture failed; using embedded material.', error);
                     return null;
                 })
             ]);
@@ -584,24 +584,24 @@ export class LoadingScreen {
                 return;
             }
 
-            const dynoModel = gltf.scene;
-            this.prepareDynoPreviewModel(dynoModel, texture);
-            this.preview.root.add(dynoModel);
-            this.fitDynoPreviewToStage(dynoModel);
-            this.setupDynoPreviewAnimations(gltf.animations);
+            const dinoModel = gltf.scene;
+            this.prepareDinoPreviewModel(dinoModel, texture);
+            this.preview.root.add(dinoModel);
+            this.fitDinoPreviewToStage(dinoModel);
+            this.setupDinoPreviewAnimations(gltf.animations);
         } catch (error) {
-            console.warn('[LoadingScreen] Failed to load dyno preview.', error);
+            console.warn('[LoadingScreen] Failed to load dino preview.', error);
             this.preview.container.classList.add('is-unavailable');
         }
     }
 
-    prepareDynoPreviewModel(dynoModel, texture) {
+    prepareDinoPreviewModel(dinoModel, texture) {
         if (texture) {
             texture.colorSpace = THREE.SRGBColorSpace;
             texture.flipY = false;
         }
 
-        dynoModel.traverse((child) => {
+        dinoModel.traverse((child) => {
             if (!child.isMesh) {
                 return;
             }
@@ -610,7 +610,7 @@ export class LoadingScreen {
             const materials = Array.isArray(child.material) ? child.material : [child.material];
             const previewMaterials = materials.map((material) => {
                 const previewMaterial = new THREE.MeshBasicMaterial({
-                    color: new THREE.Color(DYNO_MODEL_SETTINGS.monotoneColor || '#ffffff'),
+                    color: new THREE.Color(DINO_MODEL_SETTINGS.monotoneColor || '#ffffff'),
                     map: texture || material?.map || null,
                     transparent: material?.transparent === true,
                     opacity: material?.opacity ?? 1,
@@ -627,34 +627,34 @@ export class LoadingScreen {
             child.material = Array.isArray(child.material) ? previewMaterials : previewMaterials[0];
         });
 
-        dynoModel.rotation.set(
-            DYNO_MODEL_SETTINGS.extraRotation.x,
-            DYNO_MODEL_SETTINGS.facingYaw.right + DYNO_MODEL_SETTINGS.extraRotation.y,
-            DYNO_MODEL_SETTINGS.extraRotation.z
+        dinoModel.rotation.set(
+            DINO_MODEL_SETTINGS.extraRotation.x,
+            DINO_MODEL_SETTINGS.facingYaw.right + DINO_MODEL_SETTINGS.extraRotation.y,
+            DINO_MODEL_SETTINGS.extraRotation.z
         );
-        dynoModel.scale.setScalar(1);
+        dinoModel.scale.setScalar(1);
     }
 
-    fitDynoPreviewToStage(dynoModel) {
-        const bounds = new THREE.Box3().setFromObject(dynoModel);
+    fitDinoPreviewToStage(dinoModel) {
+        const bounds = new THREE.Box3().setFromObject(dinoModel);
         const size = bounds.getSize(new THREE.Vector3());
         const center = bounds.getCenter(new THREE.Vector3());
         const maxDimension = Math.max(size.x, size.y, 0.001);
         const targetSize = PREVIEW_MODEL_TARGET_SIZE;
         const scale = targetSize / maxDimension;
 
-        dynoModel.scale.setScalar(scale);
-        dynoModel.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
-        dynoModel.position.y -= targetSize * 0.03;
+        dinoModel.scale.setScalar(scale);
+        dinoModel.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+        dinoModel.position.y -= targetSize * 0.03;
         this.preview.root.rotation.z = -0.03;
     }
 
-    setupDynoPreviewAnimations(clips = []) {
+    setupDinoPreviewAnimations(clips = []) {
         const usableClips = clips.filter((clip) => (
             clip &&
             clip.duration > 0 &&
-            !this.isDynoPreviewHitClip(clip.name) &&
-            !this.isDynoPreviewDeathClip(clip.name)
+            !this.isDinoPreviewHitClip(clip.name) &&
+            !this.isDinoPreviewDeathClip(clip.name)
         ));
         this.preview.clips = usableClips;
 
@@ -676,13 +676,13 @@ export class LoadingScreen {
         this.applyPreviewMode();
     }
 
-    isDynoPreviewHitClip(name = '') {
+    isDinoPreviewHitClip(name = '') {
         // Hit clips are reactive gameplay feedback, so keep the loading preview focused on
         // normal idle/movement/flying animation poses.
         return /(^|[-_])hit($|[-_])/i.test(String(name || ''));
     }
 
-    isDynoPreviewDeathClip(name = '') {
+    isDinoPreviewDeathClip(name = '') {
         // Death/fall clips look abrupt in a loading loop, so keep them out of the preview.
         return /(^|[-_])(dead|death|die|dying)($|[-_])/i.test(String(name || ''));
     }
@@ -691,13 +691,13 @@ export class LoadingScreen {
         return String(name || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '');
     }
 
-    findDynoPreviewRunClipIndex() {
+    findDinoPreviewRunClipIndex() {
         if (!this.preview.clips.length) {
             return -1;
         }
 
         const preferredNames = [
-            ...(DYNO_MODEL_SETTINGS?.clipHints?.run || []),
+            ...(DINO_MODEL_SETTINGS?.clipHints?.run || []),
             'run'
         ].map((name) => this.normalizeClipName(name));
 
@@ -724,12 +724,12 @@ export class LoadingScreen {
         }
 
         const targetIndex = this.preview.mode === 'run'
-            ? this.findDynoPreviewRunClipIndex()
+            ? this.findDinoPreviewRunClipIndex()
             : 0;
-        this.playDynoPreviewAnimation(Math.max(0, targetIndex), 0);
+        this.playDinoPreviewAnimation(Math.max(0, targetIndex), 0);
     }
 
-    playDynoPreviewAnimation(index, fadeDuration = PREVIEW_ANIMATION_FADE_SECONDS) {
+    playDinoPreviewAnimation(index, fadeDuration = PREVIEW_ANIMATION_FADE_SECONDS) {
         if (!this.preview.actions.length) {
             return;
         }
@@ -751,17 +751,17 @@ export class LoadingScreen {
         this.preview.currentAction = nextAction;
         this.preview.currentIndex = nextIndex;
         this.preview.elapsed = 0;
-        this.preview.label.textContent = this.formatDynoPreviewClipName(this.preview.clips[nextIndex]?.name);
+        this.preview.label.textContent = this.formatDinoPreviewClipName(this.preview.clips[nextIndex]?.name);
     }
 
-    formatDynoPreviewClipName(name = '') {
-        return String(name || 'Dyno animation')
+    formatDinoPreviewClipName(name = '') {
+        return String(name || 'Dino animation')
             .replace(/[-_]+loop$/i, '')
             .replace(/[-_]+/g, ' ')
-            .trim() || 'Dyno animation';
+            .trim() || 'Dino animation';
     }
 
-    resizeDynoPreview() {
+    resizeDinoPreview() {
         if (!this.preview.renderer || !this.preview.camera || !this.preview.container) {
             return;
         }
@@ -781,7 +781,7 @@ export class LoadingScreen {
         this.preview.renderer.setSize(width, height, false);
     }
 
-    startDynoPreview() {
+    startDinoPreview() {
         if (this.preview.isRunning) {
             return;
         }
@@ -805,7 +805,7 @@ export class LoadingScreen {
                     this.preview.elapsed >= PREVIEW_ANIMATION_HOLD_SECONDS &&
                     this.preview.actions.length > 1
                 ) {
-                    this.playDynoPreviewAnimation(this.preview.currentIndex + 1);
+                    this.playDinoPreviewAnimation(this.preview.currentIndex + 1);
                 }
             }
 
@@ -820,7 +820,7 @@ export class LoadingScreen {
         this.preview.frameId = requestAnimationFrame(tick);
     }
 
-    stopDynoPreview() {
+    stopDinoPreview() {
         this.preview.isRunning = false;
         if (this.preview.frameId != null) {
             cancelAnimationFrame(this.preview.frameId);

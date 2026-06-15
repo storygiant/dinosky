@@ -1,6 +1,6 @@
 import { getPlatformPlayerName, loadLocalJson, saveJsonWithPlatformMirrors, saveLocalJson } from './PlatformBridge.js';
 
-const STORAGE_KEY = 'dynoPlayerIdentity';
+const STORAGE_KEY = 'dinoPlayerIdentity';
 
 const ADJECTIVES = [
     'Swift', 'Bold', 'Brave', 'Calm', 'Dark', 'Epic', 'Fast', 'Fierce',
@@ -9,7 +9,7 @@ const ADJECTIVES = [
 ];
 
 const ANIMALS = [
-    'Bear', 'Cobra', 'Crane', 'Dyno', 'Eagle', 'Falcon', 'Fox', 'Hawk',
+    'Bear', 'Cobra', 'Crane', 'Dino', 'Eagle', 'Falcon', 'Fox', 'Hawk',
     'Jaguar', 'Lion', 'Lynx', 'Panda', 'Panther', 'Phoenix', 'Raven',
     'Shark', 'Tiger', 'Viper', 'Wolf', 'Wolverine'
 ];

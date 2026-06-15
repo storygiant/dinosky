@@ -1,7 +1,7 @@
 {
-  "name": "dyno-the-dyno",
+  "name": "dino-the-dino",
   "version": "0.0.50",
-  "description": "Desktop wrapper scaffold for Dyno the Dyno",
+  "description": "Desktop wrapper scaffold for Dino the Dino",
   "main": "desktop/electron/main.cjs",
   "type": "commonjs",
   "scripts": {
@@ -15,8 +15,8 @@
     "electron-builder": "^26.8.1"
   },
   "build": {
-    "appId": "com.dynothedyno.game",
-    "productName": "Dyno the Dyno",
+    "appId": "com.dinothedino.game",
+    "productName": "Dino the Dino",
     "files": [
       "**/*",
       "!dist{,/**}",
@@ -24,7 +24,7 @@
       "!.git{,/**}",
       "!.vscode{,/**}",
       "!.claude{,/**}",
-      "!dyno_*.zip"
+      "!dino_*.zip"
     ],
     "directories": {
       "output": "release"

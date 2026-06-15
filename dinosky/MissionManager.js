@@ -17,9 +17,9 @@ export const MISSION_STATE = Object.freeze({
 });
 
 // localStorage key for persisted mission progress.
-const PERSIST_KEY = 'dynoMissionState';
+const PERSIST_KEY = 'dinoMissionState';
 // Race times are always persisted, even when MISSION_DISABLE_PERSISTENCE is true.
-const RACE_TIMES_KEY = 'dynoRaceTimes';
+const RACE_TIMES_KEY = 'dinoRaceTimes';
 
 export class MissionManager {
     constructor(game, missions, options = {}) {
@@ -336,7 +336,7 @@ export class MissionManager {
 
     buildTimelineContext() {
         const actors = {
-            dyno: this.game?.player
+            dino: this.game?.player
         };
 
         if (this.currentMission?.params?.actorIds) {
@@ -354,7 +354,7 @@ export class MissionManager {
 
     buildTimelineContextForMission(mission) {
         const translated = translateMission(mission);
-        const actors = { dyno: this.game?.player };
+        const actors = { dino: this.game?.player };
         if (translated?.params?.actorIds) {
             const additionalActors = collectActors(this.game, translated.params.actorIds);
             Object.assign(actors, additionalActors);
@@ -421,7 +421,7 @@ export class MissionManager {
             this.game?.setTimelineSkipHandler?.(() => {
                 applySequenceInstantly(timeline, context);
                 // Mark finished without re-running track.update() — applySequenceInstantly
-                // already applied the correct final state with dyno-special handling.
+                // already applied the correct final state with dino-special handling.
                 timeline.currentTime = timeline.duration;
                 timeline.finished = true;
                 for (const track of timeline.tracks) {
@@ -1095,7 +1095,7 @@ export class MissionManager {
     }
 
     /**
-     * showCancelMissionPopup — shown when the dyno lands in a land area for a
+     * showCancelMissionPopup — shown when the dino lands in a land area for a
      * different mission while another is already running.
      *
      * If confirmed: cancel the current mission and start the requested one.
