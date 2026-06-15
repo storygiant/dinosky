@@ -1,0 +1,11 @@
+{
+  "name": "Draco Drift",
+  "revisionLabel": "Add mobile virtual joystick for flight and movement",
+  "description": "",
+  "mode": "Universal",
+  "exportDate": "2026-03-25T08:20:18.649Z",
+  "assetCount": 1,
+  "assetTypes": [
+    "image"
+  ]
+}

@@ -1,0 +1,187 @@
+flying-loop
+flying_up-loop
+flying_dive-loop
+flying_glide-loop
+
+hover-loop
+hover_turn_left-loop
+hover_turn_right-loop
+hover_up-loop
+hover_down-loop
+
+idle-loop
+run-loop
+walk-loop
+walk_turn_left-loop
+walk_turn_right-loop
+drag-loop
+drag_idle-loop
+t-pose
+
+run-loop => flying-loop
+walk-loop => hover-loop
+idle-loop => hover-loop
+
+
+both 40 degrees short
+both 70 degrees long
+
+bones:
+spine1
+spine2
+neck1
+neck1.001
+neck2
+head
+jaw
+r_upperarm
+r_forearm
+r_finger2
+r_finger2.001
+r_finger2.002
+r_finger2.003
+r_finger2.004
+r_finger2.005
+r_finger2.006
+r_finger2.007
+r_finger2.008
+r_finger2.009
+r_finger2.010
+r_finger2.011
+r_finger2.012
+r_upperarm.001
+l_upperarm
+l_forearm
+l_finger2
+l_finger2.001
+l_finger2.002
+l_finger2.003
+l_finger2.004
+l_finger2.005
+l_finger2.006
+l_finger2.007
+l_finger2.008
+l_finger2.009
+l_finger2.010
+l_finger2.011
+l_finger2.012
+l_upperarm.001
+tail1
+tail2
+tail3
+tail3.001
+l_tailfluke
+r_tailfluke
+r_hip
+r_upperleg
+r_middleleg
+r_shin
+r_foot
+r_foot.001
+r_foot.002
+r_foot.003
+l_hip
+l_upperleg
+l_middleleg
+l_shin
+l_foot
+l_foot.001
+l_foot.002
+l_foot.003
+l_hand_IK
+r_foot_IK
+l_foot_IK
+r_hand_IK
+
+
+root
+grab_front
+grab_back
+
+----------------
+- when flying with object the object should be inbeween the wings
+- new hover up animation and add hover down
+- explode objects dont let them burn after explode. destroy instantly
+- drag objects into tunnels
+- when dropping an object it can just end up where it hits the ground. We can rotate the way is should based on the tile. like on slobes also take this into acount when dragged. on slopes they rotate. We dont need to do a check for ground tiles above it should just end at the first ground tile it hits. We can take out all difficult code (physics calculations for landing the objects)
+
+
+Runtime Dependency Flow
+At startup, index.html loads main.js, and Game becomes the composition root:
+
+main.js creates core systems (Scene, camera, renderer, joystick, loading UI).
+TiledLevelLoader loads/parses the Tiled map into a TiledLevel domain model.
+Game computes asset URLs (level textures, player assets, object models) and starts a shared Three.js LoadingManager.
+Systems are constructed around shared level state:
+LevelRenderer(scene, level, ...)
+Player(scene, level, joystick, ...)
+LevelObjectManager(scene, level, ...)
+backgrounds (SkyBackground, ParallaxBackground)
+LevelObjectManager.loadFromLevel() scans spawn markers from the configured object layer and instantiates LevelObject/VehicleObject via LevelObjectFactory.
+After load completes, animate() drives frame updates.
+So the key relationship is: Game owns orchestration; TiledLevel is shared world-state; Player/Object systems mutate/read that state; renderer observes it.
+
+Update / Render Loop Responsibilities
+Per frame (main.js renderFrame(dt)), the order is intentional:
+
+Pre-movement interaction state:
+compute pickup/drag target + button state
+consume pickup/drop input
+Simulation:
+player.update(dt) (movement, takeoff/hover/fly, auto-pickup/auto-drag align, fire, animation mixer)
+levelObjectManager.update(dt) (object physics/state machine, destruction effects, deferred removals)
+camera follow update
+Post-movement UI + visuals:
+refresh pickup/drop state
+update backgrounds
+render world scene
+render joystick overlay
+Why this matters: interaction affordance is updated both before and after simulation so button behavior matches “what happens now,” not stale state.
+
+How Main Modules Are Separated
+main.js: composition + high-level game flow only.
+Player.js: dragon gameplay brain (input interpretation, locomotion modes, turn logic, carry/drag flows, fire, animation blending).
+TiledLevelLoader.js: map/tileset parsing and coordinate conversion from authored Tiled space into world space.
+TiledLevel.js: gameplay queries and mutable level state (ground surface, blocked/flyable tests, breakable tile mutation + listeners).
+LevelRenderer.js: visual-only layer/object draw graph; rebuilds when TiledLevel emits tile-change events.
+LevelObjectManager.js: spawn discovery, object registry, nearest-object queries, update/removal/effect lifecycle.
+LevelObject/VehicleObject: object-level behavior and physics-like state transitions.
+config.js: almost all tuning and object type definitions.
+Safe Places To Add Features
+1) Add a new spawnable object type (safest for content expansion)
+Add type config in config.js under LEVEL_OBJECT_TYPES.
+Add alias recognition in LevelObjectManager.js (TYPE_ALIASES) if needed.
+Extend creation logic in LevelObjectFactory.js if it needs a specialized subclass.
+Author marker in Tiled LevelObjects layer using type/property conventions.
+This path is already designed for extension and minimizes risk to player loop logic.
+
+2) Add a new interaction (pickup-like, drag-like, trigger)
+Keep world queries in LevelObjectManager (nearest/selectable object logic).
+Keep player-side control and state gating in Player (canUsePickupDropButton, auto-align patterns are already there).
+Keep per-object behavior in LevelObject subclasses.
+Wire button behavior at main.js level only as orchestration.
+Rule of thumb: selection in manager, intent in player, effect in object class.
+
+3) Add new map-driven gameplay tiles
+Extend parse semantics in TiledLevelLoader (tile properties -> internal tile fields).
+Add query logic in TiledLevel (e.g., hazard/slippery zones).
+Hook player/object responses by calling those new queries during their updates.
+If visuals need changes, keep them in LevelRenderer only.
+4) Add camera behavior
+Confine to main.js camera methods (updateCamera, updateCameraFollow).
+Avoid embedding camera concerns in Player or LevelObject classes.
+5) Tuning/balance changes
+Prefer config.js first. Most movement, drag/carry, object physics, and effects are already parameterized.
+Coupling / Risk Areas (good to know before refactors)
+Player.js is large and multifunctional (movement + interaction + animation + fire). It’s the biggest “change blast-radius” file.
+main.js interaction order is subtle; changing update sequence can cause button/target mismatch bugs.
+TiledLevelLoader coordinate conversion is foundational; mistakes there cause spawn/render/collision drift.
+Object lifecycle (destroy -> detached effects -> deferred removal) in LevelObjectManager is carefully staged to avoid mutation-during-iteration bugs.
+Practical “Where To Start” for New Gameplay
+If you want to implement a feature safely, I’d inspect in this order:
+
+main.js (frame orchestration + system wiring)
+Player.js (update, auto pickup/drag path, capability checks)
+LevelObjectManager.js (selection/update/removal)
+LevelObject.js and VehicleObject.js (object state machine)
+TiledLevel.js + TiledLevelLoader.js (world queries and map semantics)

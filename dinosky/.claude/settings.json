@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"c:/development/dyno_js/dyno\" diff HEAD~3 HEAD -- BurnableSceneryManager.js TiledLevel.js LevelObjectManager.js ZoneDialogTriggerManager.js SpatialGrid.js)",
+      "Bash(git -C \"c:/development/dyno_js/dyno\" log --oneline --all)"
+    ]
+  }
+}

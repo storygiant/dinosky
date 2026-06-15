@@ -1,0 +1,47 @@
+{
+  "name": "dyno-the-dyno",
+  "version": "0.0.50",
+  "description": "Desktop wrapper scaffold for Dyno the Dyno",
+  "main": "desktop/electron/main.cjs",
+  "type": "commonjs",
+  "scripts": {
+    "desktop": "electron .",
+    "desktop:dev": "electron . --dev",
+    "desktop:pack": "electron-builder --dir",
+    "desktop:dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^42.3.2",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "com.dynothedyno.game",
+    "productName": "Dyno the Dyno",
+    "files": [
+      "**/*",
+      "!dist{,/**}",
+      "!release{,/**}",
+      "!.git{,/**}",
+      "!.vscode{,/**}",
+      "!.claude{,/**}",
+      "!dyno_*.zip"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "extraMetadata": {
+      "main": "desktop/electron/main.cjs"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "node_modules/app-builder-lib/templates/icons/proton-native/proton-native.ico",
+      "signAndEditExecutable": false
+    }
+  },
+  "dependencies": {
+    "steamworks.js": "^0.4.0"
+  }
+}
